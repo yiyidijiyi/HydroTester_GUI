@@ -479,7 +479,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>3</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -503,7 +503,7 @@
       <rect>
        <x>10</x>
        <y>5</y>
-       <width>80</width>
+       <width>100</width>
        <height>30</height>
       </rect>
      </property>
@@ -1029,7 +1029,7 @@
       <rect>
        <x>10</x>
        <y>5</y>
-       <width>80</width>
+       <width>100</width>
        <height>30</height>
       </rect>
      </property>
@@ -1662,7 +1662,7 @@
     <widget class="QComboBox" name="comboBox_queryUserName">
      <property name="geometry">
       <rect>
-       <x>900</x>
+       <x>905</x>
        <y>352</y>
        <width>242</width>
        <height>30</height>
@@ -1853,22 +1853,6 @@
       <string>  账号信息</string>
      </property>
     </widget>
-    <widget class="QLabel" name="label_7">
-     <property name="geometry">
-      <rect>
-       <x>1310</x>
-       <y>50</y>
-       <width>15</width>
-       <height>15</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="pixmap">
-      <pixmap>resource/advance/advanceSave0.png</pixmap>
-     </property>
-    </widget>
     <widget class="QListView" name="listView_accountList">
      <property name="geometry">
       <rect>
@@ -1905,7 +1889,7 @@
        <rect>
         <x>34</x>
         <y>10</y>
-        <width>70</width>
+        <width>80</width>
         <height>30</height>
        </rect>
       </property>
@@ -1917,13 +1901,16 @@
       <property name="text">
        <string>用户名：</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
      </widget>
      <widget class="QLabel" name="label_accountPassword">
       <property name="geometry">
        <rect>
         <x>34</x>
         <y>50</y>
-        <width>70</width>
+        <width>80</width>
         <height>30</height>
        </rect>
       </property>
@@ -1935,11 +1922,14 @@
       <property name="text">
        <string>  密码：</string>
       </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
      </widget>
      <widget class="QLabel" name="label_accountType">
       <property name="geometry">
        <rect>
-        <x>480</x>
+        <x>490</x>
         <y>10</y>
         <width>90</width>
         <height>30</height>
@@ -1957,7 +1947,7 @@
      <widget class="QLineEdit" name="lineEdit_accountName">
       <property name="geometry">
        <rect>
-        <x>110</x>
+        <x>124</x>
         <y>10</y>
         <width>242</width>
         <height>30</height>
@@ -1967,7 +1957,7 @@
      <widget class="QLineEdit" name="lineEdit_accountPassword">
       <property name="geometry">
        <rect>
-        <x>110</x>
+        <x>124</x>
         <y>50</y>
         <width>242</width>
         <height>30</height>
@@ -2016,7 +2006,7 @@
      <widget class="QLineEdit" name="lineEdit_accountType">
       <property name="geometry">
        <rect>
-        <x>580</x>
+        <x>570</x>
         <y>10</y>
         <width>242</width>
         <height>30</height>
@@ -2125,9 +2115,9 @@
     <widget class="QLabel" name="label_sensitivity">
      <property name="geometry">
       <rect>
-       <x>515</x>
+       <x>468</x>
        <y>250</y>
-       <width>70</width>
+       <width>130</width>
        <height>30</height>
       </rect>
      </property>
@@ -2138,6 +2128,9 @@
      </property>
      <property name="text">
       <string>灵敏度：</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
      </property>
     </widget>
     <widget class="QLabel" name="label_ignoreWidth">
@@ -2157,13 +2150,16 @@
      <property name="text">
       <string>忽略边缘宽度：</string>
      </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
     </widget>
     <widget class="QLabel" name="label_pressureRange">
      <property name="geometry">
       <rect>
-       <x>495</x>
+       <x>468</x>
        <y>334</y>
-       <width>90</width>
+       <width>130</width>
        <height>30</height>
       </rect>
      </property>
@@ -2175,13 +2171,16 @@
      <property name="text">
       <string>压力量程：</string>
      </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
     </widget>
     <widget class="QLabel" name="label_centerX">
      <property name="geometry">
       <rect>
-       <x>981</x>
+       <x>970</x>
        <y>250</y>
-       <width>100</width>
+       <width>110</width>
        <height>30</height>
       </rect>
      </property>
@@ -2193,13 +2192,16 @@
      <property name="text">
       <string>视野中心X：</string>
      </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
     </widget>
     <widget class="QLabel" name="label_centerY">
      <property name="geometry">
       <rect>
-       <x>981</x>
+       <x>970</x>
        <y>292</y>
-       <width>100</width>
+       <width>110</width>
        <height>30</height>
       </rect>
      </property>
@@ -2211,13 +2213,16 @@
      <property name="text">
       <string>视野中心Y：</string>
      </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
     </widget>
     <widget class="QLabel" name="label_r">
      <property name="geometry">
       <rect>
-       <x>991</x>
+       <x>970</x>
        <y>334</y>
-       <width>90</width>
+       <width>110</width>
        <height>30</height>
       </rect>
      </property>
@@ -2229,11 +2234,14 @@
      <property name="text">
       <string>视野半径：</string>
      </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
     </widget>
     <widget class="QLineEdit" name="lineEdit_dropRec">
      <property name="geometry">
       <rect>
-       <x>120</x>
+       <x>110</x>
        <y>250</y>
        <width>242</width>
        <height>30</height>
@@ -2243,7 +2251,7 @@
     <widget class="QLineEdit" name="lineEdit_flowInTime">
      <property name="geometry">
       <rect>
-       <x>120</x>
+       <x>110</x>
        <y>292</y>
        <width>242</width>
        <height>30</height>
@@ -2253,7 +2261,7 @@
     <widget class="QLineEdit" name="lineEdit_dropArea">
      <property name="geometry">
       <rect>
-       <x>120</x>
+       <x>110</x>
        <y>334</y>
        <width>242</width>
        <height>30</height>
@@ -2263,7 +2271,7 @@
     <widget class="QLineEdit" name="lineEdit_sensitivity">
      <property name="geometry">
       <rect>
-       <x>590</x>
+       <x>608</x>
        <y>250</y>
        <width>242</width>
        <height>30</height>
@@ -2273,7 +2281,7 @@
     <widget class="QLineEdit" name="lineEdit_ignoreWidth">
      <property name="geometry">
       <rect>
-       <x>590</x>
+       <x>608</x>
        <y>292</y>
        <width>242</width>
        <height>30</height>
@@ -2283,7 +2291,7 @@
     <widget class="QLineEdit" name="lineEdit_pressureRange">
      <property name="geometry">
       <rect>
-       <x>590</x>
+       <x>608</x>
        <y>334</y>
        <width>242</width>
        <height>30</height>
@@ -2368,7 +2376,7 @@
      <property name="geometry">
       <rect>
        <x>1260</x>
-       <y>377</y>
+       <y>378</y>
        <width>83</width>
        <height>27</height>
       </rect>
@@ -2385,27 +2393,10 @@
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_saveAdvancePara">
-     <property name="geometry">
-      <rect>
-       <x>1310</x>
-       <y>213</y>
-       <width>15</width>
-       <height>15</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-     <property name="icon">
-      <iconset>
-       <normaloff>resource/advance/advanceSave1.png</normaloff>resource/advance/advanceSave1.png</iconset>
-     </property>
-    </widget>
     <widget class="QLabel" name="label_actual1">
      <property name="geometry">
       <rect>
-       <x>27</x>
+       <x>30</x>
        <y>418</y>
        <width>80</width>
        <height>30</height>
@@ -2423,7 +2414,7 @@
     <widget class="QLabel" name="label_theory1">
      <property name="geometry">
       <rect>
-       <x>27</x>
+       <x>30</x>
        <y>460</y>
        <width>80</width>
        <height>30</height>
@@ -2441,7 +2432,7 @@
     <widget class="QLabel" name="label_actual2">
      <property name="geometry">
       <rect>
-       <x>500</x>
+       <x>518</x>
        <y>418</y>
        <width>80</width>
        <height>30</height>
@@ -2459,7 +2450,7 @@
     <widget class="QLabel" name="label_actual3">
      <property name="geometry">
       <rect>
-       <x>997</x>
+       <x>1010</x>
        <y>418</y>
        <width>80</width>
        <height>30</height>
@@ -2477,7 +2468,7 @@
     <widget class="QLabel" name="label_theory2">
      <property name="geometry">
       <rect>
-       <x>500</x>
+       <x>518</x>
        <y>460</y>
        <width>80</width>
        <height>30</height>
@@ -2495,7 +2486,7 @@
     <widget class="QLabel" name="label_theory3">
      <property name="geometry">
       <rect>
-       <x>997</x>
+       <x>1010</x>
        <y>460</y>
        <width>80</width>
        <height>30</height>
@@ -2513,7 +2504,7 @@
     <widget class="QLineEdit" name="lineEdit_actual1">
      <property name="geometry">
       <rect>
-       <x>120</x>
+       <x>110</x>
        <y>418</y>
        <width>242</width>
        <height>30</height>
@@ -2523,7 +2514,7 @@
     <widget class="QLineEdit" name="lineEdit_theory1">
      <property name="geometry">
       <rect>
-       <x>120</x>
+       <x>110</x>
        <y>460</y>
        <width>242</width>
        <height>30</height>
@@ -2533,7 +2524,7 @@
     <widget class="QLineEdit" name="lineEdit_actual2">
      <property name="geometry">
       <rect>
-       <x>590</x>
+       <x>608</x>
        <y>418</y>
        <width>242</width>
        <height>30</height>
@@ -2543,7 +2534,7 @@
     <widget class="QLineEdit" name="lineEdit_theory2">
      <property name="geometry">
       <rect>
-       <x>590</x>
+       <x>608</x>
        <y>460</y>
        <width>242</width>
        <height>30</height>
@@ -2568,6 +2559,43 @@
        <width>242</width>
        <height>30</height>
       </rect>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_saveAccount">
+     <property name="geometry">
+      <rect>
+       <x>1310</x>
+       <y>50</y>
+       <width>15</width>
+       <height>15</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>resource/advance/advanceSave0.png</normaloff>resource/advance/advanceSave0.png</iconset>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="pushButton_saveParams">
+     <property name="geometry">
+      <rect>
+       <x>1310</x>
+       <y>213</y>
+       <width>15</width>
+       <height>15</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="icon">
+      <iconset>
+       <normaloff>resource/advance/advanceSave1.png</normaloff>resource/advance/advanceSave1.png</iconset>
      </property>
     </widget>
     <zorder>label_accountManagement</zorder>
@@ -2601,7 +2629,6 @@
     <zorder>line_13</zorder>
     <zorder>label_pressureCali</zorder>
     <zorder>pushButton_pressureCali</zorder>
-    <zorder>pushButton_saveAdvancePara</zorder>
     <zorder>label_actual1</zorder>
     <zorder>label_theory1</zorder>
     <zorder>label_actual2</zorder>
@@ -2614,7 +2641,8 @@
     <zorder>lineEdit_theory2</zorder>
     <zorder>lineEdit_actual3</zorder>
     <zorder>lineEdit_theory3</zorder>
-    <zorder>label_7</zorder>
+    <zorder>pushButton_saveAccount</zorder>
+    <zorder>pushButton_saveParams</zorder>
    </widget>
    <widget class="QWidget" name="tab_5">
     <attribute name="title">

@@ -116,6 +116,8 @@ void Widget::CreateUi()
 	/*
 	* 设置检测方法界面样式
 	*/
+	ui->label_methodList->setStyleSheet("QLabel{background-color:#53a4ff; color:#ffffff}");
+	ui->label_methodParams->setStyleSheet("QLabel{background-color:#53a4ff; color:#ffffff}");
 
 	// 设置新增、删除、修改按钮样式
 	ui->pushButton_addMethod->setStyleSheet("QPushButton{font-family:'Microsoft YaHei';font-size:14px; color:#979797}"
