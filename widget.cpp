@@ -212,6 +212,7 @@ void Widget::CreateUi()
 
 }
 
+
 /*
 * 参数：
 * 返回：
@@ -418,7 +419,6 @@ void Widget::OnBtnReportQueryClicked()
 }
 
 
-
 /*
 * 参数：
 * 返回：
@@ -429,6 +429,7 @@ void Widget::OnBtnAdvanceClicked()
 	m_interfaceIndex = Advance;
 	SwitchInterface(m_interfaceIndex);
 }
+
 
 /*
 * 参数：

@@ -266,7 +266,7 @@
    </property>
    <property name="font">
     <font>
-     <pointsize>14</pointsize>
+     <pointsize>12</pointsize>
     </font>
    </property>
    <property name="text">
@@ -290,7 +290,7 @@
    </property>
    <property name="font">
     <font>
-     <pointsize>14</pointsize>
+     <pointsize>12</pointsize>
     </font>
    </property>
    <property name="text">
@@ -314,11 +314,11 @@
    </property>
    <property name="font">
     <font>
-     <pointsize>14</pointsize>
+     <pointsize>12</pointsize>
     </font>
    </property>
    <property name="text">
-    <string>保压时间</string>
+    <string>测试时间</string>
    </property>
   </widget>
   <widget class="QPushButton" name="pushButton_testInterface">
