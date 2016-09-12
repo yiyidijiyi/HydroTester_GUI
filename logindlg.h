@@ -15,7 +15,7 @@
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlError>
 
-#include "common.h"
+#include "useraccount.h"
 
 namespace Ui {
 class loginDlg;
@@ -31,7 +31,7 @@ public:
 
 	void CreateUi(void);
 	void SwitchAccount(ENUM_AccountType type);
-	bool AuthenticateAccount(int &id, const QString &userName, const QString &passward);
+//	bool AuthenticateAccount(int &id, const QString &userName, const QString &passward);
 
 public slots:
 	void OnLoginClicked();
@@ -46,7 +46,8 @@ signals:
 private:
     Ui::loginDlg *ui;
 
-	ENUM_AccountType m_accountType;
+	ENUM_AccountType m_userType;
+	UserAccount *m_pAccount;
 };
 
 #endif // LOGINDLG_H

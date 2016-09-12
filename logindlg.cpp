@@ -13,12 +13,15 @@
 * 返回：
 * 功能：构造函数
 */
-LoginDlg::LoginDlg(QWidget *parent) :
-    QDialog(parent),
-    ui(new Ui::loginDlg),
-	m_accountType(Admin)
+LoginDlg::LoginDlg(QWidget *parent) 
+   : QDialog(parent)
+    ,ui(new Ui::loginDlg)
+	,m_userType(Admin)
+	, m_pAccount(NULL)
 {	
 	CreateUi();
+
+	m_pAccount = new UserAccount();
 
 	connect(ui->pushButton_login, &QPushButton::clicked, this, &LoginDlg::OnLoginClicked);
 	connect(ui->pushButton_cancel, &QPushButton::clicked, this, &LoginDlg::OnCancelClicked);
@@ -35,6 +38,10 @@ LoginDlg::LoginDlg(QWidget *parent) :
 */
 LoginDlg::~LoginDlg()
 {
+	if (m_pAccount)
+	{
+		delete m_pAccount;
+	}
     delete ui;
 }
 
@@ -78,7 +85,7 @@ void LoginDlg::CreateUi()
 	ui->pushButton_developer->setStyleSheet("QPushButton{font-size:14px}");
 	ui->pushButton_admin->setStyleSheet("QPushButton{font-size:14px;}");
 	ui->pushButton_tester->setStyleSheet("QPushButton{font-size:14px;}");
-	SwitchAccount(m_accountType);
+	SwitchAccount(m_userType);
 
 	// 设置用户名、密码输入框样式
 	ui->lineEdit_name->setStyleSheet("QLineEdit{border-image: url(:/login/resource/login/input.png);}");
@@ -132,48 +139,48 @@ void LoginDlg::SwitchAccount(ENUM_AccountType type)
 * 返回：
 * 功能：校验登陆密码
 */
-bool LoginDlg::AuthenticateAccount(int &id, const QString &userName, const QString &passward)
-{
-	bool state = false;
-	QSqlDatabase db = QSqlDatabase::addDatabase("SQLITECIPHER");
-	db.setDatabaseName("./data/account.db");
-	db.setPassword("caep17305");
-
-	if (db.open())
-	{
-		//QString strQuery = "SELECT id FROM WHERE userType = ? and userName = ? and userPassward = ?";
-		QString strQuery = "SELECT id FROM account WHERE userName = ? AND userPassward = ? AND userType = ?";
-		QSqlQuery query(strQuery, db);	
-		query.bindValue(0, userName);
-		query.bindValue(1, passward);
-		query.bindValue(2, static_cast<int>(m_accountType));
-
-		query.exec();
-
-		int count = 0;
-
-		//QString errStr = query.lastError().text();
-
-		while (query.next())
-		{
-			count++;
-			id = query.value(0).toInt();
-		}
-
-		if (1 == count)
-		{
-			state = true;
-		}
-	}
-	else
-	{
-		ui->label_message->setText(QStringLiteral("连接账号数据库出错，请联系厂家！"));
-	}
-
-	db.close();
-
-	return state;
-}
+//bool LoginDlg::AuthenticateAccount(int &id, const QString &userName, const QString &passward)
+//{
+//	bool state = false;
+//	QSqlDatabase db = QSqlDatabase::addDatabase("SQLITECIPHER");
+//	db.setDatabaseName("./data/account.db");
+//	db.setPassword("caep17305");
+//
+//	if (db.open())
+//	{
+//		//QString strQuery = "SELECT id FROM WHERE userType = ? and userName = ? and userPassward = ?";
+//		QString strQuery = "SELECT id FROM account WHERE userName = ? AND userPassward = ? AND userType = ?";
+//		QSqlQuery query(strQuery, db);	
+//		query.bindValue(0, userName);
+//		query.bindValue(1, passward);
+//		query.bindValue(2, static_cast<int>(m_userType));
+//
+//		query.exec();
+//
+//		int count = 0;
+//
+//		//QString errStr = query.lastError().text();
+//
+//		while (query.next())
+//		{
+//			count++;
+//			id = query.value(0).toInt();
+//		}
+//
+//		if (1 == count)
+//		{
+//			state = true;
+//		}
+//	}
+//	else
+//	{
+//		ui->label_message->setText(QStringLiteral("连接账号数据库出错，请联系厂家！"));
+//	}
+//
+//	db.close();
+//
+//	return state;
+//}
 
 
 /*
@@ -190,18 +197,18 @@ void LoginDlg::OnLoginClicked()
 	
 	if (userName.isEmpty())
 	{
-		ui->label_message->setText(QStringLiteral("账户名不能会空！"));
+		ui->label_message->setText(QStringLiteral("账户名不能为空！"));
 		return;
 	}
 
 
 	if (passward.isEmpty())
 	{
-		ui->label_message->setText(QStringLiteral("密码不能会空！"));
+		ui->label_message->setText(QStringLiteral("密码不能为空！"));
 		return;
 	}
 
-	state = AuthenticateAccount(id, userName, passward);
+	state = m_pAccount->AuthenticateAccount(id, userName, passward, static_cast<int>(m_userType));
 
 	if (state)
 	{
@@ -210,7 +217,17 @@ void LoginDlg::OnLoginClicked()
 	}
 	else
 	{
-		ui->label_message->setText(QStringLiteral("用户名或密码错误！"));
+		QStringList message = m_pAccount->GetMessageList();
+		size_t size = message.size();
+
+		if (size > 0)
+		{
+			ui->label_message->setText(message[0]);
+		}
+		else
+		{
+			ui->label_message->setText(QStringLiteral("用户名或密码错误！"));
+		}		
 	}
 
 	//bool state = AuthenticateAccount():
@@ -235,8 +252,8 @@ void LoginDlg::OnCancelClicked()
 */
 void LoginDlg::OnDeveloperClicked()
 {
-	m_accountType = Developer;
-	SwitchAccount(m_accountType);
+	m_userType = Developer;
+	SwitchAccount(m_userType);
 	ui->label_account->setText(QStringLiteral("开发者"));
 }
 
@@ -248,8 +265,8 @@ void LoginDlg::OnDeveloperClicked()
 */
 void LoginDlg::OnAdminClicked()
 {
-	m_accountType = Admin;
-	SwitchAccount(m_accountType);
+	m_userType = Admin;
+	SwitchAccount(m_userType);
 	ui->label_account->setText(QStringLiteral("管理员"));
 }
 
@@ -262,8 +279,8 @@ void LoginDlg::OnAdminClicked()
 */
 void LoginDlg::OnTesterClicked()
 {
-	m_accountType = Tester;
-	SwitchAccount(m_accountType);
+	m_userType = Tester;
+	SwitchAccount(m_userType);
 	ui->label_account->setText(QStringLiteral("测试员"));
 }
 
