@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-02
-* 最后修改：2016-09-07
+* 最后修改：2016-09-12
 * 作      者：syf
 * 描      述：
 */
@@ -84,12 +84,17 @@ void LoginDlg::CreateUi()
 	ui->lineEdit_name->setStyleSheet("QLineEdit{border-image: url(:/login/resource/login/input.png);}");
 	ui->lineEdit_password->setStyleSheet("QLineEdit{border-image: url(:/login/resource/login/input.png);}");
 	ui->lineEdit_password->setEchoMode(QLineEdit::Password);
+	ui->lineEdit_name->setValidator(new QRegExpValidator(QRegExp("[A-Za-z0-9]+$"), this));
+	ui->lineEdit_password->setValidator(new QRegExpValidator(QRegExp("[A-Za-z0-9]+$"), this));
 
 	// 设置版权说明样式
 	ui->label_copyright->setStyleSheet("QLabel {font-size:12px; color:#ffffff;}");
 
 	// 设置账户类型样式
 	ui->label_account->setStyleSheet("QLabel {font-size:24px; color:#979797;}");
+
+	// 设置提示消息样式
+	ui->label_message->setStyleSheet("QLabel {font-size:12px; color:#ff0000;}");
 }
 
 
@@ -98,7 +103,7 @@ void LoginDlg::CreateUi()
 * 返回：
 * 功能：登录界面设定
 */
-void LoginDlg::SwitchAccount(AccountType type)
+void LoginDlg::SwitchAccount(ENUM_AccountType type)
 {
 	ui->pushButton_developer->setStyleSheet("QPushButton{color:#979797; border-image: url(:/login/resource/login/btn4.png);}");
 	ui->pushButton_admin->setStyleSheet("QPushButton{color:#979797; border-image: url(:/login/resource/login/btn4.png);}");
@@ -123,13 +128,92 @@ void LoginDlg::SwitchAccount(AccountType type)
 
 
 /*
+* 参数：id--账户id
+* 返回：
+* 功能：校验登陆密码
+*/
+bool LoginDlg::AuthenticateAccount(int &id, const QString &userName, const QString &passward)
+{
+	bool state = false;
+	QSqlDatabase db = QSqlDatabase::addDatabase("SQLITECIPHER");
+	db.setDatabaseName("./data/account.db");
+	db.setPassword("caep17305");
+
+	if (db.open())
+	{
+		//QString strQuery = "SELECT id FROM WHERE userType = ? and userName = ? and userPassward = ?";
+		QString strQuery = "SELECT id FROM account WHERE userName = ? AND userPassward = ? AND userType = ?";
+		QSqlQuery query(strQuery, db);	
+		query.bindValue(0, userName);
+		query.bindValue(1, passward);
+		query.bindValue(2, static_cast<int>(m_accountType));
+
+		query.exec();
+
+		int count = 0;
+
+		//QString errStr = query.lastError().text();
+
+		while (query.next())
+		{
+			count++;
+			id = query.value(0).toInt();
+		}
+
+		if (1 == count)
+		{
+			state = true;
+		}
+	}
+	else
+	{
+		ui->label_message->setText(QStringLiteral("连接账号数据库出错，请联系厂家！"));
+	}
+
+	db.close();
+
+	return state;
+}
+
+
+/*
 * 参数：
 * 返回：
 * 功能：点击登录按钮
 */
 void LoginDlg::OnLoginClicked()
 {
-	accept();
+	bool state = false;
+	int id = 0;
+	QString userName = ui->lineEdit_name->text();
+	QString passward = ui->lineEdit_password->text();
+	
+	if (userName.isEmpty())
+	{
+		ui->label_message->setText(QStringLiteral("账户名不能会空！"));
+		return;
+	}
+
+
+	if (passward.isEmpty())
+	{
+		ui->label_message->setText(QStringLiteral("密码不能会空！"));
+		return;
+	}
+
+	state = AuthenticateAccount(id, userName, passward);
+
+	if (state)
+	{
+		emit AccountID(id);
+		accept();
+	}
+	else
+	{
+		ui->label_message->setText(QStringLiteral("用户名或密码错误！"));
+	}
+
+	//bool state = AuthenticateAccount():
 }
 
 

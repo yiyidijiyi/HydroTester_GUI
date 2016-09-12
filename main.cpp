@@ -26,7 +26,8 @@ int main(int argc, char *argv[])
 	w.setWindowTitle(QStringLiteral("Ö÷´°¿Ú"));
     LoginDlg dlg;
 
-	
+	QObject::connect(&dlg, &LoginDlg::AccountID, &w, &Widget::OnLoginAccepted);
+
     if(dlg.exec() == QDialog::Accepted)
     {
         w.show();

@@ -1945,6 +1945,9 @@
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEdit_accountName">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>124</x>
@@ -1955,6 +1958,9 @@
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEdit_accountPassword">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>124</x>
@@ -2003,7 +2009,10 @@
        <string>修改</string>
       </property>
      </widget>
-     <widget class="QLineEdit" name="lineEdit_accountType">
+     <widget class="QComboBox" name="comboBox_accountType">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>570</x>
@@ -2012,6 +2021,27 @@
         <height>30</height>
        </rect>
       </property>
+      <property name="minimumSize">
+       <size>
+        <width>30</width>
+        <height>0</height>
+       </size>
+      </property>
+      <item>
+       <property name="text">
+        <string>测试员</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>管理员</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>开发者</string>
+       </property>
+      </item>
      </widget>
     </widget>
     <widget class="Line" name="line_10">
@@ -2598,6 +2628,19 @@
        <normaloff>resource/advance/advanceSave1.png</normaloff>resource/advance/advanceSave1.png</iconset>
      </property>
     </widget>
+    <widget class="QLabel" name="label_advanceMessage">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>5</y>
+       <width>1000</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
     <zorder>label_accountManagement</zorder>
     <zorder>line_4</zorder>
     <zorder>listView_accountList</zorder>
@@ -2643,6 +2686,7 @@
     <zorder>lineEdit_theory3</zorder>
     <zorder>pushButton_saveAccount</zorder>
     <zorder>pushButton_saveParams</zorder>
+    <zorder>label_advanceMessage</zorder>
    </widget>
    <widget class="QWidget" name="tab_5">
     <attribute name="title">

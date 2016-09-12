@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-02
-* 最后修改：2016-09-07
+* 最后修改：2016-09-12
 * 作      者：syf
 * 描      述：
 */
@@ -10,6 +10,12 @@
 #include <QDialog>
 #include <QPalette>
 #include <QLabel>
+#include <QtSql/QSql>
+#include <QtSql/QSqlDatabase>
+#include <QtSql/QSqlQuery>
+#include <QtSql/QSqlError>
+
+#include "common.h"
 
 namespace Ui {
 class loginDlg;
@@ -20,16 +26,12 @@ class LoginDlg : public QDialog
     Q_OBJECT
 
 public:
-	enum AccountType{
-		Developer	= 0,
-		Admin		= 1,
-		Tester		= 2
-	};
     explicit LoginDlg(QWidget *parent = 0);
     ~LoginDlg();
 
 	void CreateUi(void);
-	void SwitchAccount(AccountType type);
+	void SwitchAccount(ENUM_AccountType type);
+	bool AuthenticateAccount(int &id, const QString &userName, const QString &passward);
 
 public slots:
 	void OnLoginClicked();
@@ -38,10 +40,13 @@ public slots:
 	void OnAdminClicked();
 	void OnTesterClicked();
 
+signals:
+	void AccountID(int id);
+
 private:
     Ui::loginDlg *ui;
 
-	AccountType m_accountType;
+	ENUM_AccountType m_accountType;
 };
 
 #endif // LOGINDLG_H

@@ -13,15 +13,26 @@
 * 功能：构造函数
 */
 Widget::Widget(QWidget *parent)
-	: QWidget(parent),
-	ui(new Ui::Widget),
-	m_isMousePressed(false),
-	m_mousePos(QPoint(0, 0)),
-	m_pReportQueryModel(NULL),
-	m_interfaceIndex(TestInterface),
-	m_chartIndex(Video)
+	: QWidget(parent)
+	,ui(new Ui::Widget)
+	,m_isMousePressed(false)
+	,m_mousePos(QPoint(0, 0))
+	,m_pReportQueryModel(NULL)
+	,m_interfaceIndex(TestInterface)
+	,m_chartIndex(Video)
 {
 	CreateUi();
+
+	// 初始化数据成员
+	m_pAccountListModel = new QStringListModel(this);
+
+	m_account.userType = 0;
+	m_account.userName = "";
+	m_account.passward = "";
+	m_account.id = 0;
+	
+
+	UpdateAccountList();
 
 	connect(ui->pushButton_min, &QPushButton::clicked, this, &Widget::OnBtnMinClicked);
 	connect(ui->pushButton_close, &QPushButton::clicked, this, &Widget::OnBtnCloseClicked);
@@ -209,7 +220,8 @@ void Widget::CreateUi()
 		"QPushButton{border-image: url(:/login/resource/login/btn4.png);}"
 		"QPushButton:hover{color:#ffffff; border-image: url(:/login/resource/login/btn2.png);}");
 
-
+	ui->lineEdit_accountName->setValidator(new QRegExpValidator(QRegExp("[A-Za-z0-9]+$"), this));
+	ui->lineEdit_accountPassword->setValidator(new QRegExpValidator(QRegExp("[A-Za-z0-9]+$"), this));
 }
 
 
@@ -304,6 +316,40 @@ void Widget::SwitchChart(ChartIndex index)
 Widget::InterfaceIndex Widget::GetInterfaceIndex()
 {
 	return m_interfaceIndex;
+}
+
+/*
+* 参数：
+* 返回：
+* 功能：最小化按钮槽函数
+*/
+void Widget::UpdateAccountList()
+{
+	QSqlDatabase db = QSqlDatabase::addDatabase("SQLITECIPHER");
+	db.setDatabaseName("./data/account.db");
+	db.setPassword("caep17305");
+
+	if (db.open())
+	{
+		QSqlQuery query("SELECT userName FROM account", db);
+		QStringList userList;
+
+		query.exec();
+
+		while (query.next())
+		{
+			userList.append(query.value(0).toString());
+		}
+
+		m_pAccountListModel->setStringList(userList);
+		ui->listView_accountList->setModel(m_pAccountListModel);
+	}
+	else
+	{
+		ui->label_advanceMessage->setText(QStringLiteral("打开用户账号数据库出错，请联系生产厂家！"));
+	}
+
+	db.close();
 }
 
 
@@ -500,6 +546,46 @@ void Widget::OnBtnChartPrintClicked()
 {
 	m_chartIndex = Print;
 	SwitchChart(m_chartIndex);
+}
+
+
+/*
+* 参数：
+* 返回：
+* 功能：
+*/
+void Widget::OnLoginAccepted(int id)
+{
+	QSqlDatabase db = QSqlDatabase::addDatabase("SQLITECIPHER");
+	db.setDatabaseName("./data/account.db");
+	db.setPassword("caep17305");
+
+	if (db.open())
+	{
+		QString strQuery = "SELECT * FROM account WHERE id = ?";
+		QSqlQuery query(strQuery, db);
+		query.addBindValue(id);
+		query.exec();
+		int count = 0;
+		while (query.next())
+		{
+			m_account.id = id;
+			m_account.userType = query.value(3).toInt();
+			count++;
+		}
+
+		if (count != 1)
+		{
+			m_account.userType = 0;
+			ui->label_advanceMessage->setText(QStringLiteral("打开用户账号数据库出错，请联系生产厂家！"));
+		}
+	}
+	else
+	{
+		ui->label_advanceMessage->setText(QStringLiteral("打开用户账号数据库出错，请联系生产厂家！"));
+	}
+
+	db.close();
 }
 
 

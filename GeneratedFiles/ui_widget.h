@@ -151,7 +151,7 @@ public:
     QPushButton *pushButton_addAccount;
     QPushButton *pushButton_delAccount;
     QPushButton *pushButton_modifyAccount;
-    QLineEdit *lineEdit_accountType;
+    QComboBox *comboBox_accountType;
     QFrame *line_10;
     QFrame *line_11;
     QLabel *label_advance;
@@ -191,6 +191,7 @@ public:
     QLineEdit *lineEdit_theory3;
     QPushButton *pushButton_saveAccount;
     QPushButton *pushButton_saveParams;
+    QLabel *label_advanceMessage;
     QWidget *tab_5;
     QFrame *line_5;
     QFrame *line_6;
@@ -753,9 +754,11 @@ public:
         label_accountType->setFont(font1);
         lineEdit_accountName = new QLineEdit(frame);
         lineEdit_accountName->setObjectName(QStringLiteral("lineEdit_accountName"));
+        lineEdit_accountName->setEnabled(false);
         lineEdit_accountName->setGeometry(QRect(124, 10, 242, 30));
         lineEdit_accountPassword = new QLineEdit(frame);
         lineEdit_accountPassword->setObjectName(QStringLiteral("lineEdit_accountPassword"));
+        lineEdit_accountPassword->setEnabled(false);
         lineEdit_accountPassword->setGeometry(QRect(124, 50, 242, 30));
         pushButton_addAccount = new QPushButton(frame);
         pushButton_addAccount->setObjectName(QStringLiteral("pushButton_addAccount"));
@@ -766,9 +769,11 @@ public:
         pushButton_modifyAccount = new QPushButton(frame);
         pushButton_modifyAccount->setObjectName(QStringLiteral("pushButton_modifyAccount"));
         pushButton_modifyAccount->setGeometry(QRect(422, 85, 186, 34));
-        lineEdit_accountType = new QLineEdit(frame);
-        lineEdit_accountType->setObjectName(QStringLiteral("lineEdit_accountType"));
-        lineEdit_accountType->setGeometry(QRect(570, 10, 242, 30));
+        comboBox_accountType = new QComboBox(frame);
+        comboBox_accountType->setObjectName(QStringLiteral("comboBox_accountType"));
+        comboBox_accountType->setEnabled(false);
+        comboBox_accountType->setGeometry(QRect(570, 10, 242, 30));
+        comboBox_accountType->setMinimumSize(QSize(30, 0));
         line_10 = new QFrame(tab_4);
         line_10->setObjectName(QStringLiteral("line_10"));
         line_10->setGeometry(QRect(0, 205, 1354, 3));
@@ -926,6 +931,9 @@ public:
         QIcon icon10;
         icon10.addFile(QStringLiteral("resource/advance/advanceSave1.png"), QSize(), QIcon::Normal, QIcon::Off);
         pushButton_saveParams->setIcon(icon10);
+        label_advanceMessage = new QLabel(tab_4);
+        label_advanceMessage->setObjectName(QStringLiteral("label_advanceMessage"));
+        label_advanceMessage->setGeometry(QRect(120, 5, 1000, 30));
         tabWidget->addTab(tab_4, QString());
         label_accountManagement->raise();
         line_4->raise();
@@ -972,6 +980,7 @@ public:
         lineEdit_theory3->raise();
         pushButton_saveAccount->raise();
         pushButton_saveParams->raise();
+        label_advanceMessage->raise();
         tab_5 = new QWidget();
         tab_5->setObjectName(QStringLiteral("tab_5"));
         tabWidget->addTab(tab_5, QString());
@@ -1124,6 +1133,12 @@ public:
         pushButton_addAccount->setText(QApplication::translate("Widget", "\346\226\260\345\242\236", 0));
         pushButton_delAccount->setText(QApplication::translate("Widget", "\345\210\240\351\231\244", 0));
         pushButton_modifyAccount->setText(QApplication::translate("Widget", "\344\277\256\346\224\271", 0));
+        comboBox_accountType->clear();
+        comboBox_accountType->insertItems(0, QStringList()
+         << QApplication::translate("Widget", "\346\265\213\350\257\225\345\221\230", 0)
+         << QApplication::translate("Widget", "\347\256\241\347\220\206\345\221\230", 0)
+         << QApplication::translate("Widget", "\345\274\200\345\217\221\350\200\205", 0)
+        );
         label_advance->setText(QApplication::translate("Widget", "\351\253\230\347\272\247\351\200\211\351\241\271", 0));
         label_dropRec->setText(QApplication::translate("Widget", "\346\260\264\346\273\264\350\257\206\345\210\253\357\274\232", 0));
         label_flowInTime->setText(QApplication::translate("Widget", "\350\277\233\346\260\264\346\227\266\351\227\264\357\274\232", 0));
@@ -1144,6 +1159,7 @@ public:
         label_theory3->setText(QApplication::translate("Widget", "\347\220\206\350\256\272\345\200\2743\357\274\232", 0));
         pushButton_saveAccount->setText(QString());
         pushButton_saveParams->setText(QString());
+        label_advanceMessage->setText(QString());
         tabWidget->setTabText(tabWidget->indexOf(tab_4), QApplication::translate("Widget", "Tab 4", 0));
         tabWidget->setTabText(tabWidget->indexOf(tab_5), QApplication::translate("Widget", "Tab 5", 0));
         label_6->setText(QString());

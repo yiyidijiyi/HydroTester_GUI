@@ -179,6 +179,15 @@
      <height>37</height>
     </size>
    </property>
+   <property name="inputMethodHints">
+    <set>Qt::ImhNone</set>
+   </property>
+   <property name="inputMask">
+    <string/>
+   </property>
+   <property name="maxLength">
+    <number>128</number>
+   </property>
   </widget>
   <widget class="QLineEdit" name="lineEdit_password">
    <property name="geometry">
@@ -194,6 +203,12 @@
      <width>256</width>
      <height>37</height>
     </size>
+   </property>
+   <property name="inputMask">
+    <string/>
+   </property>
+   <property name="maxLength">
+    <number>32767</number>
    </property>
   </widget>
   <widget class="QLabel" name="label_3">
@@ -317,6 +332,19 @@
     <string>管理员</string>
    </property>
   </widget>
+  <widget class="QLabel" name="label_message">
+   <property name="geometry">
+    <rect>
+     <x>780</x>
+     <y>445</y>
+     <width>256</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+  </widget>
   <zorder>label_login</zorder>
   <zorder>pushButton_login</zorder>
   <zorder>label</zorder>
@@ -332,6 +360,7 @@
   <zorder>label_5</zorder>
   <zorder>label_copyright</zorder>
   <zorder>label_account</zorder>
+  <zorder>label_message</zorder>
  </widget>
  <resources/>
  <connections/>

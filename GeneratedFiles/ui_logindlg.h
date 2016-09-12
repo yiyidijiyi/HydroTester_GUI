@@ -39,6 +39,7 @@ public:
     QLabel *label_5;
     QLabel *label_copyright;
     QLabel *label_account;
+    QLabel *label_message;
 
     void setupUi(QDialog *loginDlg)
     {
@@ -87,10 +88,13 @@ public:
         lineEdit_name->setObjectName(QStringLiteral("lineEdit_name"));
         lineEdit_name->setGeometry(QRect(780, 320, 256, 37));
         lineEdit_name->setMinimumSize(QSize(256, 37));
+        lineEdit_name->setInputMethodHints(Qt::ImhNone);
+        lineEdit_name->setMaxLength(128);
         lineEdit_password = new QLineEdit(loginDlg);
         lineEdit_password->setObjectName(QStringLiteral("lineEdit_password"));
         lineEdit_password->setGeometry(QRect(780, 390, 256, 37));
         lineEdit_password->setMinimumSize(QSize(256, 37));
+        lineEdit_password->setMaxLength(32767);
         label_3 = new QLabel(loginDlg);
         label_3->setObjectName(QStringLiteral("label_3"));
         label_3->setGeometry(QRect(730, 390, 29, 29));
@@ -119,6 +123,9 @@ public:
         label_account->setObjectName(QStringLiteral("label_account"));
         label_account->setGeometry(QRect(530, 320, 120, 40));
         label_account->setMinimumSize(QSize(120, 40));
+        label_message = new QLabel(loginDlg);
+        label_message->setObjectName(QStringLiteral("label_message"));
+        label_message->setGeometry(QRect(780, 445, 256, 30));
         label_login->raise();
         pushButton_login->raise();
         label->raise();
@@ -134,6 +141,7 @@ public:
         label_5->raise();
         label_copyright->raise();
         label_account->raise();
+        label_message->raise();
 
         retranslateUi(loginDlg);
 
@@ -151,11 +159,14 @@ public:
         pushButton_developer->setText(QApplication::translate("loginDlg", "\345\274\200\345\217\221\350\200\205", 0));
         pushButton_admin->setText(QApplication::translate("loginDlg", "\347\256\241\347\220\206\345\221\230", 0));
         pushButton_tester->setText(QApplication::translate("loginDlg", "\346\265\213\350\257\225\345\221\230", 0));
+        lineEdit_name->setInputMask(QString());
+        lineEdit_password->setInputMask(QString());
         label_3->setText(QString());
         label_4->setText(QString());
         label_5->setText(QString());
         label_copyright->setText(QApplication::translate("loginDlg", "Copyright(C)2015 NingBo Textile Instrument Factory", 0));
         label_account->setText(QApplication::translate("loginDlg", "\347\256\241\347\220\206\345\221\230", 0));
+        label_message->setText(QString());
     } // retranslateUi
 
 };
