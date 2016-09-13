@@ -508,7 +508,7 @@
       </rect>
      </property>
      <property name="text">
-      <string>测试图标显示</string>
+      <string>测试图表</string>
      </property>
     </widget>
     <widget class="QComboBox" name="comboBox_selCom">
@@ -717,6 +717,9 @@
        <height>26</height>
       </rect>
      </property>
+     <property name="frame">
+      <bool>true</bool>
+     </property>
      <item>
       <property name="text">
        <string>方法选择</string>
@@ -749,11 +752,11 @@
       </rect>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tab_10">
       <attribute name="title">
-       <string>视频</string>
+       <string>图表</string>
       </attribute>
       <widget class="QLabel" name="label_video">
        <property name="geometry">
@@ -795,17 +798,7 @@
      </widget>
      <widget class="QWidget" name="tab_7">
       <attribute name="title">
-       <string>图表</string>
-      </attribute>
-     </widget>
-     <widget class="QWidget" name="tab_8">
-      <attribute name="title">
        <string>报告</string>
-      </attribute>
-     </widget>
-     <widget class="QWidget" name="tab_9">
-      <attribute name="title">
-       <string>打印</string>
       </attribute>
      </widget>
     </widget>
@@ -834,7 +827,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>视频</string>
+       <string>图表</string>
       </property>
       <property name="flat">
        <bool>true</bool>
@@ -892,19 +885,6 @@
        <enum>Qt::Vertical</enum>
       </property>
      </widget>
-     <widget class="Line" name="line_28">
-      <property name="geometry">
-       <rect>
-        <x>293</x>
-        <y>3</y>
-        <width>3</width>
-        <height>20</height>
-       </rect>
-      </property>
-      <property name="orientation">
-       <enum>Qt::Vertical</enum>
-      </property>
-     </widget>
      <widget class="QPushButton" name="pushButton_curve">
       <property name="geometry">
        <rect>
@@ -921,26 +901,10 @@
        <bool>true</bool>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_chart">
-      <property name="geometry">
-       <rect>
-        <x>118</x>
-        <y>0</y>
-        <width>56</width>
-        <height>26</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>图表</string>
-      </property>
-      <property name="flat">
-       <bool>true</bool>
-      </property>
-     </widget>
      <widget class="QPushButton" name="pushButton_report">
       <property name="geometry">
        <rect>
-        <x>177</x>
+        <x>118</x>
         <y>0</y>
         <width>56</width>
         <height>26</height>
@@ -956,7 +920,7 @@
      <widget class="QPushButton" name="pushButton_print">
       <property name="geometry">
        <rect>
-        <x>236</x>
+        <x>177</x>
         <y>0</y>
         <width>56</width>
         <height>26</height>
@@ -1012,13 +976,16 @@
      <property name="geometry">
       <rect>
        <x>12</x>
-       <y>50</y>
+       <y>45</y>
        <width>460</width>
        <height>30</height>
       </rect>
      </property>
      <property name="frameShape">
       <enum>QFrame::Panel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Sunken</enum>
      </property>
      <property name="text">
       <string>检测方法列表</string>
@@ -1041,7 +1008,7 @@
      <property name="geometry">
       <rect>
        <x>13</x>
-       <y>80</y>
+       <y>75</y>
        <width>458</width>
        <height>420</height>
       </rect>
@@ -1057,7 +1024,7 @@
      <property name="geometry">
       <rect>
        <x>490</x>
-       <y>50</y>
+       <y>45</y>
        <width>846</width>
        <height>30</height>
       </rect>
@@ -1071,6 +1038,9 @@
      <property name="frameShape">
       <enum>QFrame::Panel</enum>
      </property>
+     <property name="frameShadow">
+      <enum>QFrame::Sunken</enum>
+     </property>
      <property name="text">
       <string>方法参数</string>
      </property>
@@ -1079,7 +1049,7 @@
      <property name="geometry">
       <rect>
        <x>491</x>
-       <y>80</y>
+       <y>75</y>
        <width>845</width>
        <height>420</height>
       </rect>
@@ -1221,6 +1191,9 @@
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEdit_methodName">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>90</x>
@@ -1231,6 +1204,9 @@
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEdit_standard">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>90</x>
@@ -1241,6 +1217,9 @@
       </property>
      </widget>
      <widget class="QComboBox" name="comboBox_testMethod_2">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>90</x>
@@ -1251,6 +1230,9 @@
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEdit_pressureRate">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>90</x>
@@ -1261,6 +1243,9 @@
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEdit_setTime">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>90</x>
@@ -1271,6 +1256,9 @@
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEdit_targetPressure">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>470</x>
@@ -1281,6 +1269,9 @@
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEdit_pressureCycle">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>470</x>
@@ -1291,6 +1282,9 @@
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEdit_pressureHolding">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>470</x>
@@ -1301,6 +1295,9 @@
       </property>
      </widget>
      <widget class="QLineEdit" name="lineEdit_unit">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>470</x>
@@ -1311,6 +1308,9 @@
       </property>
      </widget>
      <widget class="QTextEdit" name="textEdit_decribe">
+      <property name="enabled">
+       <bool>false</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>90</x>
@@ -1364,7 +1364,7 @@
      <property name="geometry">
       <rect>
        <x>1305</x>
-       <y>58</y>
+       <y>54</y>
        <width>15</width>
        <height>15</height>
       </rect>
@@ -1389,13 +1389,13 @@
      <property name="geometry">
       <rect>
        <x>12</x>
-       <y>50</y>
+       <y>45</y>
        <width>1330</width>
        <height>270</height>
       </rect>
      </property>
      <property name="frameShape">
-      <enum>QFrame::Box</enum>
+      <enum>QFrame::Panel</enum>
      </property>
      <property name="lineWidth">
       <number>1</number>
@@ -1474,11 +1474,11 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>14</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="text">
-      <string>测询结果查询</string>
+      <string>测试结果</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_endDate">
@@ -1498,7 +1498,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>14</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="text">
@@ -1522,7 +1522,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>14</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="text">
@@ -1572,7 +1572,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>14</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="text">
@@ -1596,7 +1596,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>14</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="text">
@@ -1620,7 +1620,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>14</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="text">
@@ -1705,7 +1705,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>14</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="text">
@@ -1729,7 +1729,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>14</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="text">
@@ -1753,7 +1753,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>14</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="text">
@@ -1776,7 +1776,7 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>14</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="text">
@@ -1800,18 +1800,21 @@
      <property name="geometry">
       <rect>
        <x>12</x>
-       <y>42</y>
+       <y>45</y>
        <width>422</width>
        <height>30</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>14</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="frameShape">
-      <enum>QFrame::Box</enum>
+      <enum>QFrame::Panel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Sunken</enum>
      </property>
      <property name="text">
       <string>  账号列表</string>
@@ -1821,7 +1824,7 @@
      <property name="geometry">
       <rect>
        <x>448</x>
-       <y>42</y>
+       <y>45</y>
        <width>886</width>
        <height>30</height>
       </rect>
@@ -1840,11 +1843,14 @@
      </property>
      <property name="font">
       <font>
-       <pointsize>14</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="frameShape">
-      <enum>QFrame::Box</enum>
+      <enum>QFrame::Panel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Sunken</enum>
      </property>
      <property name="lineWidth">
       <number>1</number>
@@ -1857,9 +1863,9 @@
      <property name="geometry">
       <rect>
        <x>13</x>
-       <y>72</y>
+       <y>75</y>
        <width>420</width>
-       <height>125</height>
+       <height>135</height>
       </rect>
      </property>
      <property name="frameShape">
@@ -1873,9 +1879,9 @@
      <property name="geometry">
       <rect>
        <x>449</x>
-       <y>72</y>
+       <y>75</y>
        <width>884</width>
-       <height>125</height>
+       <height>135</height>
       </rect>
      </property>
      <property name="frameShape">
@@ -1895,7 +1901,7 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>14</pointsize>
+        <pointsize>9</pointsize>
        </font>
       </property>
       <property name="text">
@@ -1916,7 +1922,7 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>14</pointsize>
+        <pointsize>9</pointsize>
        </font>
       </property>
       <property name="text">
@@ -1937,7 +1943,7 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>14</pointsize>
+        <pointsize>9</pointsize>
        </font>
       </property>
       <property name="text">
@@ -1970,7 +1976,7 @@
        </rect>
       </property>
      </widget>
-     <widget class="QPushButton" name="pushButton_addAccount">
+     <widget class="QPushButton" name="pushButton_newAccount">
       <property name="geometry">
        <rect>
         <x>34</x>
@@ -2027,28 +2033,13 @@
         <height>0</height>
        </size>
       </property>
-      <item>
-       <property name="text">
-        <string>测试员</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>管理员</string>
-       </property>
-      </item>
-      <item>
-       <property name="text">
-        <string>开发者</string>
-       </property>
-      </item>
      </widget>
     </widget>
     <widget class="Line" name="line_10">
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>205</y>
+       <y>220</y>
        <width>1354</width>
        <height>3</height>
       </rect>
@@ -2061,7 +2052,7 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>235</y>
+       <y>250</y>
        <width>1354</width>
        <height>3</height>
       </rect>
@@ -2074,14 +2065,14 @@
      <property name="geometry">
       <rect>
        <x>12</x>
-       <y>207</y>
+       <y>220</y>
        <width>80</width>
        <height>30</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>14</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="text">
@@ -2092,14 +2083,14 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>250</y>
+       <y>260</y>
        <width>90</width>
        <height>30</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>14</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="text">
@@ -2110,14 +2101,14 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>292</y>
+       <y>300</y>
        <width>90</width>
        <height>31</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>14</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="text">
@@ -2128,14 +2119,14 @@
      <property name="geometry">
       <rect>
        <x>20</x>
-       <y>334</y>
+       <y>340</y>
        <width>90</width>
        <height>30</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>14</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="text">
@@ -2146,14 +2137,14 @@
      <property name="geometry">
       <rect>
        <x>468</x>
-       <y>250</y>
+       <y>260</y>
        <width>130</width>
        <height>30</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>14</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="text">
@@ -2167,14 +2158,14 @@
      <property name="geometry">
       <rect>
        <x>468</x>
-       <y>292</y>
+       <y>300</y>
        <width>130</width>
        <height>30</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>14</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="text">
@@ -2188,14 +2179,14 @@
      <property name="geometry">
       <rect>
        <x>468</x>
-       <y>334</y>
+       <y>339</y>
        <width>130</width>
        <height>30</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>14</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="text">
@@ -2209,14 +2200,14 @@
      <property name="geometry">
       <rect>
        <x>970</x>
-       <y>250</y>
+       <y>260</y>
        <width>110</width>
        <height>30</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>14</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="text">
@@ -2230,14 +2221,14 @@
      <property name="geometry">
       <rect>
        <x>970</x>
-       <y>292</y>
+       <y>300</y>
        <width>110</width>
        <height>30</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>14</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="text">
@@ -2251,14 +2242,14 @@
      <property name="geometry">
       <rect>
        <x>970</x>
-       <y>334</y>
+       <y>339</y>
        <width>110</width>
        <height>30</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>14</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="text">
@@ -2269,90 +2260,117 @@
      </property>
     </widget>
     <widget class="QLineEdit" name="lineEdit_dropRec">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>110</x>
-       <y>250</y>
+       <y>260</y>
        <width>242</width>
        <height>30</height>
       </rect>
      </property>
     </widget>
     <widget class="QLineEdit" name="lineEdit_flowInTime">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>110</x>
-       <y>292</y>
+       <y>300</y>
        <width>242</width>
        <height>30</height>
       </rect>
      </property>
     </widget>
     <widget class="QLineEdit" name="lineEdit_dropArea">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>110</x>
-       <y>334</y>
+       <y>340</y>
        <width>242</width>
        <height>30</height>
       </rect>
      </property>
     </widget>
     <widget class="QLineEdit" name="lineEdit_sensitivity">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>608</x>
-       <y>250</y>
+       <y>260</y>
        <width>242</width>
        <height>30</height>
       </rect>
      </property>
     </widget>
     <widget class="QLineEdit" name="lineEdit_ignoreWidth">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>608</x>
-       <y>292</y>
+       <y>300</y>
        <width>242</width>
        <height>30</height>
       </rect>
      </property>
     </widget>
     <widget class="QLineEdit" name="lineEdit_pressureRange">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>608</x>
-       <y>334</y>
+       <y>339</y>
        <width>242</width>
        <height>30</height>
       </rect>
      </property>
     </widget>
     <widget class="QLineEdit" name="lineEdit_centerX">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>1090</x>
-       <y>250</y>
+       <y>260</y>
        <width>242</width>
        <height>30</height>
       </rect>
      </property>
     </widget>
     <widget class="QLineEdit" name="lineEdit_centerY">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>1090</x>
-       <y>292</y>
+       <y>300</y>
        <width>242</width>
        <height>30</height>
       </rect>
      </property>
     </widget>
     <widget class="QLineEdit" name="lineEdit_r">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>1090</x>
-       <y>334</y>
+       <y>339</y>
        <width>242</width>
        <height>30</height>
       </rect>
@@ -2362,7 +2380,7 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>376</y>
+       <y>390</y>
        <width>1354</width>
        <height>3</height>
       </rect>
@@ -2375,7 +2393,7 @@
      <property name="geometry">
       <rect>
        <x>0</x>
-       <y>406</y>
+       <y>420</y>
        <width>1354</width>
        <height>3</height>
       </rect>
@@ -2388,14 +2406,14 @@
      <property name="geometry">
       <rect>
        <x>12</x>
-       <y>378</y>
+       <y>390</y>
        <width>80</width>
        <height>30</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>14</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="text">
@@ -2406,14 +2424,14 @@
      <property name="geometry">
       <rect>
        <x>1260</x>
-       <y>378</y>
+       <y>392</y>
        <width>83</width>
        <height>27</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>14</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="text">
@@ -2427,14 +2445,14 @@
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>418</y>
+       <y>430</y>
        <width>80</width>
        <height>30</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>14</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="text">
@@ -2445,14 +2463,14 @@
      <property name="geometry">
       <rect>
        <x>30</x>
-       <y>460</y>
+       <y>475</y>
        <width>80</width>
        <height>30</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>14</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="text">
@@ -2463,14 +2481,14 @@
      <property name="geometry">
       <rect>
        <x>518</x>
-       <y>418</y>
+       <y>430</y>
        <width>80</width>
        <height>30</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>14</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="text">
@@ -2481,14 +2499,14 @@
      <property name="geometry">
       <rect>
        <x>1010</x>
-       <y>418</y>
+       <y>430</y>
        <width>80</width>
        <height>30</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>14</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="text">
@@ -2499,14 +2517,14 @@
      <property name="geometry">
       <rect>
        <x>518</x>
-       <y>460</y>
+       <y>475</y>
        <width>80</width>
        <height>30</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>14</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="text">
@@ -2517,14 +2535,14 @@
      <property name="geometry">
       <rect>
        <x>1010</x>
-       <y>460</y>
+       <y>475</y>
        <width>80</width>
        <height>30</height>
       </rect>
      </property>
      <property name="font">
       <font>
-       <pointsize>14</pointsize>
+       <pointsize>9</pointsize>
       </font>
      </property>
      <property name="text">
@@ -2532,60 +2550,78 @@
      </property>
     </widget>
     <widget class="QLineEdit" name="lineEdit_actual1">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>110</x>
-       <y>418</y>
+       <y>430</y>
        <width>242</width>
        <height>30</height>
       </rect>
      </property>
     </widget>
     <widget class="QLineEdit" name="lineEdit_theory1">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>110</x>
-       <y>460</y>
+       <y>475</y>
        <width>242</width>
        <height>30</height>
       </rect>
      </property>
     </widget>
     <widget class="QLineEdit" name="lineEdit_actual2">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>608</x>
-       <y>418</y>
+       <y>430</y>
        <width>242</width>
        <height>30</height>
       </rect>
      </property>
     </widget>
     <widget class="QLineEdit" name="lineEdit_theory2">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>608</x>
-       <y>460</y>
+       <y>475</y>
        <width>242</width>
        <height>30</height>
       </rect>
      </property>
     </widget>
     <widget class="QLineEdit" name="lineEdit_actual3">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>1090</x>
-       <y>418</y>
+       <y>430</y>
        <width>242</width>
        <height>30</height>
       </rect>
      </property>
     </widget>
     <widget class="QLineEdit" name="lineEdit_theory3">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>1090</x>
-       <y>460</y>
+       <y>475</y>
        <width>242</width>
        <height>30</height>
       </rect>
@@ -2595,7 +2631,7 @@
      <property name="geometry">
       <rect>
        <x>1310</x>
-       <y>50</y>
+       <y>53</y>
        <width>15</width>
        <height>15</height>
       </rect>
@@ -2615,7 +2651,7 @@
      <property name="geometry">
       <rect>
        <x>1310</x>
-       <y>213</y>
+       <y>228</y>
        <width>15</width>
        <height>15</height>
       </rect>

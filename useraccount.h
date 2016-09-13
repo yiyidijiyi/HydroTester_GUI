@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-12
-* 最后修改：2016-09-12
+* 最后修改：2016-09-13
 * 作      者：syf
 * 描      述：
 */
@@ -28,9 +28,12 @@ public:
 	QStringList& GetMessageList();
 	bool AuthenticateAccount(int &id, const QString &userName, const QString &passward, int userType);
 	bool GetAccountList(QStringList &accountList,  ENUM_AccountType userType);
+	bool GetAccountInfo(const QString &userName, STRUCT_Account &account);
+	bool GetAccountInfo(int id, STRUCT_Account &account);
 	bool AddAccount(STRUCT_Account &account);
 	bool DeleteAccount(int id);
-	bool DeleteAccount(QString &userName);
+	bool DeleteAccount(const QString &userName);
+	bool UpdateAccount(const STRUCT_Account &ccount);
 private:
 	QStringList m_messageList;
 };

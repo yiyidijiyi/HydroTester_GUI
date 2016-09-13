@@ -160,7 +160,9 @@ public:
         pushButton_admin->setText(QApplication::translate("loginDlg", "\347\256\241\347\220\206\345\221\230", 0));
         pushButton_tester->setText(QApplication::translate("loginDlg", "\346\265\213\350\257\225\345\221\230", 0));
         lineEdit_name->setInputMask(QString());
+        lineEdit_name->setText(QApplication::translate("loginDlg", "gy", 0));
         lineEdit_password->setInputMask(QString());
+        lineEdit_password->setText(QApplication::translate("loginDlg", "gy17305", 0));
         label_3->setText(QString());
         label_4->setText(QString());
         label_5->setText(QString());

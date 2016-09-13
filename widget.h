@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-02
-* 最后修改：2016-09-08
+* 最后修改：2016-09-13
 * 作      者：syf
 * 描      述：
 */
@@ -13,7 +13,6 @@
 #include <QDateTime>
 #include <QCalendarWidget>
 #include <QtSql/QSqlRelationalTableModel>
-
 #include <QStringListModel>
 
 #include "common.h"
@@ -50,9 +49,13 @@ public:
 	enum ChartIndex{
 		Video	= 0,
 		Curve	= 1,
-		Chart	= 2,
-		Report  = 3,
-		Print		= 4
+		Report  = 2,
+	};
+
+	enum UIState{
+		Disable		= 1,
+		Editable	= 2,
+		New			= 3
 	};
 
 	Widget(QWidget *parent = 0);
@@ -65,6 +68,9 @@ public:
 
 private:
 	void UpdateAccountList();
+
+	// 更新UI状态
+	void UpdateAcountInfoUI(UIState state);
 
 protected slots:
 	void OnBtnMinClicked();
@@ -82,11 +88,16 @@ public slots:
 
 	void OnBtnChartVideoClicked();
 	void OnBtnChartCurveClicked();
-	void OnBtnChartChartClicked();
 	void OnBtnChartReportClicked();
 	void OnBtnChartPrintClicked();
 	
 	void OnLoginAccepted(int id);
+
+	void OnAccountListItemClicked(const QModelIndex &index);
+	void OnBtnNewAccountClicked();
+	void OnBtnSaveAccountClicked();
+	void OnBtnDeleteAccountClicked();
+	void OnBtnModifyAccountClicked();
 private:
 	Ui::Widget* ui;
 
@@ -98,8 +109,10 @@ private:
 	ChartIndex	      m_chartIndex;
 
 	// 用户账号相关
-	QStringListModel *m_pAccountListModel;
+	QStringListModel	*m_pAccountListModel;
 	STRUCT_Account	m_account;
+	UserAccount			*m_pAccountDB;
+	UIState					m_accountEditState;
 };
 
 #endif // WIDGET_H

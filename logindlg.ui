@@ -185,6 +185,9 @@
    <property name="inputMask">
     <string/>
    </property>
+   <property name="text">
+    <string>gy</string>
+   </property>
    <property name="maxLength">
     <number>128</number>
    </property>
@@ -206,6 +209,9 @@
    </property>
    <property name="inputMask">
     <string/>
+   </property>
+   <property name="text">
+    <string>gy17305</string>
    </property>
    <property name="maxLength">
     <number>32767</number>

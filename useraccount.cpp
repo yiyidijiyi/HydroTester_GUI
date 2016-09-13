@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-12
-* 最后修改：2016-09-12
+* 最后修改：2016-09-13
 * 作      者：syf
 * 描      述：
 */
@@ -39,6 +39,7 @@ QStringList& UserAccount::GetMessageList()
 {
 	return m_messageList;
 }
+
 
 /*
 * 参数：userType--用户类型
@@ -86,6 +87,133 @@ bool UserAccount::GetAccountList(QStringList &accountList, ENUM_AccountType user
 	db.close();
 	return state;
 }
+
+
+/*
+* 参数：userName--用户账号名称
+* 返回：
+* 功能：根据用户账号名称查询，用户账号信息
+*/
+bool UserAccount::GetAccountInfo(const QString &userName, STRUCT_Account &account)
+{
+	bool state = false;
+	m_messageList.clear();
+
+	QSqlDatabase db = QSqlDatabase::addDatabase("SQLITECIPHER");
+	db.setDatabaseName("./data/account.db");
+	db.setPassword("caep17305");
+
+	if (db.open())
+	{
+		QString strQuery = "SELECT * FROM account WHERE userName = ?";
+		QSqlQuery query(strQuery, db);
+		query.addBindValue(userName);
+
+		if (query.exec())
+		{
+			int count = 0;
+			while (query.next())
+			{
+				count++;
+				account.id = query.value(0).toInt();
+				account.userName = query.value(1).toString();
+				account.passward = query.value(2).toString();
+				account.userType = query.value(3).toInt();
+			}
+
+			if (0 == count)
+			{
+				m_messageList.append(QStringLiteral("未查找到账号信息！"));
+			}
+			else if (count > 1)
+			{
+				m_messageList.append(QStringLiteral("存在同名账号，请联系管理员！"));
+			}
+			else
+			{
+				state = true;
+				m_messageList.append(QStringLiteral("查询账号信息成功！"));
+			}
+		}
+		else
+		{
+			m_messageList.append(QStringLiteral("查询账号信息出错！"));
+			m_messageList.append(query.lastError().text());
+		}
+	}
+	else
+	{
+		m_messageList.append(QStringLiteral("连接账号数据库失败！"));
+		m_messageList.append(db.lastError().text());
+	}
+
+	db.close();
+	return state;
+}
+
+
+/*
+* 参数：id--用户账号id
+* 返回：
+* 功能：根据用户账号名称查询，用户账号信息
+*/
+bool UserAccount::GetAccountInfo(int id, STRUCT_Account &account)
+{
+	bool state = false;
+	m_messageList.clear();
+
+	QSqlDatabase db = QSqlDatabase::addDatabase("SQLITECIPHER");
+	db.setDatabaseName("./data/account.db");
+	db.setPassword("caep17305");
+
+	if (db.open())
+	{
+		QString strQuery = "SELECT * FROM account WHERE id = ?";
+		QSqlQuery query(strQuery, db);
+		query.addBindValue(id);
+
+		if (query.exec())
+		{
+			int count = 0;
+			while (query.next())
+			{
+				count++;
+				account.id = query.value(0).toInt();
+				account.userName = query.value(1).toString();
+				account.passward = query.value(2).toString();
+				account.userType = query.value(3).toInt();
+			}
+
+			if (0 == count)
+			{
+				m_messageList.append(QStringLiteral("未查找到账号信息！"));
+			}
+			else if (count > 1)
+			{
+				m_messageList.append(QStringLiteral("存在同名账号，请联系管理员！"));
+			}
+			else
+			{
+				state = true;
+				m_messageList.append(QStringLiteral("查询账号信息成功！"));
+			}
+		}
+		else
+		{
+			m_messageList.append(QStringLiteral("查询账号信息出错！"));
+			m_messageList.append(query.lastError().text());
+		}
+	}
+	else
+	{
+		m_messageList.append(QStringLiteral("连接账号数据库失败！"));
+		m_messageList.append(db.lastError().text());
+	}
+
+	db.close();
+	return state;
+}
+
 
 
 /*
@@ -262,7 +390,7 @@ bool UserAccount::DeleteAccount(int id)
 * 返回：
 * 功能：根据账户id删除账户
 */
-bool UserAccount::DeleteAccount(QString &userName)
+bool UserAccount::DeleteAccount(const QString &userName)
 {
 	m_messageList.clear();
 	bool state = false;
@@ -297,6 +425,53 @@ bool UserAccount::DeleteAccount(QString &userName)
 	db.close();
 	return state;
 }
+
+
+/*
+* 参数：account--账户信息
+* 返回：
+* 功能：修改账户信息
+*/
+bool UserAccount::UpdateAccount(const STRUCT_Account &account)
+{
+	m_messageList.clear();
+	bool state = false;
+
+	QSqlDatabase db = QSqlDatabase::addDatabase("SQLITECIPHER");
+	db.setDatabaseName("./data/account.db");
+	db.setPassword("caep17305");
+
+	if (db.open())
+	{
+		// 修改账户密码
+		QString strQuery = "UPDATE account SET userPassward = ? WHERE userName = ?";
+		QSqlQuery query(db);
+		query.prepare(strQuery);
+		query.bindValue(0, account.passward);
+		query.bindValue(1, account.userName);
+
+		if (query.exec())
+		{
+			state = true;
+			m_messageList.append(QStringList("修改用户密码成功！"));
+		}
+		else
+		{
+			m_messageList.append(QStringList("修改用户密码时出错！"));
+			m_messageList.append(query.lastError().text());
+		}
+	}
+	else
+	{
+		m_messageList.append(QStringList("链接账号数据库失败！"));
+		m_messageList.append(db.lastError().text());
+	}
+
+	db.close();
+	return state;
+}
+
+
 
 /*
 * 参数：

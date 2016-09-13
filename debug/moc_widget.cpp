@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_Widget_t {
-    QByteArrayData data[21];
-    char stringdata0[355];
+    QByteArrayData data[26];
+    char stringdata0[462];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -45,11 +45,16 @@ QT_MOC_LITERAL(12, 183, 19), // "OnBtnAdvanceClicked"
 QT_MOC_LITERAL(13, 203, 16), // "OnBtnHelpClicked"
 QT_MOC_LITERAL(14, 220, 22), // "OnBtnChartVideoClicked"
 QT_MOC_LITERAL(15, 243, 22), // "OnBtnChartCurveClicked"
-QT_MOC_LITERAL(16, 266, 22), // "OnBtnChartChartClicked"
-QT_MOC_LITERAL(17, 289, 23), // "OnBtnChartReportClicked"
-QT_MOC_LITERAL(18, 313, 22), // "OnBtnChartPrintClicked"
-QT_MOC_LITERAL(19, 336, 15), // "OnLoginAccepted"
-QT_MOC_LITERAL(20, 352, 2) // "id"
+QT_MOC_LITERAL(16, 266, 23), // "OnBtnChartReportClicked"
+QT_MOC_LITERAL(17, 290, 22), // "OnBtnChartPrintClicked"
+QT_MOC_LITERAL(18, 313, 15), // "OnLoginAccepted"
+QT_MOC_LITERAL(19, 329, 2), // "id"
+QT_MOC_LITERAL(20, 332, 24), // "OnAccountListItemClicked"
+QT_MOC_LITERAL(21, 357, 5), // "index"
+QT_MOC_LITERAL(22, 363, 22), // "OnBtnNewAccountClicked"
+QT_MOC_LITERAL(23, 386, 23), // "OnBtnSaveAccountClicked"
+QT_MOC_LITERAL(24, 410, 25), // "OnBtnDeleteAccountClicked"
+QT_MOC_LITERAL(25, 436, 25) // "OnBtnModifyAccountClicked"
 
     },
     "Widget\0OnBtnMinClicked\0\0OnBtnCloseClicked\0"
@@ -59,9 +64,12 @@ QT_MOC_LITERAL(20, 352, 2) // "id"
     "OnBtnTestMethodClicked\0OnBtnReportQueryClicked\0"
     "OnBtnAdvanceClicked\0OnBtnHelpClicked\0"
     "OnBtnChartVideoClicked\0OnBtnChartCurveClicked\0"
-    "OnBtnChartChartClicked\0OnBtnChartReportClicked\0"
-    "OnBtnChartPrintClicked\0OnLoginAccepted\0"
-    "id"
+    "OnBtnChartReportClicked\0OnBtnChartPrintClicked\0"
+    "OnLoginAccepted\0id\0OnAccountListItemClicked\0"
+    "index\0OnBtnNewAccountClicked\0"
+    "OnBtnSaveAccountClicked\0"
+    "OnBtnDeleteAccountClicked\0"
+    "OnBtnModifyAccountClicked"
 };
 #undef QT_MOC_LITERAL
 
@@ -71,7 +79,7 @@ static const uint qt_meta_data_Widget[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      16,   14, // methods
+      20,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -79,22 +87,26 @@ static const uint qt_meta_data_Widget[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,   94,    2, 0x09 /* Protected */,
-       3,    0,   95,    2, 0x09 /* Protected */,
-       4,    1,   96,    2, 0x09 /* Protected */,
-       7,    1,   99,    2, 0x09 /* Protected */,
-       8,    1,  102,    2, 0x09 /* Protected */,
-       9,    0,  105,    2, 0x0a /* Public */,
-      10,    0,  106,    2, 0x0a /* Public */,
-      11,    0,  107,    2, 0x0a /* Public */,
-      12,    0,  108,    2, 0x0a /* Public */,
-      13,    0,  109,    2, 0x0a /* Public */,
-      14,    0,  110,    2, 0x0a /* Public */,
-      15,    0,  111,    2, 0x0a /* Public */,
-      16,    0,  112,    2, 0x0a /* Public */,
-      17,    0,  113,    2, 0x0a /* Public */,
-      18,    0,  114,    2, 0x0a /* Public */,
-      19,    1,  115,    2, 0x0a /* Public */,
+       1,    0,  114,    2, 0x09 /* Protected */,
+       3,    0,  115,    2, 0x09 /* Protected */,
+       4,    1,  116,    2, 0x09 /* Protected */,
+       7,    1,  119,    2, 0x09 /* Protected */,
+       8,    1,  122,    2, 0x09 /* Protected */,
+       9,    0,  125,    2, 0x0a /* Public */,
+      10,    0,  126,    2, 0x0a /* Public */,
+      11,    0,  127,    2, 0x0a /* Public */,
+      12,    0,  128,    2, 0x0a /* Public */,
+      13,    0,  129,    2, 0x0a /* Public */,
+      14,    0,  130,    2, 0x0a /* Public */,
+      15,    0,  131,    2, 0x0a /* Public */,
+      16,    0,  132,    2, 0x0a /* Public */,
+      17,    0,  133,    2, 0x0a /* Public */,
+      18,    1,  134,    2, 0x0a /* Public */,
+      20,    1,  137,    2, 0x0a /* Public */,
+      22,    0,  140,    2, 0x0a /* Public */,
+      23,    0,  141,    2, 0x0a /* Public */,
+      24,    0,  142,    2, 0x0a /* Public */,
+      25,    0,  143,    2, 0x0a /* Public */,
 
  // slots: parameters
     QMetaType::Void,
@@ -111,8 +123,12 @@ static const uint qt_meta_data_Widget[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
+    QMetaType::Void, QMetaType::Int,   19,
+    QMetaType::Void, QMetaType::QModelIndex,   21,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Int,   20,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
 
        0        // eod
 };
@@ -135,10 +151,14 @@ void Widget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
         case 9: _t->OnBtnHelpClicked(); break;
         case 10: _t->OnBtnChartVideoClicked(); break;
         case 11: _t->OnBtnChartCurveClicked(); break;
-        case 12: _t->OnBtnChartChartClicked(); break;
-        case 13: _t->OnBtnChartReportClicked(); break;
-        case 14: _t->OnBtnChartPrintClicked(); break;
-        case 15: _t->OnLoginAccepted((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 12: _t->OnBtnChartReportClicked(); break;
+        case 13: _t->OnBtnChartPrintClicked(); break;
+        case 14: _t->OnLoginAccepted((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 15: _t->OnAccountListItemClicked((*reinterpret_cast< const QModelIndex(*)>(_a[1]))); break;
+        case 16: _t->OnBtnNewAccountClicked(); break;
+        case 17: _t->OnBtnSaveAccountClicked(); break;
+        case 18: _t->OnBtnDeleteAccountClicked(); break;
+        case 19: _t->OnBtnModifyAccountClicked(); break;
         default: ;
         }
     }
@@ -169,13 +189,13 @@ int Widget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 16)
+        if (_id < 20)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 16;
+        _id -= 20;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 16)
+        if (_id < 20)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 16;
+        _id -= 20;
     }
     return _id;
 }
