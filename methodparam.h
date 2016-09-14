@@ -26,7 +26,10 @@ public:
 	~MethodParam();
 
 	bool GetMethodList(QStringList &methodList);
-	bool GetMethodInfo(int id, STRUCT_MethodParam &method);
+	bool GetMethodInfo(int index, STRUCT_MethodParam &method);
+	bool AddMethod(const STRUCT_MethodParam &method);
+	bool DeleteMethod(int index);
+	bool UpdateMethodParam(int index, const STRUCT_MethodParam &method);
 private:
 	QStringList		m_messageList;
 	QVector<int>	m_idMap;
