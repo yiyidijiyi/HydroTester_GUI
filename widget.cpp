@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-02
-* 最后修改：2016-09-13
+* 最后修改：2016-09-14
 * 作      者：syf
 * 描      述：
 */
@@ -386,9 +386,9 @@ void Widget::UpdateAccountList()
 
 
 /*
-* 参数：
+* 参数：state-编辑状态
 * 返回：
-* 功能：最小化按钮槽函数
+* 功能：更新账号信息显示
 */
 void Widget::UpdateAcountInfoUI(UIState state)
 {
@@ -425,6 +425,123 @@ void Widget::UpdateAcountInfoUI(UIState state)
 		ui->comboBox_accountType->addItem(QStringLiteral("测试员"));
 		ui->comboBox_accountType->addItem(QStringLiteral("管理员"));
 		ui->comboBox_accountType->addItem(QStringLiteral("开发者"));
+		break;
+	}
+}
+
+/*
+* 参数：
+* 返回：
+* 功能：更新测试方案显示
+*/
+void Widget::UpdateMethodInfoUI(UIState state)
+{
+	ui->comboBox_plan->setEnabled(true);
+
+	int index = 0;
+
+	switch(state)
+	{
+	case New:
+		ui->comboBox_plan->setEnabled(true);
+		ui->comboBox_unit->setEnabled(true);
+		index = 0;
+		UpdateEditableMethodInfoUI(index);
+
+		ui->comboBox_plan->setCurrentIndex(0);
+		ui->comboBox_unit->setCurrentIndex(0);
+
+		ui->lineEdit_methodName->clear();
+		ui->lineEdit_standard->clear();
+		ui->lineEdit_pressureRate->clear();
+		ui->lineEdit_setTime->clear();
+		ui->lineEdit_targetPressure->clear();
+		ui->lineEdit_pressureCycle->clear();
+		ui->lineEdit_pressureHolding->clear();
+		break;
+	case Editable:
+		ui->comboBox_plan->setEnabled(true);
+		ui->comboBox_unit->setEnabled(true);
+		index = ui->comboBox_plan->currentIndex();
+		UpdateEditableMethodInfoUI(index);
+		break;
+	case Disable:
+		ui->comboBox_plan->setEnabled(false);
+		ui->comboBox_unit->setEnabled(false);
+
+		ui->lineEdit_methodName->setEnabled(false);
+		ui->lineEdit_standard->setEnabled(false);
+		ui->lineEdit_pressureRate->setEnabled(false);
+		ui->lineEdit_setTime->setEnabled(false);
+		ui->lineEdit_targetPressure->setEnabled(false);
+		ui->lineEdit_pressureCycle->setEnabled(false);
+		ui->lineEdit_pressureHolding->setEnabled(false);
+	default:
+		break;
+	}
+}
+
+
+/*
+* 参数：index--选择的测试方法
+* 返回：
+* 功能：根据选择的测试方法，更新可编辑的测试信息UI
+*/
+void Widget::UpdateEditableMethodInfoUI(int index)
+{
+	switch (index)
+	{
+	case 0:	// 持续增压		
+		ui->lineEdit_methodName->setEnabled(true);
+		ui->lineEdit_standard->setEnabled(true);
+		ui->lineEdit_pressureRate->setEnabled(true);
+		ui->lineEdit_setTime->setEnabled(false);
+		ui->lineEdit_targetPressure->setEnabled(false);
+		ui->lineEdit_pressureCycle->setEnabled(false);
+		ui->lineEdit_pressureHolding->setEnabled(false);
+		ui->textEdit_discription->setEnabled(true);
+		break;
+	case 1:	// 定时计压
+		ui->lineEdit_methodName->setEnabled(true);
+		ui->lineEdit_standard->setEnabled(true);
+		ui->lineEdit_pressureRate->setEnabled(true);
+		ui->lineEdit_setTime->setEnabled(true);
+		ui->lineEdit_targetPressure->setEnabled(false);
+		ui->lineEdit_pressureCycle->setEnabled(false);
+		ui->lineEdit_pressureHolding->setEnabled(false);
+		ui->textEdit_discription->setEnabled(true);
+		break;
+	case 2:	// 定时定压
+		ui->lineEdit_methodName->setEnabled(true);
+		ui->lineEdit_standard->setEnabled(true);
+		ui->lineEdit_pressureRate->setEnabled(true);
+		ui->lineEdit_setTime->setEnabled(true);
+		ui->lineEdit_targetPressure->setEnabled(true);
+		ui->lineEdit_pressureCycle->setEnabled(false);
+		ui->lineEdit_pressureHolding->setEnabled(false);
+		ui->textEdit_discription->setEnabled(true);
+		break;
+	case 3:	// 绕曲松弛
+		ui->lineEdit_methodName->setEnabled(true);
+		ui->lineEdit_standard->setEnabled(true);
+		ui->lineEdit_pressureRate->setEnabled(true);
+		ui->lineEdit_setTime->setEnabled(false);
+		ui->lineEdit_targetPressure->setEnabled(true);
+		ui->lineEdit_pressureCycle->setEnabled(true);
+		ui->lineEdit_pressureHolding->setEnabled(true);
+		ui->textEdit_discription->setEnabled(true);
+		break;
+	case 4:	// 渗水漏水
+		ui->lineEdit_methodName->setEnabled(true);
+		ui->lineEdit_standard->setEnabled(true);
+		ui->lineEdit_pressureRate->setEnabled(true);
+		ui->lineEdit_setTime->setEnabled(true);
+		ui->lineEdit_targetPressure->setEnabled(true);
+		ui->lineEdit_pressureCycle->setEnabled(false);
+		ui->lineEdit_pressureHolding->setEnabled(false);
+		ui->textEdit_discription->setEnabled(true);
+		break;
+	default:
 		break;
 	}
 }

@@ -65,7 +65,7 @@ public:
     QPushButton *pushButton_startStop;
     QPushButton *pushButton_pauseConti;
     QPushButton *pushButton_openCloseCamera;
-    QComboBox *comboBox_2;
+    QComboBox *comboBox_selMethod;
     QFrame *frame_3;
     QTabWidget *tabWidget_testInterface;
     QWidget *tab_10;
@@ -101,17 +101,17 @@ public:
     QLabel *label_18;
     QLineEdit *lineEdit_methodName;
     QLineEdit *lineEdit_standard;
-    QComboBox *comboBox_testMethod_2;
+    QComboBox *comboBox_plan;
     QLineEdit *lineEdit_pressureRate;
     QLineEdit *lineEdit_setTime;
     QLineEdit *lineEdit_targetPressure;
     QLineEdit *lineEdit_pressureCycle;
     QLineEdit *lineEdit_pressureHolding;
-    QLineEdit *lineEdit_unit;
-    QTextEdit *textEdit_decribe;
+    QTextEdit *textEdit_discription;
     QPushButton *pushButton_addMethod;
     QPushButton *pushButton_delMethod;
     QPushButton *pushButton_modifyMethod;
+    QComboBox *comboBox_unit;
     QPushButton *pushButton_methodSave;
     QWidget *tab_3;
     QTableView *tableView_reportQuery;
@@ -394,10 +394,10 @@ public:
         pushButton_openCloseCamera->setObjectName(QStringLiteral("pushButton_openCloseCamera"));
         pushButton_openCloseCamera->setGeometry(QRect(1220, 5, 90, 24));
         pushButton_openCloseCamera->setFlat(true);
-        comboBox_2 = new QComboBox(tab);
-        comboBox_2->setObjectName(QStringLiteral("comboBox_2"));
-        comboBox_2->setGeometry(QRect(12, 45, 400, 26));
-        comboBox_2->setFrame(true);
+        comboBox_selMethod = new QComboBox(tab);
+        comboBox_selMethod->setObjectName(QStringLiteral("comboBox_selMethod"));
+        comboBox_selMethod->setGeometry(QRect(12, 45, 400, 26));
+        comboBox_selMethod->setFrame(true);
         frame_3 = new QFrame(tab);
         frame_3->setObjectName(QStringLiteral("frame_3"));
         frame_3->setGeometry(QRect(13, 70, 396, 430));
@@ -483,7 +483,7 @@ public:
         pushButton_pauseConti->raise();
         pushButton_openCloseCamera->raise();
         frame_3->raise();
-        comboBox_2->raise();
+        comboBox_selMethod->raise();
         frame_4->raise();
         tab_2 = new QWidget();
         tab_2->setObjectName(QStringLiteral("tab_2"));
@@ -554,10 +554,10 @@ public:
         lineEdit_standard->setObjectName(QStringLiteral("lineEdit_standard"));
         lineEdit_standard->setEnabled(false);
         lineEdit_standard->setGeometry(QRect(90, 90, 270, 30));
-        comboBox_testMethod_2 = new QComboBox(frame_2);
-        comboBox_testMethod_2->setObjectName(QStringLiteral("comboBox_testMethod_2"));
-        comboBox_testMethod_2->setEnabled(false);
-        comboBox_testMethod_2->setGeometry(QRect(90, 50, 270, 30));
+        comboBox_plan = new QComboBox(frame_2);
+        comboBox_plan->setObjectName(QStringLiteral("comboBox_plan"));
+        comboBox_plan->setEnabled(false);
+        comboBox_plan->setGeometry(QRect(90, 50, 270, 30));
         lineEdit_pressureRate = new QLineEdit(frame_2);
         lineEdit_pressureRate->setObjectName(QStringLiteral("lineEdit_pressureRate"));
         lineEdit_pressureRate->setEnabled(false);
@@ -578,14 +578,10 @@ public:
         lineEdit_pressureHolding->setObjectName(QStringLiteral("lineEdit_pressureHolding"));
         lineEdit_pressureHolding->setEnabled(false);
         lineEdit_pressureHolding->setGeometry(QRect(470, 90, 270, 30));
-        lineEdit_unit = new QLineEdit(frame_2);
-        lineEdit_unit->setObjectName(QStringLiteral("lineEdit_unit"));
-        lineEdit_unit->setEnabled(false);
-        lineEdit_unit->setGeometry(QRect(470, 130, 270, 30));
-        textEdit_decribe = new QTextEdit(frame_2);
-        textEdit_decribe->setObjectName(QStringLiteral("textEdit_decribe"));
-        textEdit_decribe->setEnabled(false);
-        textEdit_decribe->setGeometry(QRect(90, 214, 652, 148));
+        textEdit_discription = new QTextEdit(frame_2);
+        textEdit_discription->setObjectName(QStringLiteral("textEdit_discription"));
+        textEdit_discription->setEnabled(false);
+        textEdit_discription->setGeometry(QRect(90, 214, 652, 148));
         pushButton_addMethod = new QPushButton(frame_2);
         pushButton_addMethod->setObjectName(QStringLiteral("pushButton_addMethod"));
         pushButton_addMethod->setGeometry(QRect(20, 372, 189, 38));
@@ -595,6 +591,9 @@ public:
         pushButton_modifyMethod = new QPushButton(frame_2);
         pushButton_modifyMethod->setObjectName(QStringLiteral("pushButton_modifyMethod"));
         pushButton_modifyMethod->setGeometry(QRect(416, 372, 189, 38));
+        comboBox_unit = new QComboBox(frame_2);
+        comboBox_unit->setObjectName(QStringLiteral("comboBox_unit"));
+        comboBox_unit->setGeometry(QRect(470, 130, 270, 30));
         pushButton_methodSave = new QPushButton(tab_2);
         pushButton_methodSave->setObjectName(QStringLiteral("pushButton_methodSave"));
         pushButton_methodSave->setGeometry(QRect(1305, 54, 15, 15));
@@ -1057,7 +1056,7 @@ public:
 
         retranslateUi(Widget);
 
-        tabWidget->setCurrentIndex(3);
+        tabWidget->setCurrentIndex(1);
         tabWidget_testInterface->setCurrentIndex(2);
 
 
@@ -1090,8 +1089,8 @@ public:
         pushButton_startStop->setText(QApplication::translate("Widget", "\345\274\200\345\247\213", 0));
         pushButton_pauseConti->setText(QApplication::translate("Widget", "\346\232\202\345\201\234", 0));
         pushButton_openCloseCamera->setText(QApplication::translate("Widget", "\346\211\223\345\274\200\347\233\270\346\234\272", 0));
-        comboBox_2->clear();
-        comboBox_2->insertItems(0, QStringList()
+        comboBox_selMethod->clear();
+        comboBox_selMethod->insertItems(0, QStringList()
          << QApplication::translate("Widget", "\346\226\271\346\263\225\351\200\211\346\213\251", 0)
         );
         label_video->setText(QString());
@@ -1117,9 +1116,24 @@ public:
         label_16->setText(QApplication::translate("Widget", "\344\277\235\345\216\213\346\227\266\351\227\264\357\274\232", 0));
         label_17->setText(QApplication::translate("Widget", "\345\216\213\345\212\233\345\215\225\344\275\215\357\274\232", 0));
         label_18->setText(QApplication::translate("Widget", "\346\217\217\350\277\260\357\274\232", 0));
+        comboBox_plan->clear();
+        comboBox_plan->insertItems(0, QStringList()
+         << QApplication::translate("Widget", "\346\214\201\347\273\255\345\242\236\345\216\213", 0)
+         << QApplication::translate("Widget", "\345\256\232\346\227\266\350\256\241\345\216\213", 0)
+         << QApplication::translate("Widget", "\345\256\232\346\227\266\345\256\232\345\216\213", 0)
+         << QApplication::translate("Widget", "\347\273\225\346\233\262\346\235\276\345\274\233", 0)
+         << QApplication::translate("Widget", "\346\270\227\346\260\264\346\274\217\346\260\264", 0)
+        );
         pushButton_addMethod->setText(QApplication::translate("Widget", "\346\226\260\345\242\236", 0));
         pushButton_delMethod->setText(QApplication::translate("Widget", "\345\210\240\351\231\244", 0));
         pushButton_modifyMethod->setText(QApplication::translate("Widget", "\344\277\256\346\224\271", 0));
+        comboBox_unit->clear();
+        comboBox_unit->insertItems(0, QStringList()
+         << QApplication::translate("Widget", "Pa(\345\270\225)", 0)
+         << QApplication::translate("Widget", "kPa(\345\215\203\345\270\225)", 0)
+         << QApplication::translate("Widget", "mBar(\346\257\253\345\267\264)", 0)
+         << QApplication::translate("Widget", "mmH2O(\346\257\253\347\261\263\346\260\264\346\237\261)", 0)
+        );
         pushButton_methodSave->setText(QString());
         tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("Widget", "Tab 2", 0));
         label_reportQuery->setText(QApplication::translate("Widget", "\346\265\213\350\257\225\347\273\223\346\236\234", 0));

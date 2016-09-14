@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-02
-* 最后修改：2016-09-13
+* 最后修改：2016-09-14
 * 作      者：syf
 * 描      述：
 */
@@ -68,9 +68,12 @@ public:
 
 private:
 	void UpdateAccountList();
+	
 
 	// 更新UI状态
 	void UpdateAcountInfoUI(UIState state);
+	void UpdateMethodInfoUI(UIState state);
+	void UpdateEditableMethodInfoUI(int index);
 
 protected slots:
 	void OnBtnMinClicked();

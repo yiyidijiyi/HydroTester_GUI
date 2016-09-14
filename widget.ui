@@ -479,7 +479,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>3</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -708,7 +708,7 @@
       <bool>true</bool>
      </property>
     </widget>
-    <widget class="QComboBox" name="comboBox_2">
+    <widget class="QComboBox" name="comboBox_selMethod">
      <property name="geometry">
       <rect>
        <x>12</x>
@@ -952,7 +952,7 @@
     <zorder>pushButton_pauseConti</zorder>
     <zorder>pushButton_openCloseCamera</zorder>
     <zorder>frame_3</zorder>
-    <zorder>comboBox_2</zorder>
+    <zorder>comboBox_selMethod</zorder>
     <zorder>frame_4</zorder>
    </widget>
    <widget class="QWidget" name="tab_2">
@@ -1216,7 +1216,7 @@
        </rect>
       </property>
      </widget>
-     <widget class="QComboBox" name="comboBox_testMethod_2">
+     <widget class="QComboBox" name="comboBox_plan">
       <property name="enabled">
        <bool>false</bool>
       </property>
@@ -1228,6 +1228,31 @@
         <height>30</height>
        </rect>
       </property>
+      <item>
+       <property name="text">
+        <string>持续增压</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>定时计压</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>定时定压</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>绕曲松弛</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>渗水漏水</string>
+       </property>
+      </item>
      </widget>
      <widget class="QLineEdit" name="lineEdit_pressureRate">
       <property name="enabled">
@@ -1294,20 +1319,7 @@
        </rect>
       </property>
      </widget>
-     <widget class="QLineEdit" name="lineEdit_unit">
-      <property name="enabled">
-       <bool>false</bool>
-      </property>
-      <property name="geometry">
-       <rect>
-        <x>470</x>
-        <y>130</y>
-        <width>270</width>
-        <height>30</height>
-       </rect>
-      </property>
-     </widget>
-     <widget class="QTextEdit" name="textEdit_decribe">
+     <widget class="QTextEdit" name="textEdit_discription">
       <property name="enabled">
        <bool>false</bool>
       </property>
@@ -1358,6 +1370,36 @@
       <property name="text">
        <string>修改</string>
       </property>
+     </widget>
+     <widget class="QComboBox" name="comboBox_unit">
+      <property name="geometry">
+       <rect>
+        <x>470</x>
+        <y>130</y>
+        <width>270</width>
+        <height>30</height>
+       </rect>
+      </property>
+      <item>
+       <property name="text">
+        <string>Pa(帕)</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>kPa(千帕)</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>mBar(毫巴)</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>mmH2O(毫米水柱)</string>
+       </property>
+      </item>
      </widget>
     </widget>
     <widget class="QPushButton" name="pushButton_methodSave">
