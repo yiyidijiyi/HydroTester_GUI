@@ -12,7 +12,8 @@
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQuery>
 #include <QtSql/QSqlError>
-#include <QtCore/QVariant>
+#include <QVariant>
+#include <QVector>
 
 #include "common.h"
 
@@ -24,9 +25,11 @@ public:
 	MethodParam(QObject *parent = 0);
 	~MethodParam();
 
+	bool GetMethodList(QStringList &methodList);
 	bool GetMethodInfo(int id, STRUCT_MethodParam &method);
 private:
-	QStringList m_messageList;
+	QStringList		m_messageList;
+	QVector<int>	m_idMap;
 };
 
 #endif // METHODPARAM_H

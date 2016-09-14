@@ -34,7 +34,57 @@ MethodParam::~MethodParam()
 /*
 * 参数：
 * 返回：
-* 功能：析构函数
+* 功能：
+*/
+bool MethodParam::GetMethodList(QStringList &methodList)
+{
+	bool state = false;
+	m_messageList.clear();
+
+	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+	db.setDatabaseName("./data/TestMethod.db");
+
+	if (db.open())
+	{
+		QString strQuery = "SELECT * FROM parameters";
+		QSqlQuery query(strQuery, db);
+		m_idMap.clear();
+		methodList.clear();
+
+		if (query.exec())
+		{
+			while (query.next())
+			{
+				m_idMap.append(query.value(0).toInt());
+				methodList.append(query.value(1).toString());
+			}
+
+			state = true;
+			m_messageList.append(QStringLiteral("查询测试方法列表成功！"));
+
+		}
+		else
+		{
+			m_messageList.append(QStringLiteral("查询测试方法列表出错！"));
+			m_messageList.append(query.lastError().text());
+		}
+	}
+	else
+	{
+		m_messageList.append(QStringLiteral("连接测试方法数据库失败！"));
+		m_messageList.append(db.lastError().text());
+	}
+
+	db.close();
+	return state;
+}
+
+
+/*
+* 参数：id--数据条目id
+			method--输出，测试方法参数
+* 返回：
+* 功能：根据数据库中parameters表的id，查询测试方法参数
 */
 bool MethodParam::GetMethodInfo(int id, STRUCT_MethodParam &method)
 {
@@ -46,7 +96,7 @@ bool MethodParam::GetMethodInfo(int id, STRUCT_MethodParam &method)
 
 	if (db.open())
 	{
-		QString strQuery = "SELECT * FROM account WHERE id = ?";
+		QString strQuery = "SELECT * FROM parameters WHERE id = ?";
 		QSqlQuery query(strQuery, db);
 		query.addBindValue(id);
 
