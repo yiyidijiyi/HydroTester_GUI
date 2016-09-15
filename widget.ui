@@ -1372,6 +1372,9 @@
       </property>
      </widget>
      <widget class="QComboBox" name="comboBox_unit">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
       <property name="geometry">
        <rect>
         <x>470</x>
@@ -1420,6 +1423,19 @@
      </property>
      <property name="flat">
       <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_testMethodMessage">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>5</y>
+       <width>1000</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
      </property>
     </widget>
    </widget>

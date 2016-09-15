@@ -113,6 +113,7 @@ public:
     QPushButton *pushButton_modifyMethod;
     QComboBox *comboBox_unit;
     QPushButton *pushButton_methodSave;
+    QLabel *label_testMethodMessage;
     QWidget *tab_3;
     QTableView *tableView_reportQuery;
     QDateEdit *dateEdit_start;
@@ -593,6 +594,7 @@ public:
         pushButton_modifyMethod->setGeometry(QRect(416, 372, 189, 38));
         comboBox_unit = new QComboBox(frame_2);
         comboBox_unit->setObjectName(QStringLiteral("comboBox_unit"));
+        comboBox_unit->setEnabled(true);
         comboBox_unit->setGeometry(QRect(470, 130, 270, 30));
         pushButton_methodSave = new QPushButton(tab_2);
         pushButton_methodSave->setObjectName(QStringLiteral("pushButton_methodSave"));
@@ -601,6 +603,9 @@ public:
         icon8.addFile(QStringLiteral("resource/testmethod/methodSave.png"), QSize(), QIcon::Normal, QIcon::Off);
         pushButton_methodSave->setIcon(icon8);
         pushButton_methodSave->setFlat(true);
+        label_testMethodMessage = new QLabel(tab_2);
+        label_testMethodMessage->setObjectName(QStringLiteral("label_testMethodMessage"));
+        label_testMethodMessage->setGeometry(QRect(120, 5, 1000, 30));
         tabWidget->addTab(tab_2, QString());
         tab_3 = new QWidget();
         tab_3->setObjectName(QStringLiteral("tab_3"));
@@ -1135,6 +1140,7 @@ public:
          << QApplication::translate("Widget", "mmH2O(\346\257\253\347\261\263\346\260\264\346\237\261)", 0)
         );
         pushButton_methodSave->setText(QString());
+        label_testMethodMessage->setText(QString());
         tabWidget->setTabText(tabWidget->indexOf(tab_2), QApplication::translate("Widget", "Tab 2", 0));
         label_reportQuery->setText(QApplication::translate("Widget", "\346\265\213\350\257\225\347\273\223\346\236\234", 0));
         label_endDate->setText(QApplication::translate("Widget", "\347\273\223\346\235\237\346\227\245\346\234\237\357\274\232", 0));

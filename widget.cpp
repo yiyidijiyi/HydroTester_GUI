@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-02
-* 最后修改：2016-09-14
+* 最后修改：2016-09-15
 * 作      者：syf
 * 描      述：
 */
@@ -14,13 +14,14 @@
 */
 Widget::Widget(QWidget *parent)
 	: QWidget(parent)
-	,ui(new Ui::Widget)
-	,m_isMousePressed(false)
-	,m_mousePos(QPoint(0, 0))
-	,m_pReportQueryModel(NULL)
-	,m_interfaceIndex(TestInterface)
-	,m_chartIndex(Video)
+	, ui(new Ui::Widget)
+	, m_isMousePressed(false)
+	, m_mousePos(QPoint(0, 0))
+	, m_pReportQueryModel(NULL)
+	, m_interfaceIndex(TestInterface)
+	, m_chartIndex(Video)
 	, m_accountEditState(Disable)
+	, m_methodEditState(Disable)
 {
 	CreateUi();
 
@@ -33,6 +34,10 @@ Widget::Widget(QWidget *parent)
 	m_account.id = 0;
 
 	m_pAccountDB = new UserAccount();
+
+	// 初始化测试方法相关数据成员
+	m_pMethodListModel = new QStringListModel(this);
+	m_pMethodParam = new MethodParam();
 
 
 	// 链接信号与槽
@@ -50,6 +55,12 @@ Widget::Widget(QWidget *parent)
 	connect(ui->pushButton_report, &QPushButton::clicked, this, &Widget::OnBtnChartReportClicked);
 	connect(ui->pushButton_print, &QPushButton::clicked, this, &Widget::OnBtnChartPrintClicked);
 
+	// 测试方法操作
+	connect(ui->listView_methodList, &QListView::clicked, this, &Widget::OnMethodListItemClicked);
+	connect(ui->pushButton_addMethod, &QPushButton::clicked, this, &Widget::OnBtnNewMethodClicked);
+	connect(ui->comboBox_plan, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &Widget::OnCombMethodPlanChanged);
+	connect(ui->pushButton_methodSave, &QPushButton::clicked, this, &Widget::OnBtnSaveMethodClicked);
+
 	// 账户信息操作
 	connect(ui->listView_accountList, &QListView::clicked, this, &Widget::OnAccountListItemClicked);
 	connect(ui->pushButton_newAccount, &QPushButton::clicked, this, &Widget::OnBtnNewAccountClicked);
@@ -66,6 +77,26 @@ Widget::Widget(QWidget *parent)
 */
 Widget::~Widget()
 {
+	if (m_pAccountListModel)
+	{
+		delete m_pAccountListModel;
+	}
+
+	if (m_pMethodListModel)
+	{
+		delete m_pMethodListModel;
+	}
+
+	if (m_pAccountDB)
+	{
+		delete m_pAccountDB;
+	}
+
+	if (m_pMethodParam)
+	{
+		delete m_pMethodParam;
+	}
+
 	delete ui;
 }
 
@@ -91,7 +122,8 @@ void Widget::CreateUi()
 	// 设置通用样式
 	this->setStyleSheet("QLabel{font-family:'Microsoft YaHei'; font-size:14px;color:#979797;}"
 		"QPushButton{font-family:'Microsoft YaHei'; font-size:14px;}"
-		"QLineEdit{font-family:'Microsoft YaHei'; font-size:14px; color:#979797; background-color:#f7f7f7;}"
+		"QLineEdit{font-family:'Microsoft YaHei'; font-size:14px; color:#979797; }"
+		"QTextEdit{font-family:'Microsoft YaHei'; font-size:14px; color:#979797; }"
 		"QDateEdit{font-family:'Microsoft YaHei'; font-size:14px; color:#979797; background-color:#f7f7f7;}"
 		"QComboBox{font-family:'Microsoft YaHei'; font-size:14px; color:#979797; background-color:#f7f7f7}");
 
@@ -137,6 +169,17 @@ void Widget::CreateUi()
 	*/
 	ui->label_methodList->setStyleSheet("QLabel{background-color:#53a4ff; color:#ffffff}");
 	ui->label_methodParams->setStyleSheet("QLabel{background-color:#53a4ff; color:#ffffff}");
+	ui->label_testMethodMessage->setStyleSheet("QLabel{color:#ff0000}");
+
+	ui->listView_methodList->setStyleSheet("font-family:'Microsoft YaHei'; font-size:14px;");
+
+	// 输入限制设定
+	ui->lineEdit_pressureRate->setValidator(new QDoubleValidator(0, 1000000, 2, this));
+	ui->lineEdit_setTime->setValidator(new QDoubleValidator(0, 1000000, 2, this));
+	ui->lineEdit_targetPressure->setValidator(new QDoubleValidator(0, 1000000, 2, this));
+	ui->lineEdit_pressureCycle->setValidator(new QIntValidator(0, 100, this));
+	ui->lineEdit_pressureHolding->setValidator(new QDoubleValidator(0, 1000000, 2, this));
+
 
 	// 设置新增、删除、修改按钮样式
 	ui->pushButton_addMethod->setStyleSheet("QPushButton{font-family:'Microsoft YaHei';font-size:14px; color:#979797}"
@@ -229,8 +272,9 @@ void Widget::CreateUi()
 		"QPushButton{border-image: url(:/login/resource/login/btn4.png);}"
 		"QPushButton:hover{color:#ffffff; border-image: url(:/login/resource/login/btn2.png);}");
 
-	ui->listView_accountList->setStyleSheet("font-family:'Microsoft YaHei'; font-size:14px; color:#979797");
+	ui->listView_accountList->setStyleSheet("font-family:'Microsoft YaHei'; font-size:14px;");
 
+	// 用户名和密码只能有字母和数字构成
 	ui->lineEdit_accountName->setValidator(new QRegExpValidator(QRegExp("[A-Za-z0-9]+$"), this));
 	ui->lineEdit_accountPassword->setValidator(new QRegExpValidator(QRegExp("[A-Za-z0-9]+$"), this));
 }
@@ -325,7 +369,7 @@ Widget::InterfaceIndex Widget::GetInterfaceIndex()
 /*
 * 参数：
 * 返回：
-* 功能：最小化按钮槽函数
+* 功能：更新账户信息列表
 */
 void Widget::UpdateAccountList()
 {
@@ -386,6 +430,28 @@ void Widget::UpdateAccountList()
 
 
 /*
+* 参数：
+* 返回：
+* 功能：更新测试方法列表
+*/
+void Widget::UpdateTestMethodList()
+{
+	QStringList methodList;
+	bool state = false;
+	state = m_pMethodParam->GetMethodList(methodList);
+
+	if (!state)
+	{
+		ui->label_testMethodMessage->setText(m_pMethodParam->GetMessageList()[0]);
+		return;
+	}
+
+	m_pMethodListModel->setStringList(methodList);
+	ui->listView_methodList->setModel(m_pMethodListModel);
+}
+
+
+/*
 * 参数：state-编辑状态
 * 返回：
 * 功能：更新账号信息显示
@@ -429,6 +495,25 @@ void Widget::UpdateAcountInfoUI(UIState state)
 	}
 }
 
+
+/*
+* 参数：
+* 返回：
+* 功能：判断目标压力值是否超量程
+*/
+bool Widget::IsPressureOverload(double p)
+{
+	bool state = false;
+
+	if (p < 1000000.0)
+	{
+		state = true;
+	}
+
+	return state;
+}
+
+
 /*
 * 参数：
 * 返回：
@@ -436,38 +521,38 @@ void Widget::UpdateAcountInfoUI(UIState state)
 */
 void Widget::UpdateMethodInfoUI(UIState state)
 {
-	ui->comboBox_plan->setEnabled(true);
-
 	int index = 0;
 
 	switch(state)
 	{
 	case New:
 		ui->comboBox_plan->setEnabled(true);
-		ui->comboBox_unit->setEnabled(true);
-		index = 0;
-		UpdateEditableMethodInfoUI(index);
-
 		ui->comboBox_plan->setCurrentIndex(0);
 		ui->comboBox_unit->setCurrentIndex(0);
 
 		ui->lineEdit_methodName->clear();
+		ui->lineEdit_methodName->setEnabled(true);
 		ui->lineEdit_standard->clear();
+		ui->lineEdit_standard->setEnabled(true);
 		ui->lineEdit_pressureRate->clear();
-		ui->lineEdit_setTime->clear();
-		ui->lineEdit_targetPressure->clear();
-		ui->lineEdit_pressureCycle->clear();
-		ui->lineEdit_pressureHolding->clear();
+		ui->lineEdit_pressureRate->setEnabled(true);
+		ui->textEdit_discription->clear();
+		ui->textEdit_discription->setEnabled(true);
+
+		OnCombMethodPlanChanged(0);
 		break;
 	case Editable:
-		ui->comboBox_plan->setEnabled(true);
+		ui->lineEdit_methodName->setEnabled(true);
+		ui->lineEdit_standard->setEnabled(true);
+		ui->lineEdit_pressureRate->setEnabled(true);
+		ui->textEdit_discription->setEnabled(true);
+
 		ui->comboBox_unit->setEnabled(true);
 		index = ui->comboBox_plan->currentIndex();
-		UpdateEditableMethodInfoUI(index);
+		OnCombMethodPlanChanged(index);
 		break;
 	case Disable:
 		ui->comboBox_plan->setEnabled(false);
-		ui->comboBox_unit->setEnabled(false);
 
 		ui->lineEdit_methodName->setEnabled(false);
 		ui->lineEdit_standard->setEnabled(false);
@@ -476,71 +561,7 @@ void Widget::UpdateMethodInfoUI(UIState state)
 		ui->lineEdit_targetPressure->setEnabled(false);
 		ui->lineEdit_pressureCycle->setEnabled(false);
 		ui->lineEdit_pressureHolding->setEnabled(false);
-	default:
-		break;
-	}
-}
-
-
-/*
-* 参数：index--选择的测试方法
-* 返回：
-* 功能：根据选择的测试方法，更新可编辑的测试信息UI
-*/
-void Widget::UpdateEditableMethodInfoUI(int index)
-{
-	switch (index)
-	{
-	case 0:	// 持续增压		
-		ui->lineEdit_methodName->setEnabled(true);
-		ui->lineEdit_standard->setEnabled(true);
-		ui->lineEdit_pressureRate->setEnabled(true);
-		ui->lineEdit_setTime->setEnabled(false);
-		ui->lineEdit_targetPressure->setEnabled(false);
-		ui->lineEdit_pressureCycle->setEnabled(false);
-		ui->lineEdit_pressureHolding->setEnabled(false);
-		ui->textEdit_discription->setEnabled(true);
-		break;
-	case 1:	// 定时计压
-		ui->lineEdit_methodName->setEnabled(true);
-		ui->lineEdit_standard->setEnabled(true);
-		ui->lineEdit_pressureRate->setEnabled(true);
-		ui->lineEdit_setTime->setEnabled(true);
-		ui->lineEdit_targetPressure->setEnabled(false);
-		ui->lineEdit_pressureCycle->setEnabled(false);
-		ui->lineEdit_pressureHolding->setEnabled(false);
-		ui->textEdit_discription->setEnabled(true);
-		break;
-	case 2:	// 定时定压
-		ui->lineEdit_methodName->setEnabled(true);
-		ui->lineEdit_standard->setEnabled(true);
-		ui->lineEdit_pressureRate->setEnabled(true);
-		ui->lineEdit_setTime->setEnabled(true);
-		ui->lineEdit_targetPressure->setEnabled(true);
-		ui->lineEdit_pressureCycle->setEnabled(false);
-		ui->lineEdit_pressureHolding->setEnabled(false);
-		ui->textEdit_discription->setEnabled(true);
-		break;
-	case 3:	// 绕曲松弛
-		ui->lineEdit_methodName->setEnabled(true);
-		ui->lineEdit_standard->setEnabled(true);
-		ui->lineEdit_pressureRate->setEnabled(true);
-		ui->lineEdit_setTime->setEnabled(false);
-		ui->lineEdit_targetPressure->setEnabled(true);
-		ui->lineEdit_pressureCycle->setEnabled(true);
-		ui->lineEdit_pressureHolding->setEnabled(true);
-		ui->textEdit_discription->setEnabled(true);
-		break;
-	case 4:	// 渗水漏水
-		ui->lineEdit_methodName->setEnabled(true);
-		ui->lineEdit_standard->setEnabled(true);
-		ui->lineEdit_pressureRate->setEnabled(true);
-		ui->lineEdit_setTime->setEnabled(true);
-		ui->lineEdit_targetPressure->setEnabled(true);
-		ui->lineEdit_pressureCycle->setEnabled(false);
-		ui->lineEdit_pressureHolding->setEnabled(false);
-		ui->textEdit_discription->setEnabled(true);
-		break;
+		ui->textEdit_discription->setEnabled(false);
 	default:
 		break;
 	}
@@ -746,6 +767,8 @@ void Widget::OnLoginAccepted(int id)
 	}
 
 	UpdateAccountList();
+
+	UpdateTestMethodList();
 }
 
 
@@ -935,6 +958,290 @@ void Widget::OnBtnModifyAccountClicked()
 	{
 		m_accountEditState = Editable;
 		UpdateAcountInfoUI(m_accountEditState);
+	}
+}
+
+
+/*
+* 参数：
+* 返回：
+* 功能：点击测试方法列表时，显示对应的测试方法参数
+*/
+void Widget::OnMethodListItemClicked(const QModelIndex &index)
+{
+	bool state = false;
+	int i = index.row();
+	STRUCT_MethodParam method;
+	
+	// 点击列表内容，切换到非编辑状态
+	m_methodEditState = Disable;
+	UpdateMethodInfoUI(m_methodEditState);
+
+	state = m_pMethodParam->GetMethodInfo(i, method);
+
+	if (!state)
+	{
+		ui->label_testMethodMessage->setText(m_pMethodParam->GetMessageList()[0]);
+		return;
+	}
+
+	ui->lineEdit_methodName->setText(method.name);
+	ui->comboBox_plan->setCurrentIndex(method.plan);
+	ui->lineEdit_standard->setText(method.standard);
+	ui->textEdit_discription->setText(method.discription);
+	ui->comboBox_unit->setCurrentIndex(method.uint);
+
+	// 根据测试方法类型显示测试方法参数
+	switch (method.plan)
+	{
+	case 0:	// 持续增压
+		ui->lineEdit_pressureRate->setText(QString::number(method.rate));
+		break;
+	case 1:	// 定时计压
+		ui->lineEdit_pressureRate->setText(QString::number(method.rate));
+		ui->lineEdit_setTime->setText(QString::number(method.timing));
+		break;
+	case 2:	// 定时定压
+		ui->lineEdit_pressureRate->setText(QString::number(method.rate));
+		ui->lineEdit_setTime->setText(QString::number(method.timing));
+		ui->lineEdit_targetPressure->setText(QString::number(method.pressure));
+		break;
+	case 3:	// 绕曲松弛
+		ui->lineEdit_pressureRate->setText(QString::number(method.rate));
+		ui->lineEdit_targetPressure->setText(QString::number(method.pressure));
+		ui->lineEdit_pressureCycle->setText(QString::number(method.cycle));
+		ui->lineEdit_pressureHolding->setText(QString::number(method.holdingTime));
+		break;
+	case 4:	// 渗水漏水
+		ui->lineEdit_pressureRate->setText(QString::number(method.rate));
+		ui->lineEdit_setTime->setText(QString::number(method.timing));
+		ui->lineEdit_targetPressure->setText(QString::number(method.pressure));
+		break;
+	default:
+		ui->label_testMethodMessage->setText(QStringLiteral("测试方法参数错误！"));
+		break;
+	}
+}
+
+
+/*
+* 参数：
+* 返回：
+* 功能：新增测试方法按钮槽函数
+*/
+void Widget::OnBtnNewMethodClicked()
+{
+	if (New != m_methodEditState)
+	{
+		m_methodEditState = New;
+		UpdateMethodInfoUI(m_methodEditState);
+	}
+}
+
+
+/*
+* 参数：index--选择的下拉框项索引
+* 返回：
+* 功能：测试方案下拉框选择改变槽函数
+*/
+void Widget::OnCombMethodPlanChanged(int index)
+{
+	// 非编辑状态，无需更新编辑状态
+	if (Disable == m_methodEditState)
+	{
+		return;
+	}
+	switch (index)
+	{
+	case 0:	// 持续增压
+		ui->lineEdit_setTime->clear();
+		ui->lineEdit_setTime->setEnabled(false);
+		ui->lineEdit_targetPressure->clear();
+		ui->lineEdit_targetPressure->setEnabled(false);
+		ui->lineEdit_pressureCycle->clear();
+		ui->lineEdit_pressureCycle->setEnabled(false);
+		ui->lineEdit_pressureHolding->clear();
+		ui->lineEdit_pressureHolding->setEnabled(false);
+		break;
+	case 1:	// 定时计压
+		ui->lineEdit_setTime->setEnabled(true);
+		ui->lineEdit_targetPressure->clear();
+		ui->lineEdit_targetPressure->setEnabled(false);
+		ui->lineEdit_pressureCycle->clear();
+		ui->lineEdit_pressureCycle->setEnabled(false);
+		ui->lineEdit_pressureHolding->clear();
+		ui->lineEdit_pressureHolding->setEnabled(false);
+		break;
+	case 2:	// 定时定压
+		ui->lineEdit_setTime->setEnabled(true);
+		ui->lineEdit_targetPressure->setEnabled(true);
+		ui->lineEdit_pressureCycle->clear();
+		ui->lineEdit_pressureCycle->setEnabled(false);
+		ui->lineEdit_pressureHolding->clear();
+		ui->lineEdit_pressureHolding->setEnabled(false);
+		break;
+	case 3:	// 绕曲松弛
+		ui->lineEdit_setTime->clear();
+		ui->lineEdit_setTime->setEnabled(false);
+		ui->lineEdit_targetPressure->setEnabled(true);
+		ui->lineEdit_pressureCycle->setEnabled(true);
+		ui->lineEdit_pressureHolding->setEnabled(true);
+		break;
+	case 4:	// 渗水漏水
+		ui->lineEdit_setTime->setEnabled(true);
+		ui->lineEdit_targetPressure->setEnabled(true);
+		ui->lineEdit_pressureCycle->clear();
+		ui->lineEdit_pressureCycle->setEnabled(false);
+		ui->lineEdit_pressureHolding->clear();
+		ui->lineEdit_pressureHolding->setEnabled(false);
+		break;
+	default:
+		break;
+	}
+}
+
+
+/*
+* 参数：
+* 返回：
+* 功能：保存测试方法参数按钮槽函数
+*/
+void Widget::OnBtnSaveMethodClicked()
+{
+	// 非编辑状态，不需要保存数据
+	if (Disable == m_methodEditState)
+	{
+		return;
+	}
+
+	int index = ui->comboBox_plan->currentIndex();
+	STRUCT_MethodParam method;
+	bool state = false;
+
+	method.name = ui->lineEdit_methodName->text();
+	method.plan = index;
+	method.standard = ui->lineEdit_standard->text();
+	method.discription = ui->textEdit_discription->toPlainText();
+	method.uint = ui->comboBox_unit->currentIndex();
+
+	method.rate = ui->lineEdit_pressureRate->text().toDouble();
+	method.timing = ui->lineEdit_setTime->text().toDouble();
+	method.pressure = ui->lineEdit_targetPressure->text().toDouble();
+	method.cycle = ui->lineEdit_pressureCycle->text().toInt();
+	method.holdingTime = ui->lineEdit_pressureHolding->text().toDouble();
+
+	if (method.name.isEmpty())
+	{
+		ui->label_testMethodMessage->setText(QStringLiteral("方法名称不能为空！"));
+		return;
+	}
+
+	// 检查参数是否正确
+	switch (index)
+	{
+	case 0:	// 持续增压
+		if (method.rate < 0.01)
+		{
+			ui->label_testMethodMessage->setText(QStringLiteral("请设置正确的增压速率值！"));
+			return;
+		}
+		break;
+	case 1:	// 定时计压
+		if (method.rate < 0.01)
+		{
+			ui->label_testMethodMessage->setText(QStringLiteral("请设置正确的增压速率值！"));
+			return;
+		}
+
+		if (method.timing < 0.01)
+		{
+			ui->label_testMethodMessage->setText(QStringLiteral("请设置正确的定时时间值！"));
+			return;
+		}
+		break;
+	case 2:	// 定时定压
+		if (method.rate < 0.01)
+		{
+			ui->label_testMethodMessage->setText(QStringLiteral("请设置正确的增压速率值！"));
+			return;
+		}
+
+		if (method.timing < 0.01)
+		{
+			ui->label_testMethodMessage->setText(QStringLiteral("请设置正确的定时时间值！"));
+			return;
+		}
+
+		if (method.pressure < 0.01)
+		{
+			ui->label_testMethodMessage->setText(QStringLiteral("请设置正确的目标压强值！"));
+			return;
+		}
+		break;
+	case 3:	// 绕曲松弛
+		if (method.rate < 0.01)
+		{
+			ui->label_testMethodMessage->setText(QStringLiteral("请设置正确的增压速率值！"));
+			return;
+		}
+
+		if (method.pressure < 0.01)
+		{
+			ui->label_testMethodMessage->setText(QStringLiteral("请设置正确的目标压强值！"));
+			return;
+		}
+
+		if (method.cycle < 1)
+		{
+			ui->label_testMethodMessage->setText(QStringLiteral("请设置正确的松绕周期值！"));
+			return;
+		}
+
+		if (method.holdingTime < 0.01)
+		{
+			ui->label_testMethodMessage->setText(QStringLiteral("请设置正确的保压时间值！"));
+			return;
+		}
+		break;
+	case 4:	// 渗水漏水
+		if (method.rate < 0.01)
+		{
+			ui->label_testMethodMessage->setText(QStringLiteral("请设置正确的增压速率值！"));
+			return;
+		}
+
+		if (method.timing < 0.01)
+		{
+			ui->label_testMethodMessage->setText(QStringLiteral("请设置正确的定时时间值！"));
+			return;
+		}
+
+		if (method.pressure < 0.01)
+		{
+			ui->label_testMethodMessage->setText(QStringLiteral("请设置正确的目标压强值！"));
+			return;
+		}
+		break;
+	default:
+		break;
+	}
+
+	state = m_pMethodParam->AddMethod(method);
+
+	if (state)
+	{
+		ui->label_testMethodMessage->setText(QStringLiteral("新增测试方法成功！"));
+
+		// 更新列表
+		UpdateTestMethodList();
+
+		// 推出编辑状态
+		m_methodEditState = Disable;
+		UpdateMethodInfoUI(m_methodEditState);
+	}
+	else
+	{
+		ui->label_testMethodMessage->setText(m_pMethodParam->GetMessageList()[0]);
 	}
 }
 

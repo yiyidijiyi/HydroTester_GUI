@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-14
-* 最后修改：2016-09-14
+* 最后修改：2016-09-15
 * 作      者：syf
 * 描      述：
 */
@@ -25,6 +25,7 @@ public:
 	MethodParam(QObject *parent = 0);
 	~MethodParam();
 
+	QStringList& GetMessageList();
 	bool GetMethodList(QStringList &methodList);
 	bool GetMethodInfo(int index, STRUCT_MethodParam &method);
 	bool AddMethod(const STRUCT_MethodParam &method);

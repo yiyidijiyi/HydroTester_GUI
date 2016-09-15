@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-02
-* 最后修改：2016-09-14
+* 最后修改：2016-09-15
 * 作      者：syf
 * 描      述：
 */
@@ -17,6 +17,7 @@
 
 #include "common.h"
 #include "useraccount.h"
+#include "methodparam.h"
 #include "ui_widget.h"
 
 // 自定义标题栏大小
@@ -67,13 +68,22 @@ public:
 	Widget::InterfaceIndex GetInterfaceIndex(void);
 
 private:
+	/*
+	* 更新信息列表
+	*/
 	void UpdateAccountList();
+	void UpdateTestMethodList();
 	
-
-	// 更新UI状态
+	/*
+	* 更新UI状态
+	*/
 	void UpdateAcountInfoUI(UIState state);
 	void UpdateMethodInfoUI(UIState state);
-	void UpdateEditableMethodInfoUI(int index);
+
+	/*
+	* 设置值超限判断
+	*/
+	bool IsPressureOverload(double p);
 
 protected slots:
 	void OnBtnMinClicked();
@@ -83,24 +93,44 @@ protected slots:
 	void mouseReleaseEvent(QMouseEvent* event);
 
 public slots:
+	/*
+	* 操作界面切换
+	*/
 	void OnBtnTestInterfaceClicked();
 	void OnBtnTestMethodClicked();
 	void OnBtnReportQueryClicked();
 	void OnBtnAdvanceClicked();
 	void OnBtnHelpClicked();
 
+	/*
+	* 测试界面操作
+	*/
 	void OnBtnChartVideoClicked();
 	void OnBtnChartCurveClicked();
 	void OnBtnChartReportClicked();
 	void OnBtnChartPrintClicked();
 	
+	/*
+	* 登录成功
+	*/
 	void OnLoginAccepted(int id);
 
+	/*
+	* 帐号信息操作
+	*/
 	void OnAccountListItemClicked(const QModelIndex &index);
 	void OnBtnNewAccountClicked();
 	void OnBtnSaveAccountClicked();
 	void OnBtnDeleteAccountClicked();
 	void OnBtnModifyAccountClicked();
+
+	/*
+	* 测试方法操作
+	*/
+	void OnMethodListItemClicked(const QModelIndex &index);
+	void OnCombMethodPlanChanged(int index);
+	void OnBtnNewMethodClicked();
+	void OnBtnSaveMethodClicked();
 private:
 	Ui::Widget* ui;
 
@@ -113,9 +143,14 @@ private:
 
 	// 用户账号相关
 	QStringListModel	*m_pAccountListModel;
-	STRUCT_Account	m_account;
-	UserAccount			*m_pAccountDB;
-	UIState					m_accountEditState;
+	STRUCT_Account		m_account;
+	UserAccount				*m_pAccountDB;
+	UIState						m_accountEditState;
+
+	// 测试方法相关
+	QStringListModel *m_pMethodListModel;
+	MethodParam	*m_pMethodParam;
+	UIState	m_methodEditState;
 };
 
 #endif // WIDGET_H

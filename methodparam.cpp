@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-14
-* 最后修改：2016-09-14
+* 最后修改：2016-09-15
 * 作      者：syf
 * 描      述：
 */
@@ -28,6 +28,17 @@ MethodParam::MethodParam(QObject *parent)
 MethodParam::~MethodParam()
 {
 
+}
+
+
+/*
+* 参数：
+* 返回：函数调用结果信息列表
+* 功能：返回成员函数调用后的结果信息列表
+*/
+QStringList& MethodParam::GetMessageList()
+{
+	return m_messageList;
 }
 
 
@@ -155,7 +166,7 @@ bool MethodParam::AddMethod(const STRUCT_MethodParam &method)
 
 	if (db.open())
 	{
-		QString strQuery = "INSERT INTO   parameters  (name, plan, standard, rate, timing, pressure, cycle, holdingTime, uinit, description) \
+		QString strQuery = "INSERT INTO   parameters (name, plan, standard, rate, timing, pressure, cycle, holdingTime, unit, description) \
 											VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		QSqlQuery query(strQuery, db);
 		query.bindValue(0, method.name);
