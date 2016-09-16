@@ -479,7 +479,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -722,25 +722,9 @@
      </property>
      <item>
       <property name="text">
-       <string>方法选择</string>
+       <string>请选择测试方法</string>
       </property>
      </item>
-    </widget>
-    <widget class="QFrame" name="frame_3">
-     <property name="geometry">
-      <rect>
-       <x>13</x>
-       <y>70</y>
-       <width>396</width>
-       <height>430</height>
-      </rect>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Plain</enum>
-     </property>
     </widget>
     <widget class="QTabWidget" name="tabWidget_testInterface">
      <property name="geometry">
@@ -934,6 +918,35 @@
       </property>
      </widget>
     </widget>
+    <widget class="QLabel" name="label_testInterfaceMessage">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>5</y>
+       <width>1000</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="textEdit_methodInfo">
+     <property name="geometry">
+      <rect>
+       <x>13</x>
+       <y>70</y>
+       <width>396</width>
+       <height>430</height>
+      </rect>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
+     </property>
+    </widget>
     <zorder>tabWidget_testInterface</zorder>
     <zorder>line_15</zorder>
     <zorder>label_19</zorder>
@@ -951,9 +964,10 @@
     <zorder>pushButton_startStop</zorder>
     <zorder>pushButton_pauseConti</zorder>
     <zorder>pushButton_openCloseCamera</zorder>
-    <zorder>frame_3</zorder>
     <zorder>comboBox_selMethod</zorder>
     <zorder>frame_4</zorder>
+    <zorder>label_testInterfaceMessage</zorder>
+    <zorder>textEdit_methodInfo</zorder>
    </widget>
    <widget class="QWidget" name="tab_2">
     <attribute name="title">
@@ -1014,7 +1028,7 @@
       </rect>
      </property>
      <property name="frameShape">
-      <enum>QFrame::Panel</enum>
+      <enum>QFrame::StyledPanel</enum>
      </property>
      <property name="frameShadow">
       <enum>QFrame::Plain</enum>
@@ -1405,7 +1419,7 @@
       </item>
      </widget>
     </widget>
-    <widget class="QPushButton" name="pushButton_methodSave">
+    <widget class="QPushButton" name="pushButton_saveMethod">
      <property name="geometry">
       <rect>
        <x>1305</x>
@@ -1453,7 +1467,10 @@
       </rect>
      </property>
      <property name="frameShape">
-      <enum>QFrame::Panel</enum>
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Plain</enum>
      </property>
      <property name="lineWidth">
       <number>1</number>

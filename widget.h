@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-02
-* 最后修改：2016-09-15
+* 最后修改：2016-09-16
 * 作      者：syf
 * 描      述：
 */
@@ -94,6 +94,11 @@ protected slots:
 
 public slots:
 	/*
+	* 登录成功
+	*/
+	void OnLoginAccepted(int id);
+
+	/*
 	* 操作界面切换
 	*/
 	void OnBtnTestInterfaceClicked();
@@ -109,11 +114,17 @@ public slots:
 	void OnBtnChartCurveClicked();
 	void OnBtnChartReportClicked();
 	void OnBtnChartPrintClicked();
-	
+	void OnCombSelMethodChanged(int index);
+
 	/*
-	* 登录成功
+	* 测试方法操作
 	*/
-	void OnLoginAccepted(int id);
+	void OnMethodListItemClicked(const QModelIndex &index);
+	void OnCombMethodPlanChanged(int index);
+	void OnBtnNewMethodClicked();
+	void OnBtnSaveMethodClicked();
+	void OnBtnDeleteMethodClicked();
+	void OnBtnModifyMethodClicked();
 
 	/*
 	* 帐号信息操作
@@ -123,14 +134,6 @@ public slots:
 	void OnBtnSaveAccountClicked();
 	void OnBtnDeleteAccountClicked();
 	void OnBtnModifyAccountClicked();
-
-	/*
-	* 测试方法操作
-	*/
-	void OnMethodListItemClicked(const QModelIndex &index);
-	void OnCombMethodPlanChanged(int index);
-	void OnBtnNewMethodClicked();
-	void OnBtnSaveMethodClicked();
 private:
 	Ui::Widget* ui;
 
@@ -151,6 +154,7 @@ private:
 	QStringListModel *m_pMethodListModel;
 	MethodParam	*m_pMethodParam;
 	UIState	m_methodEditState;
+	int	m_methodListIndex;
 };
 
 #endif // WIDGET_H

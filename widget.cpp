@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-02
-* 最后修改：2016-09-15
+* 最后修改：2016-09-16
 * 作      者：syf
 * 描      述：
 */
@@ -22,6 +22,7 @@ Widget::Widget(QWidget *parent)
 	, m_chartIndex(Video)
 	, m_accountEditState(Disable)
 	, m_methodEditState(Disable)
+	, m_methodListIndex(-1)
 {
 	CreateUi();
 
@@ -59,7 +60,9 @@ Widget::Widget(QWidget *parent)
 	connect(ui->listView_methodList, &QListView::clicked, this, &Widget::OnMethodListItemClicked);
 	connect(ui->pushButton_addMethod, &QPushButton::clicked, this, &Widget::OnBtnNewMethodClicked);
 	connect(ui->comboBox_plan, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &Widget::OnCombMethodPlanChanged);
-	connect(ui->pushButton_methodSave, &QPushButton::clicked, this, &Widget::OnBtnSaveMethodClicked);
+	connect(ui->pushButton_saveMethod, &QPushButton::clicked, this, &Widget::OnBtnSaveMethodClicked);
+	connect(ui->pushButton_delMethod, &QPushButton::clicked, this, &Widget::OnBtnDeleteMethodClicked);
+	connect(ui->pushButton_modifyMethod, &QPushButton::clicked, this, &Widget::OnBtnModifyMethodClicked);
 
 	// 账户信息操作
 	connect(ui->listView_accountList, &QListView::clicked, this, &Widget::OnAccountListItemClicked);
@@ -448,6 +451,11 @@ void Widget::UpdateTestMethodList()
 
 	m_pMethodListModel->setStringList(methodList);
 	ui->listView_methodList->setModel(m_pMethodListModel);
+
+	ui->comboBox_selMethod->clear();
+	ui->comboBox_selMethod->addItem(QStringLiteral("请选择测试方法"));
+	ui->comboBox_selMethod->addItems(methodList);
+	ui->comboBox_selMethod->setCurrentIndex(0);
 }
 
 
@@ -547,7 +555,7 @@ void Widget::UpdateMethodInfoUI(UIState state)
 		ui->lineEdit_pressureRate->setEnabled(true);
 		ui->textEdit_discription->setEnabled(true);
 
-		ui->comboBox_unit->setEnabled(true);
+		ui->comboBox_plan->setEnabled(true);
 		index = ui->comboBox_plan->currentIndex();
 		OnCombMethodPlanChanged(index);
 		break;
@@ -748,6 +756,27 @@ void Widget::OnBtnChartReportClicked()
 void Widget::OnBtnChartPrintClicked()
 {
 	
+}
+
+
+/*
+* 参数：
+* 返回：
+* 功能：根据选择的测试方法，显示测试方法信息
+*/
+void Widget::OnCombSelMethodChanged(int index)
+{
+	ui->textEdit_methodInfo->clear();
+
+	if (0 == index)
+	{
+		return;
+	}
+
+	STRUCT_MethodParam method;
+	bool state = false;
+
+	state = m_pMethodParam->GetMethodInfo(index - 1, method);
 }
 
 
@@ -970,14 +999,14 @@ void Widget::OnBtnModifyAccountClicked()
 void Widget::OnMethodListItemClicked(const QModelIndex &index)
 {
 	bool state = false;
-	int i = index.row();
+	m_methodListIndex = index.row();
 	STRUCT_MethodParam method;
 	
 	// 点击列表内容，切换到非编辑状态
 	m_methodEditState = Disable;
 	UpdateMethodInfoUI(m_methodEditState);
 
-	state = m_pMethodParam->GetMethodInfo(i, method);
+	state = m_pMethodParam->GetMethodInfo(m_methodListIndex, method);
 
 	if (!state)
 	{
@@ -996,18 +1025,28 @@ void Widget::OnMethodListItemClicked(const QModelIndex &index)
 	{
 	case 0:	// 持续增压
 		ui->lineEdit_pressureRate->setText(QString::number(method.rate));
+		ui->lineEdit_setTime->clear();
+		ui->lineEdit_targetPressure->clear();
+		ui->lineEdit_pressureCycle->clear();
+		ui->lineEdit_pressureHolding->clear();
 		break;
 	case 1:	// 定时计压
 		ui->lineEdit_pressureRate->setText(QString::number(method.rate));
 		ui->lineEdit_setTime->setText(QString::number(method.timing));
+		ui->lineEdit_targetPressure->clear();
+		ui->lineEdit_pressureCycle->clear();
+		ui->lineEdit_pressureHolding->clear();
 		break;
 	case 2:	// 定时定压
 		ui->lineEdit_pressureRate->setText(QString::number(method.rate));
 		ui->lineEdit_setTime->setText(QString::number(method.timing));
 		ui->lineEdit_targetPressure->setText(QString::number(method.pressure));
+		ui->lineEdit_pressureCycle->clear();
+		ui->lineEdit_pressureHolding->clear();
 		break;
 	case 3:	// 绕曲松弛
 		ui->lineEdit_pressureRate->setText(QString::number(method.rate));
+		ui->lineEdit_setTime->clear();
 		ui->lineEdit_targetPressure->setText(QString::number(method.pressure));
 		ui->lineEdit_pressureCycle->setText(QString::number(method.cycle));
 		ui->lineEdit_pressureHolding->setText(QString::number(method.holdingTime));
@@ -1016,6 +1055,8 @@ void Widget::OnMethodListItemClicked(const QModelIndex &index)
 		ui->lineEdit_pressureRate->setText(QString::number(method.rate));
 		ui->lineEdit_setTime->setText(QString::number(method.timing));
 		ui->lineEdit_targetPressure->setText(QString::number(method.pressure));
+		ui->lineEdit_pressureCycle->clear();
+		ui->lineEdit_pressureHolding->clear();
 		break;
 	default:
 		ui->label_testMethodMessage->setText(QStringLiteral("测试方法参数错误！"));
@@ -1051,6 +1092,7 @@ void Widget::OnCombMethodPlanChanged(int index)
 	{
 		return;
 	}
+
 	switch (index)
 	{
 	case 0:	// 持续增压
@@ -1226,23 +1268,127 @@ void Widget::OnBtnSaveMethodClicked()
 		break;
 	}
 
-	state = m_pMethodParam->AddMethod(method);
-
-	if (state)
+	if (New == m_methodEditState)
 	{
-		ui->label_testMethodMessage->setText(QStringLiteral("新增测试方法成功！"));
+		state = m_pMethodParam->AddMethod(method);
 
-		// 更新列表
-		UpdateTestMethodList();
+		if (state)
+		{
+			ui->label_testMethodMessage->setText(QStringLiteral("新增测试方法成功！"));
 
-		// 推出编辑状态
-		m_methodEditState = Disable;
-		UpdateMethodInfoUI(m_methodEditState);
+			// 更新列表
+			UpdateTestMethodList();
+
+			// 编辑状态切换为Disable
+			m_methodEditState = Disable;
+			UpdateMethodInfoUI(m_methodEditState);
+		}
+		else
+		{
+			ui->label_testMethodMessage->setText(m_pMethodParam->GetMessageList()[0]);
+		}
+	}
+	else if (Editable == m_methodEditState)
+	{
+		state = m_pMethodParam->UpdateMethodParam(m_methodListIndex, method);
+
+		if (state)
+		{
+			ui->label_testMethodMessage->setText(QStringLiteral("修改测试方法成功！"));
+
+			// 更新列表
+			UpdateTestMethodList();
+
+			// 编辑状态切换为Disable
+			m_methodEditState = Disable;
+			UpdateMethodInfoUI(m_methodEditState);
+		}
+		else
+		{
+			ui->label_testMethodMessage->setText(m_pMethodParam->GetMessageList()[0]);
+		}
+	}
+}
+
+
+/*
+* 参数：
+* 返回：
+* 功能：根据列表中选中的条目，删除一条测试方法
+*/
+void Widget::OnBtnDeleteMethodClicked()
+{
+	// 新增编辑时，删除按钮无效
+	if (New == m_methodEditState)
+	{
+		return;
+	}
+
+	if (m_methodListIndex >= 0)
+	{
+		bool state = false;
+
+		state = m_pMethodParam->DeleteMethod(m_methodListIndex);
+
+		if (state)
+		{
+			ui->label_testMethodMessage->setText(QStringLiteral("删除测试方法成功！"));
+
+			// 更新列表
+			UpdateTestMethodList();
+
+			// 索引设定为未选中状态，并清除原有的参数显示
+			m_methodListIndex = -1;
+
+			ui->lineEdit_methodName->clear();
+			ui->lineEdit_standard->clear();
+			ui->lineEdit_pressureRate->clear();
+			ui->lineEdit_setTime->clear();
+			ui->lineEdit_targetPressure->clear();
+			ui->lineEdit_pressureCycle->clear();
+			ui->lineEdit_pressureHolding->clear();
+			ui->textEdit_discription->clear();
+
+			ui->comboBox_plan->setCurrentIndex(0);
+			ui->comboBox_unit->setCurrentIndex(0);
+
+			// 编辑状态切换为Disable
+			m_methodEditState = Disable;
+			UpdateMethodInfoUI(m_methodEditState);
+		}
+		else
+		{
+			ui->label_testMethodMessage->setText(m_pMethodParam->GetMessageList()[0]);
+		}
 	}
 	else
 	{
-		ui->label_testMethodMessage->setText(m_pMethodParam->GetMessageList()[0]);
+		ui->label_testMethodMessage->setText(QStringLiteral("未选中有效的测试方法条目！"));
 	}
+}
+
+
+/*
+* 参数：
+* 返回：
+* 功能：修改测试方法参数按钮槽函数
+*/
+void Widget::OnBtnModifyMethodClicked()
+{
+	if (m_methodListIndex < 0)
+	{
+		ui->label_testMethodMessage->setText(QStringLiteral("未选中有效的测试方法条目！"));
+		return;
+	}
+
+	// 新增或修改编辑状态下，修改按钮无效
+	if ((New == m_methodEditState) || (Editable == m_methodEditState))
+	{
+		return;
+	}
+
+	m_methodEditState = Editable;
+	UpdateMethodInfoUI(m_methodEditState);
 }
 
 

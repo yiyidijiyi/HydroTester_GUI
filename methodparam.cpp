@@ -263,7 +263,7 @@ bool MethodParam::UpdateMethodParam(int index, const STRUCT_MethodParam &method)
 	if (db.open())
 	{
 		QString strQuery = "UPDATE parameters SET name = ?, plan = ?, standard = ?, rate = ?, timing = ?, pressure= ?, \
-						   cycle = ?, holdingTime = ?, uinit = ?, description = ?  WHERE id = ?";
+						   cycle = ?, holdingTime = ?, unit = ?, description = ?  WHERE id = ?";
 		QSqlQuery query(strQuery, db);
 		query.bindValue(0, method.name);
 		query.bindValue(1, method.plan);
