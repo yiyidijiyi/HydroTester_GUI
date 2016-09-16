@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_Widget_t {
-    QByteArrayData data[33];
-    char stringdata0[628];
+    QByteArrayData data[34];
+    char stringdata0[654];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -53,15 +53,16 @@ QT_MOC_LITERAL(20, 332, 22), // "OnCombSelMethodChanged"
 QT_MOC_LITERAL(21, 355, 5), // "index"
 QT_MOC_LITERAL(22, 361, 23), // "OnMethodListItemClicked"
 QT_MOC_LITERAL(23, 385, 23), // "OnCombMethodPlanChanged"
-QT_MOC_LITERAL(24, 409, 21), // "OnBtnNewMethodClicked"
-QT_MOC_LITERAL(25, 431, 22), // "OnBtnSaveMethodClicked"
-QT_MOC_LITERAL(26, 454, 24), // "OnBtnDeleteMethodClicked"
-QT_MOC_LITERAL(27, 479, 24), // "OnBtnModifyMethodClicked"
-QT_MOC_LITERAL(28, 504, 24), // "OnAccountListItemClicked"
-QT_MOC_LITERAL(29, 529, 22), // "OnBtnNewAccountClicked"
-QT_MOC_LITERAL(30, 552, 23), // "OnBtnSaveAccountClicked"
-QT_MOC_LITERAL(31, 576, 25), // "OnBtnDeleteAccountClicked"
-QT_MOC_LITERAL(32, 602, 25) // "OnBtnModifyAccountClicked"
+QT_MOC_LITERAL(24, 409, 25), // "OnCombPressureUnitChanged"
+QT_MOC_LITERAL(25, 435, 21), // "OnBtnNewMethodClicked"
+QT_MOC_LITERAL(26, 457, 22), // "OnBtnSaveMethodClicked"
+QT_MOC_LITERAL(27, 480, 24), // "OnBtnDeleteMethodClicked"
+QT_MOC_LITERAL(28, 505, 24), // "OnBtnModifyMethodClicked"
+QT_MOC_LITERAL(29, 530, 24), // "OnAccountListItemClicked"
+QT_MOC_LITERAL(30, 555, 22), // "OnBtnNewAccountClicked"
+QT_MOC_LITERAL(31, 578, 23), // "OnBtnSaveAccountClicked"
+QT_MOC_LITERAL(32, 602, 25), // "OnBtnDeleteAccountClicked"
+QT_MOC_LITERAL(33, 628, 25) // "OnBtnModifyAccountClicked"
 
     },
     "Widget\0OnBtnMinClicked\0\0OnBtnCloseClicked\0"
@@ -74,6 +75,7 @@ QT_MOC_LITERAL(32, 602, 25) // "OnBtnModifyAccountClicked"
     "OnBtnChartReportClicked\0OnBtnChartPrintClicked\0"
     "OnCombSelMethodChanged\0index\0"
     "OnMethodListItemClicked\0OnCombMethodPlanChanged\0"
+    "OnCombPressureUnitChanged\0"
     "OnBtnNewMethodClicked\0OnBtnSaveMethodClicked\0"
     "OnBtnDeleteMethodClicked\0"
     "OnBtnModifyMethodClicked\0"
@@ -90,7 +92,7 @@ static const uint qt_meta_data_Widget[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      27,   14, // methods
+      28,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -98,33 +100,34 @@ static const uint qt_meta_data_Widget[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,  149,    2, 0x09 /* Protected */,
-       3,    0,  150,    2, 0x09 /* Protected */,
-       4,    1,  151,    2, 0x09 /* Protected */,
-       7,    1,  154,    2, 0x09 /* Protected */,
-       8,    1,  157,    2, 0x09 /* Protected */,
-       9,    1,  160,    2, 0x0a /* Public */,
-      11,    0,  163,    2, 0x0a /* Public */,
-      12,    0,  164,    2, 0x0a /* Public */,
-      13,    0,  165,    2, 0x0a /* Public */,
-      14,    0,  166,    2, 0x0a /* Public */,
-      15,    0,  167,    2, 0x0a /* Public */,
-      16,    0,  168,    2, 0x0a /* Public */,
-      17,    0,  169,    2, 0x0a /* Public */,
-      18,    0,  170,    2, 0x0a /* Public */,
-      19,    0,  171,    2, 0x0a /* Public */,
-      20,    1,  172,    2, 0x0a /* Public */,
-      22,    1,  175,    2, 0x0a /* Public */,
-      23,    1,  178,    2, 0x0a /* Public */,
-      24,    0,  181,    2, 0x0a /* Public */,
-      25,    0,  182,    2, 0x0a /* Public */,
-      26,    0,  183,    2, 0x0a /* Public */,
-      27,    0,  184,    2, 0x0a /* Public */,
-      28,    1,  185,    2, 0x0a /* Public */,
-      29,    0,  188,    2, 0x0a /* Public */,
-      30,    0,  189,    2, 0x0a /* Public */,
-      31,    0,  190,    2, 0x0a /* Public */,
-      32,    0,  191,    2, 0x0a /* Public */,
+       1,    0,  154,    2, 0x09 /* Protected */,
+       3,    0,  155,    2, 0x09 /* Protected */,
+       4,    1,  156,    2, 0x09 /* Protected */,
+       7,    1,  159,    2, 0x09 /* Protected */,
+       8,    1,  162,    2, 0x09 /* Protected */,
+       9,    1,  165,    2, 0x0a /* Public */,
+      11,    0,  168,    2, 0x0a /* Public */,
+      12,    0,  169,    2, 0x0a /* Public */,
+      13,    0,  170,    2, 0x0a /* Public */,
+      14,    0,  171,    2, 0x0a /* Public */,
+      15,    0,  172,    2, 0x0a /* Public */,
+      16,    0,  173,    2, 0x0a /* Public */,
+      17,    0,  174,    2, 0x0a /* Public */,
+      18,    0,  175,    2, 0x0a /* Public */,
+      19,    0,  176,    2, 0x0a /* Public */,
+      20,    1,  177,    2, 0x0a /* Public */,
+      22,    1,  180,    2, 0x0a /* Public */,
+      23,    1,  183,    2, 0x0a /* Public */,
+      24,    1,  186,    2, 0x0a /* Public */,
+      25,    0,  189,    2, 0x0a /* Public */,
+      26,    0,  190,    2, 0x0a /* Public */,
+      27,    0,  191,    2, 0x0a /* Public */,
+      28,    0,  192,    2, 0x0a /* Public */,
+      29,    1,  193,    2, 0x0a /* Public */,
+      30,    0,  196,    2, 0x0a /* Public */,
+      31,    0,  197,    2, 0x0a /* Public */,
+      32,    0,  198,    2, 0x0a /* Public */,
+      33,    0,  199,    2, 0x0a /* Public */,
 
  // slots: parameters
     QMetaType::Void,
@@ -144,6 +147,7 @@ static const uint qt_meta_data_Widget[] = {
     QMetaType::Void,
     QMetaType::Void, QMetaType::Int,   21,
     QMetaType::Void, QMetaType::QModelIndex,   21,
+    QMetaType::Void, QMetaType::Int,   21,
     QMetaType::Void, QMetaType::Int,   21,
     QMetaType::Void,
     QMetaType::Void,
@@ -182,15 +186,16 @@ void Widget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
         case 15: _t->OnCombSelMethodChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 16: _t->OnMethodListItemClicked((*reinterpret_cast< const QModelIndex(*)>(_a[1]))); break;
         case 17: _t->OnCombMethodPlanChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 18: _t->OnBtnNewMethodClicked(); break;
-        case 19: _t->OnBtnSaveMethodClicked(); break;
-        case 20: _t->OnBtnDeleteMethodClicked(); break;
-        case 21: _t->OnBtnModifyMethodClicked(); break;
-        case 22: _t->OnAccountListItemClicked((*reinterpret_cast< const QModelIndex(*)>(_a[1]))); break;
-        case 23: _t->OnBtnNewAccountClicked(); break;
-        case 24: _t->OnBtnSaveAccountClicked(); break;
-        case 25: _t->OnBtnDeleteAccountClicked(); break;
-        case 26: _t->OnBtnModifyAccountClicked(); break;
+        case 18: _t->OnCombPressureUnitChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 19: _t->OnBtnNewMethodClicked(); break;
+        case 20: _t->OnBtnSaveMethodClicked(); break;
+        case 21: _t->OnBtnDeleteMethodClicked(); break;
+        case 22: _t->OnBtnModifyMethodClicked(); break;
+        case 23: _t->OnAccountListItemClicked((*reinterpret_cast< const QModelIndex(*)>(_a[1]))); break;
+        case 24: _t->OnBtnNewAccountClicked(); break;
+        case 25: _t->OnBtnSaveAccountClicked(); break;
+        case 26: _t->OnBtnDeleteAccountClicked(); break;
+        case 27: _t->OnBtnModifyAccountClicked(); break;
         default: ;
         }
     }
@@ -221,13 +226,13 @@ int Widget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 27)
+        if (_id < 28)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 27;
+        _id -= 28;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 27)
+        if (_id < 28)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 27;
+        _id -= 28;
     }
     return _id;
 }

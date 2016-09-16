@@ -463,7 +463,7 @@ public:
         pushButton_print->setFlat(true);
         label_testInterfaceMessage = new QLabel(tab);
         label_testInterfaceMessage->setObjectName(QStringLiteral("label_testInterfaceMessage"));
-        label_testInterfaceMessage->setGeometry(QRect(120, 5, 1000, 30));
+        label_testInterfaceMessage->setGeometry(QRect(120, 5, 800, 30));
         textEdit_methodInfo = new QTextEdit(tab);
         textEdit_methodInfo->setObjectName(QStringLiteral("textEdit_methodInfo"));
         textEdit_methodInfo->setGeometry(QRect(13, 70, 396, 430));

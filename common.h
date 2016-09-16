@@ -18,10 +18,10 @@ typedef enum {
 
 // 压强单位
 typedef enum{
-	Pa				= 1,
-	kPa			= 2,
-	mBar			= 3,
-	mmH2O	= 4
+	Pa			= 0,
+	kPa			= 1,
+	mBar		= 2,
+	mmH2O	= 3
 }ENUM_PressureUnit;
 
 // 测试方法

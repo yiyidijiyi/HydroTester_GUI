@@ -85,6 +85,16 @@ private:
 	*/
 	bool IsPressureOverload(double p);
 
+	/*
+	* 压强单位转换
+	*/
+	void ConvertPressureUnit(double &pressure, ENUM_PressureUnit unit0, ENUM_PressureUnit unit1);
+
+	/*
+	* 显示测试方法参数信息
+	*/
+	void ShowMethodParam(const STRUCT_MethodParam &method);
+
 protected slots:
 	void OnBtnMinClicked();
 	void OnBtnCloseClicked();
@@ -121,6 +131,7 @@ public slots:
 	*/
 	void OnMethodListItemClicked(const QModelIndex &index);
 	void OnCombMethodPlanChanged(int index);
+	void OnCombPressureUnitChanged(int index);
 	void OnBtnNewMethodClicked();
 	void OnBtnSaveMethodClicked();
 	void OnBtnDeleteMethodClicked();
@@ -155,6 +166,7 @@ private:
 	MethodParam	*m_pMethodParam;
 	UIState	m_methodEditState;
 	int	m_methodListIndex;
+	int	m_currentUnitIndex;
 };
 
 #endif // WIDGET_H

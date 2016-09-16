@@ -23,6 +23,7 @@ Widget::Widget(QWidget *parent)
 	, m_accountEditState(Disable)
 	, m_methodEditState(Disable)
 	, m_methodListIndex(-1)
+	, m_currentUnitIndex(0)
 {
 	CreateUi();
 
@@ -40,26 +41,32 @@ Widget::Widget(QWidget *parent)
 	m_pMethodListModel = new QStringListModel(this);
 	m_pMethodParam = new MethodParam();
 
-
-	// 链接信号与槽
+	/*
+	* 链接信号与槽
+	*/
+	
 	connect(ui->pushButton_min, &QPushButton::clicked, this, &Widget::OnBtnMinClicked);
 	connect(ui->pushButton_close, &QPushButton::clicked, this, &Widget::OnBtnCloseClicked);
 
+	// 界面切换
 	connect(ui->pushButton_testInterface, &QPushButton::clicked, this, &Widget::OnBtnTestInterfaceClicked);
 	connect(ui->pushButton_testMethod, &QPushButton::clicked, this, &Widget::OnBtnTestMethodClicked);
 	connect(ui->pushButton_advance, &QPushButton::clicked, this, &Widget::OnBtnAdvanceClicked);
 	connect(ui->pushButton_reportQuery, &QPushButton::clicked, this, &Widget::OnBtnReportQueryClicked);
 	connect(ui->pushButton_help, &QPushButton::clicked, this, &Widget::OnBtnHelpClicked);
 
+	// 测试界面操作
 	connect(ui->pushButton_video, &QPushButton::clicked, this, &Widget::OnBtnChartVideoClicked);
 	connect(ui->pushButton_curve, &QPushButton::clicked, this, &Widget::OnBtnChartCurveClicked);
 	connect(ui->pushButton_report, &QPushButton::clicked, this, &Widget::OnBtnChartReportClicked);
 	connect(ui->pushButton_print, &QPushButton::clicked, this, &Widget::OnBtnChartPrintClicked);
+	connect(ui->comboBox_selMethod, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &Widget::OnCombSelMethodChanged);
 
 	// 测试方法操作
 	connect(ui->listView_methodList, &QListView::clicked, this, &Widget::OnMethodListItemClicked);
 	connect(ui->pushButton_addMethod, &QPushButton::clicked, this, &Widget::OnBtnNewMethodClicked);
 	connect(ui->comboBox_plan, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &Widget::OnCombMethodPlanChanged);
+	connect(ui->comboBox_unit, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &Widget::OnCombPressureUnitChanged);
 	connect(ui->pushButton_saveMethod, &QPushButton::clicked, this, &Widget::OnBtnSaveMethodClicked);
 	connect(ui->pushButton_delMethod, &QPushButton::clicked, this, &Widget::OnBtnDeleteMethodClicked);
 	connect(ui->pushButton_modifyMethod, &QPushButton::clicked, this, &Widget::OnBtnModifyMethodClicked);
@@ -166,6 +173,9 @@ void Widget::CreateUi()
 
 	// 图表显示功能选择
 	SwitchChart(m_chartIndex);
+
+	// 设置提示信息样式
+	ui->label_testInterfaceMessage->setStyleSheet("QLabel{color:#ff0000}");
 
 	/*
 	* 设置检测方法界面样式
@@ -522,6 +532,147 @@ bool Widget::IsPressureOverload(double p)
 }
 
 
+void Widget::ConvertPressureUnit(double &pressure, ENUM_PressureUnit unit0, ENUM_PressureUnit unit1)
+{
+	switch (unit0)
+	{
+	case Pa:
+		switch (unit1)
+		{
+		case kPa:
+			pressure /= 1000;
+			break;
+		case mBar:
+			pressure /= 100;
+			break;
+		case mmH2O:
+			pressure /= 9.8;
+			break;
+		default:
+			break;
+		}
+		break;
+	case kPa:
+		switch (unit1)
+		{
+		case Pa:
+			pressure *= 1000;
+			break;
+		case mBar:
+			pressure *= 10;
+			break;
+		case mmH2O:
+			pressure *= (1000 / 9.8);
+			break;
+		default:
+			break;
+		}
+		break;
+	case mBar:
+		switch (unit1)
+		{
+		case Pa:
+			pressure *= 100;
+			break;
+		case kPa:
+			pressure /= 10;
+			break;
+		case mmH2O:
+			pressure *= (100 / 9.8);
+			break;
+		default:
+			break;
+		}
+		break;
+	case mmH2O:
+		switch (unit1)
+		{
+		case Pa:
+			pressure *= 9.8;
+			break;
+		case kPa:
+			pressure *= 0.0098;
+			break;
+		case mBar:
+			pressure *= 0.098;
+			break;
+		default:
+			break;
+		}
+		break;
+	default:
+		break;
+	}
+}
+
+
+/*
+* 参数：method--测试方法参数结合
+* 返回：
+* 功能：根据测试方案，显示参数信息
+*/
+void Widget::ShowMethodParam(const STRUCT_MethodParam &method)
+{
+	ui->textEdit_methodInfo->append(QStringLiteral("方法名称：") + method.name);
+	ui->textEdit_methodInfo->append(QStringLiteral("应用标准：") + method.standard);
+	ui->textEdit_methodInfo->append(QStringLiteral("描述：") + method.discription);
+
+	QString unit;
+
+	switch (method.uint)
+	{
+	case 0:
+		unit = QStringLiteral("Pa(帕)");
+		break;
+	case 1:
+		unit = QStringLiteral("kPa(千帕)");
+		break;
+	case 2:
+		unit = QStringLiteral("mBar(毫巴)");
+		break;
+		unit = QStringLiteral("mmH2O(毫米水柱)");
+	case 3:
+		break;
+	default:
+		break;
+	}
+
+	switch (method.plan)
+	{
+	case 0:
+		ui->textEdit_methodInfo->append(QStringLiteral("测试方法：") + QStringLiteral("持续增压"));
+		ui->textEdit_methodInfo->append(QStringLiteral("增压速率：") + QString::number(method.rate) + unit + QStringLiteral("/分钟"));
+		break;
+	case 1:
+		ui->textEdit_methodInfo->append(QStringLiteral("测试方法：") + QStringLiteral("定时计压"));
+		ui->textEdit_methodInfo->append(QStringLiteral("增压速率：") + QString::number(method.rate) + unit + QStringLiteral("/分钟"));
+		ui->textEdit_methodInfo->append(QStringLiteral("定时时间：") + QString::number(method.timing) +  QStringLiteral("分钟"));
+		break;
+	case 2:
+		ui->textEdit_methodInfo->append(QStringLiteral("测试方法：") + QStringLiteral("定时定压"));
+		ui->textEdit_methodInfo->append(QStringLiteral("增压速率：") + QString::number(method.rate) + unit + QStringLiteral("/分钟"));
+		ui->textEdit_methodInfo->append(QStringLiteral("定时时间：") + QString::number(method.timing) + QStringLiteral("分钟"));
+		ui->textEdit_methodInfo->append(QStringLiteral("目标压强：") + QString::number(method.pressure) + unit);
+		break;
+	case 3:
+		ui->textEdit_methodInfo->append(QStringLiteral("测试方法：") + QStringLiteral("绕曲松弛"));
+		ui->textEdit_methodInfo->append(QStringLiteral("增压速率：") + QString::number(method.rate) + unit + QStringLiteral("/分钟"));
+		ui->textEdit_methodInfo->append(QStringLiteral("目标压强：") + QString::number(method.pressure) + unit);
+		ui->textEdit_methodInfo->append(QStringLiteral("松绕周期：") + QString::number(method.cycle) + QStringLiteral("次"));
+		ui->textEdit_methodInfo->append(QStringLiteral("保压时间：") + QString::number(method.holdingTime) + QStringLiteral("分钟"));
+		break;
+	case 4:
+		ui->textEdit_methodInfo->append(QStringLiteral("测试方法：") + QStringLiteral("渗水漏水"));
+		ui->textEdit_methodInfo->append(QStringLiteral("增压速率：") + QString::number(method.rate) + unit + QStringLiteral("/分钟"));
+		ui->textEdit_methodInfo->append(QStringLiteral("定时时间：") + QString::number(method.timing) + QStringLiteral("分钟"));
+		ui->textEdit_methodInfo->append(QStringLiteral("目标压强：") + QString::number(method.pressure) + unit);
+		break;
+	default:
+		break;
+	}
+}
+
+
 /*
 * 参数：
 * 返回：
@@ -537,6 +688,7 @@ void Widget::UpdateMethodInfoUI(UIState state)
 		ui->comboBox_plan->setEnabled(true);
 		ui->comboBox_plan->setCurrentIndex(0);
 		ui->comboBox_unit->setCurrentIndex(0);
+		m_currentUnitIndex = 0;
 
 		ui->lineEdit_methodName->clear();
 		ui->lineEdit_methodName->setEnabled(true);
@@ -768,7 +920,7 @@ void Widget::OnCombSelMethodChanged(int index)
 {
 	ui->textEdit_methodInfo->clear();
 
-	if (0 == index)
+	if (index < 1)
 	{
 		return;
 	}
@@ -777,6 +929,15 @@ void Widget::OnCombSelMethodChanged(int index)
 	bool state = false;
 
 	state = m_pMethodParam->GetMethodInfo(index - 1, method);
+
+	if (!state)
+	{
+		ui->label_testInterfaceMessage->setText(m_pMethodParam->GetMessageList()[0]);
+	}
+	else
+	{
+		ShowMethodParam(method);
+	}
 }
 
 
@@ -1019,6 +1180,7 @@ void Widget::OnMethodListItemClicked(const QModelIndex &index)
 	ui->lineEdit_standard->setText(method.standard);
 	ui->textEdit_discription->setText(method.discription);
 	ui->comboBox_unit->setCurrentIndex(method.uint);
+	m_currentUnitIndex = method.uint;
 
 	// 根据测试方法类型显示测试方法参数
 	switch (method.plan)
@@ -1140,6 +1302,34 @@ void Widget::OnCombMethodPlanChanged(int index)
 	default:
 		break;
 	}
+}
+
+
+/*
+* 参数：index--压强单位索引
+* 返回：
+* 功能：根据压强单位改变，自动转换压力值
+*/
+void Widget::OnCombPressureUnitChanged(int index)
+{
+	QString strP1 = ui->lineEdit_pressureRate->text();
+	QString strP2 = ui->lineEdit_targetPressure->text();
+
+	if (!strP1.isEmpty())
+	{
+		double pressure1 = strP1.toDouble();
+		ConvertPressureUnit(pressure1, static_cast<ENUM_PressureUnit>(m_currentUnitIndex), static_cast<ENUM_PressureUnit>(index));
+		ui->lineEdit_pressureRate->setText(QString::number(pressure1));
+	}
+
+	if (!strP2.isEmpty())
+	{
+		double pressure2 = strP2.toDouble();
+		ConvertPressureUnit(pressure2, static_cast<ENUM_PressureUnit>(m_currentUnitIndex), static_cast<ENUM_PressureUnit>(index));
+		ui->lineEdit_targetPressure->setText(QString::number(pressure2));
+	}
+
+	m_currentUnitIndex = index;
 }
 
 
