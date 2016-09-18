@@ -21,11 +21,12 @@ class TestResult : public QObject
 	Q_OBJECT
 
 public:
-	TestResult(QObject *parent);
+	TestResult(QObject *parent = 0);
 	~TestResult();
 
 	QStringList& GetMessageList();
-	bool GetPeportList(QList<STRUCT_Reprot> &reportList, const QString &startDate, const QString &endDate, int methodPlan = -1, const QString &methodName = "", const QString &userName = "");
+	//bool GetPeportList(QList<STRUCT_Reprot> &reportList, const QString &startDate, const QString &endDate, int methodPlan = -1, const QString &methodName = "", const QString &userName = "");
+	bool GetPeportList(QList<STRUCT_Reprot> &reportList, const QDateTime &startDate, const QDateTime &endDate, int methodPlan = -1, const QString &methodName = "", const QString &userName = "");
 	bool GetReport(int id,  STRUCT_Reprot &report);
 	bool DeleteReport(int id);
 

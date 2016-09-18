@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-02
-* 最后修改：2016-09-16
+* 最后修改：2016-09-18
 * 作      者：syf
 * 描      述：
 */
@@ -41,6 +41,9 @@ Widget::Widget(QWidget *parent)
 	m_pMethodListModel = new QStringListModel(this);
 	m_pMethodParam = new MethodParam();
 
+	// 初始化测试结果查询相关成员
+	m_pTestResult = new TestResult();
+
 	/*
 	* 链接信号与槽
 	*/
@@ -70,6 +73,10 @@ Widget::Widget(QWidget *parent)
 	connect(ui->pushButton_saveMethod, &QPushButton::clicked, this, &Widget::OnBtnSaveMethodClicked);
 	connect(ui->pushButton_delMethod, &QPushButton::clicked, this, &Widget::OnBtnDeleteMethodClicked);
 	connect(ui->pushButton_modifyMethod, &QPushButton::clicked, this, &Widget::OnBtnModifyMethodClicked);
+
+	// 测试结果查询操作
+	connect(ui->pushButton_query, &QPushButton::clicked, this, &Widget::OnBtnQueryClicked);
+	connect(ui->pushButton_delReport, &QPushButton::clicked, this, &Widget::OnBtnDeleteReportListClicked);
 
 	// 账户信息操作
 	connect(ui->listView_accountList, &QListView::clicked, this, &Widget::OnAccountListItemClicked);
@@ -105,6 +112,16 @@ Widget::~Widget()
 	if (m_pMethodParam)
 	{
 		delete m_pMethodParam;
+	}
+
+	if (m_pReportQueryModel)
+	{
+		delete m_pReportQueryModel;
+	}
+
+	if (m_pTestResult)
+	{
+		delete m_pTestResult;
 	}
 
 	delete ui;
@@ -209,6 +226,68 @@ void Widget::CreateUi()
 	* 设置结果查询界面样式
 	*/
 	m_pReportQueryModel = new QStandardItemModel();
+	CreateReportViewTable();
+
+
+	// 设置当前日期
+	ui->dateEdit_start->setDate(QDate::currentDate().addDays(-1));
+	ui->dateEdit_end->setDate(QDate::currentDate());
+
+	// 设置调出日历窗口
+	ui->dateEdit_start->setCalendarPopup(true);
+	ui->dateEdit_end->setCalendarPopup(true);
+
+	// 设置查询、删除、生成报告按钮样式
+	ui->pushButton_query->setStyleSheet("QPushButton{font-family:'Microsoft YaHei';font-size:14px; color:#979797}"
+		"QPushButton{border-image: url(:/main/resource/main/queryBtn0.png);}"
+		"QPushButton:hover{color:#ffffff; border-image: url(:/main/resource/main/queryBtn1.png);}");
+	ui->pushButton_delReport->setStyleSheet("QPushButton{font-family:'Microsoft YaHei';font-size:14px; color:#979797}"
+		"QPushButton{border-image: url(:/main/resource/main/queryBtn0.png);}"
+		"QPushButton:hover{color:#ffffff; border-image: url(:/main/resource/main/queryBtn1.png);}");
+	ui->pushButton_genReport->setStyleSheet("QPushButton{font-family:'Microsoft YaHei';font-size:14px; color:#979797}"
+		"QPushButton{border-image: url(:/main/resource/main/queryBtn0.png);}"
+		"QPushButton:hover{color:#ffffff; border-image: url(:/main/resource/main/queryBtn1.png);}");
+
+	// 设置提示信息样式
+	ui->label_queryMessage->setStyleSheet("QLabel{color:#ff0000}");
+
+	/*
+	* 设置高级设置界面样式
+	*/
+	ui->label_accountList->setStyleSheet("QLabel{background-color:#53a4ff; color:#ffffff}");
+	ui->label_accountInfo->setStyleSheet("QLabel{background-color:#53a4ff; color:#ffffff}");
+	ui->label_advanceMessage->setStyleSheet("QLabel{color:#ff0000}");
+
+	ui->pushButton_newAccount->setStyleSheet("QPushButton{font-family:'Microsoft YaHei';font-size:14px; color:#979797}"
+		"QPushButton{border-image: url(:/advance/resource/advance/advanceBtn0.png);}"
+		"QPushButton:hover{color:#ffffff; border-image: url(:/advance/resource/advance/advanceBtn1.png);}");
+	ui->pushButton_delAccount->setStyleSheet("QPushButton{font-family:'Microsoft YaHei';font-size:14px; color:#979797}"
+		"QPushButton{border-image: url(:/advance/resource/advance/advanceBtn0.png);}"
+		"QPushButton:hover{color:#ffffff; border-image: url(:/advance/resource/advance/advanceBtn1.png);}");
+	ui->pushButton_modifyAccount->setStyleSheet("QPushButton{font-family:'Microsoft YaHei';font-size:14px; color:#979797}"
+		"QPushButton{border-image: url(:/advance/resource/advance/advanceBtn0.png);}"
+		"QPushButton:hover{color:#ffffff; border-image: url(:/advance/resource/advance/advanceBtn1.png);}");
+
+	ui->pushButton_pressureCali->setStyleSheet("QPushButton{font-family:'Microsoft YaHei'; font-size:14px; color:#979797}"
+		"QPushButton{border-image: url(:/login/resource/login/btn4.png);}"
+		"QPushButton:hover{color:#ffffff; border-image: url(:/login/resource/login/btn2.png);}");
+
+	ui->listView_accountList->setStyleSheet("font-family:'Microsoft YaHei'; font-size:14px;");
+
+	// 用户名和密码只能有字母和数字构成
+	ui->lineEdit_accountName->setValidator(new QRegExpValidator(QRegExp("[A-Za-z0-9]+$"), this));
+	ui->lineEdit_accountPassword->setValidator(new QRegExpValidator(QRegExp("[A-Za-z0-9]+$"), this));
+}
+
+
+/*
+* 参数：
+* 返回：
+* 功能：生成报告查询表样式
+*/
+void Widget::CreateReportViewTable()
+{
+	m_pReportQueryModel->clear();
 	m_pReportQueryModel->setHorizontalHeaderItem(0, new QStandardItem(QStringLiteral("序号")));
 	m_pReportQueryModel->setHorizontalHeaderItem(1, new QStandardItem(QStringLiteral("方法名称")));
 	m_pReportQueryModel->setHorizontalHeaderItem(2, new QStandardItem(QStringLiteral("测试日期")));
@@ -244,52 +323,6 @@ void Widget::CreateUi()
 	m_pReportQueryModel->horizontalHeaderItem(2)->setForeground(QBrush(QColor(0x97, 0x97, 0x97)));
 	m_pReportQueryModel->horizontalHeaderItem(3)->setForeground(QBrush(QColor(0x97, 0x97, 0x97)));
 	m_pReportQueryModel->horizontalHeaderItem(4)->setForeground(QBrush(QColor(0x97, 0x97, 0x97)));
-
-	// 设置当前日期
-	ui->dateEdit_start->setDate(QDate::currentDate().addDays(-1));
-	ui->dateEdit_end->setDate(QDate::currentDate());
-
-	// 设置调出日历窗口
-	ui->dateEdit_start->setCalendarPopup(true);
-	ui->dateEdit_end->setCalendarPopup(true);
-
-	// 设置查询、删除、生成报告按钮样式
-	ui->pushButton_query->setStyleSheet("QPushButton{font-family:'Microsoft YaHei';font-size:14px; color:#979797}"
-		"QPushButton{border-image: url(:/main/resource/main/queryBtn0.png);}"
-		"QPushButton:hover{color:#ffffff; border-image: url(:/main/resource/main/queryBtn1.png);}");
-	ui->pushButton_delReport->setStyleSheet("QPushButton{font-family:'Microsoft YaHei';font-size:14px; color:#979797}"
-		"QPushButton{border-image: url(:/main/resource/main/queryBtn0.png);}"
-		"QPushButton:hover{color:#ffffff; border-image: url(:/main/resource/main/queryBtn1.png);}");
-	ui->pushButton_genReport->setStyleSheet("QPushButton{font-family:'Microsoft YaHei';font-size:14px; color:#979797}"
-		"QPushButton{border-image: url(:/main/resource/main/queryBtn0.png);}"
-		"QPushButton:hover{color:#ffffff; border-image: url(:/main/resource/main/queryBtn1.png);}");
-
-	/*
-	* 设置高级设置界面样式
-	*/
-	ui->label_accountList->setStyleSheet("QLabel{background-color:#53a4ff; color:#ffffff}");
-	ui->label_accountInfo->setStyleSheet("QLabel{background-color:#53a4ff; color:#ffffff}");
-	ui->label_advanceMessage->setStyleSheet("QLabel{color:#ff0000}");
-
-	ui->pushButton_newAccount->setStyleSheet("QPushButton{font-family:'Microsoft YaHei';font-size:14px; color:#979797}"
-		"QPushButton{border-image: url(:/advance/resource/advance/advanceBtn0.png);}"
-		"QPushButton:hover{color:#ffffff; border-image: url(:/advance/resource/advance/advanceBtn1.png);}");
-	ui->pushButton_delAccount->setStyleSheet("QPushButton{font-family:'Microsoft YaHei';font-size:14px; color:#979797}"
-		"QPushButton{border-image: url(:/advance/resource/advance/advanceBtn0.png);}"
-		"QPushButton:hover{color:#ffffff; border-image: url(:/advance/resource/advance/advanceBtn1.png);}");
-	ui->pushButton_modifyAccount->setStyleSheet("QPushButton{font-family:'Microsoft YaHei';font-size:14px; color:#979797}"
-		"QPushButton{border-image: url(:/advance/resource/advance/advanceBtn0.png);}"
-		"QPushButton:hover{color:#ffffff; border-image: url(:/advance/resource/advance/advanceBtn1.png);}");
-
-	ui->pushButton_pressureCali->setStyleSheet("QPushButton{font-family:'Microsoft YaHei'; font-size:14px; color:#979797}"
-		"QPushButton{border-image: url(:/login/resource/login/btn4.png);}"
-		"QPushButton:hover{color:#ffffff; border-image: url(:/login/resource/login/btn2.png);}");
-
-	ui->listView_accountList->setStyleSheet("font-family:'Microsoft YaHei'; font-size:14px;");
-
-	// 用户名和密码只能有字母和数字构成
-	ui->lineEdit_accountName->setValidator(new QRegExpValidator(QRegExp("[A-Za-z0-9]+$"), this));
-	ui->lineEdit_accountPassword->setValidator(new QRegExpValidator(QRegExp("[A-Za-z0-9]+$"), this));
 }
 
 
@@ -475,6 +508,61 @@ void Widget::UpdateTestMethodList()
 	ui->comboBox_queryMethodName->clear();
 	ui->comboBox_queryMethodName->addItem(QStringLiteral("请选择方法名称"));
 	ui->comboBox_queryMethodName->addItems(methodList);
+}
+
+
+/*
+* 参数：reportList:查询到的报告列表
+* 返回：
+* 功能：更新测试结果查询表
+*/
+void Widget::UpdateReportQueryView(const QList<STRUCT_Reprot> &reportList)
+{
+	CreateReportViewTable();
+
+	size_t size = m_reportList.size();
+
+	for (size_t i = 0; i < size; i++)
+	{
+		QString strMode = "";
+		switch (reportList[i].endMode)
+		{
+		case 0:
+			strMode = QStringLiteral("自动结束");
+			break;
+		case 1:
+			strMode = QStringLiteral("手动结束");
+			break;
+		case 2:
+			strMode = QStringLiteral("超量程");
+			break;
+		default:
+			break;
+		}
+		m_pReportQueryModel->setItem(i, 0, new QStandardItem(QString::number(reportList[i].id)));
+		m_pReportQueryModel->setItem(i, 1, new QStandardItem(reportList[i].methodName));
+		m_pReportQueryModel->setItem(i, 2, new QStandardItem(reportList[i].testDate));
+		m_pReportQueryModel->setItem(i, 3, new QStandardItem(strMode));
+		m_pReportQueryModel->setItem(i, 4, new QStandardItem(reportList[i].userName));
+
+		m_pReportQueryModel->item(i, 0)->setTextAlignment(Qt::AlignCenter);
+		m_pReportQueryModel->item(i, 1)->setTextAlignment(Qt::AlignCenter);
+		m_pReportQueryModel->item(i, 2)->setTextAlignment(Qt::AlignCenter);
+		m_pReportQueryModel->item(i, 3)->setTextAlignment(Qt::AlignCenter);
+		m_pReportQueryModel->item(i, 4)->setTextAlignment(Qt::AlignCenter);
+
+		m_pReportQueryModel->item(i, 0)->setForeground(QBrush(QColor(0, 0, 0)));
+		m_pReportQueryModel->item(i, 1)->setForeground(QBrush(QColor(0, 0, 0)));
+		m_pReportQueryModel->item(i, 2)->setForeground(QBrush(QColor(0, 0, 0)));
+		m_pReportQueryModel->item(i, 3)->setForeground(QBrush(QColor(0, 0, 0)));
+		m_pReportQueryModel->item(i, 4)->setForeground(QBrush(QColor(0, 0, 0)));
+
+		m_pReportQueryModel->item(i, 0)->setFont(QFont("Microsoft YaHei", 10, QFont::Black));
+		m_pReportQueryModel->item(i, 1)->setFont(QFont("Microsoft YaHei", 10, QFont::Black));
+		m_pReportQueryModel->item(i, 2)->setFont(QFont("Microsoft YaHei", 10, QFont::Black));
+		m_pReportQueryModel->item(i, 3)->setFont(QFont("Microsoft YaHei", 10, QFont::Black));
+		m_pReportQueryModel->item(i, 4)->setFont(QFont("Microsoft YaHei", 10, QFont::Black));
+	}
 }
 
 
@@ -678,6 +766,30 @@ void Widget::ShowMethodParam(const STRUCT_MethodParam &method)
 		break;
 	default:
 		break;
+	}
+}
+
+
+/*
+* 参数：id:选中项目的id
+* 返回：
+* 功能：删除测试结果列表中选中的项目
+*/
+void Widget::DeleteReportInList(int id)
+{
+	size_t size = m_reportList.size();
+	
+	for (size_t i = 0; i < size; i++)
+	{
+		if (id != m_reportList[i].id)
+		{
+			continue;
+		}
+		else
+		{
+			m_reportList.removeAt(i);
+			break;
+		}
 	}
 }
 
@@ -1590,6 +1702,105 @@ void Widget::OnBtnModifyMethodClicked()
 	UpdateMethodInfoUI(m_methodEditState);
 }
 
+
+/*
+* 参数：
+* 返回：
+* 功能：根据选择的条件，查询测试结果数据库
+*/
+void Widget::OnBtnQueryClicked()
+{
+	int methodPlan = -1;
+	int index = -1;
+	QString methodName = "";
+	QString userName = "";
+	//QString startDate = ui->dateEdit_start->dateTime().toString("yyyy-MM-dd hh:mm:ss");
+	//QString endDate = ui->dateEdit_end->dateTime().toString("yyyy-MM-dd hh:mm:ss");
+
+	QDateTime startDate = ui->dateEdit_start->dateTime();
+	QDateTime endDate = ui->dateEdit_end->dateTime();
+
+	index = ui->comboBox_queryTestMethod->currentIndex();
+
+	if (index > 0)
+	{
+		methodPlan = index - 1;
+	}
+
+	index = ui->comboBox_queryMethodName->currentIndex();
+
+	if (index > 0)
+	{
+		methodName = ui->comboBox_queryMethodName->currentText();
+	}
+
+	index = ui->comboBox_queryUserName->currentIndex();
+
+	if (index > 0)
+	{
+		userName = ui->comboBox_queryUserName->currentText();
+	}
+
+	bool state = m_pTestResult->GetPeportList(m_reportList, startDate, endDate, methodPlan, methodName, userName);
+	
+
+	if (!state)
+	{
+		ui->label_queryMessage->setText(m_pTestResult->GetMessageList()[0]);
+	}
+	else
+	{
+		UpdateReportQueryView(m_reportList);
+	}
+}
+
+
+/*
+* 参数：
+* 返回：
+* 功能：删除选中的测试结果报告
+*/
+void Widget::OnBtnDeleteReportListClicked()
+{
+	QModelIndexList selectedList = ui->tableView_reportQuery->selectionModel()->selectedIndexes();
+	int i = 0, j = -1;
+	int id = 0;
+	bool state = false;
+	QModelIndex selection;
+
+	foreach(selection, selectedList)
+	{
+		i = selection.row();
+
+		if (j == i)
+		{
+			continue;
+		}
+		else
+		{
+			j = i;
+		}
+
+		id = m_pReportQueryModel->item(i, 0)->text().toInt();
+
+		state = m_pTestResult->DeleteReport(id);
+
+		if (!state)
+		{
+			ui->label_queryMessage->setText(m_pTestResult->GetMessageList()[0]);
+			break;
+		}
+		else
+		{
+			DeleteReportInList(id);
+		}
+	}
+
+	if (state)
+	{
+		UpdateReportQueryView(m_reportList);
+	}
+}
 
 /*
 * 参数：

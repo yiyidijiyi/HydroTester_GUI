@@ -1865,6 +1865,19 @@
       <string>生成报告</string>
      </property>
     </widget>
+    <widget class="QLabel" name="label_queryMessage">
+     <property name="geometry">
+      <rect>
+       <x>120</x>
+       <y>5</y>
+       <width>1000</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="tab_4">
     <attribute name="title">

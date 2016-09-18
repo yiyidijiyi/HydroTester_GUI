@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-02
-* 最后修改：2016-09-16
+* 最后修改：2016-09-18
 * 作      者：syf
 * 描      述：
 */
@@ -18,6 +18,7 @@
 #include "common.h"
 #include "useraccount.h"
 #include "methodparam.h"
+#include "testresult.h"
 #include "ui_widget.h"
 
 // 自定义标题栏大小
@@ -63,6 +64,7 @@ public:
 	~Widget();
 
 	void CreateUi();
+	void CreateReportViewTable();
 	void SwitchInterface(InterfaceIndex index);
 	void SwitchChart(ChartIndex index);
 	Widget::InterfaceIndex GetInterfaceIndex(void);
@@ -73,6 +75,7 @@ private:
 	*/
 	void UpdateAccountList();
 	void UpdateTestMethodList();
+	void UpdateReportQueryView(const QList<STRUCT_Reprot> &reportList);
 	
 	/*
 	* 更新UI状态
@@ -94,6 +97,11 @@ private:
 	* 显示测试方法参数信息
 	*/
 	void ShowMethodParam(const STRUCT_MethodParam &method);
+
+	/*
+	* 删除测试结果列表中选中的项目
+	*/
+	void DeleteReportInList(int id);
 
 protected slots:
 	void OnBtnMinClicked();
@@ -138,6 +146,12 @@ public slots:
 	void OnBtnModifyMethodClicked();
 
 	/*
+	* 报告查询操作
+	*/
+	void OnBtnQueryClicked();
+	void OnBtnDeleteReportListClicked();
+
+	/*
 	* 帐号信息操作
 	*/
 	void OnAccountListItemClicked(const QModelIndex &index);
@@ -155,18 +169,22 @@ private:
 	InterfaceIndex m_interfaceIndex;
 	ChartIndex	      m_chartIndex;
 
-	// 用户账号相关
-	QStringListModel	*m_pAccountListModel;
-	STRUCT_Account		m_account;
-	UserAccount				*m_pAccountDB;
-	UIState						m_accountEditState;
-
 	// 测试方法相关
 	QStringListModel *m_pMethodListModel;
 	MethodParam	*m_pMethodParam;
 	UIState	m_methodEditState;
 	int	m_methodListIndex;
 	int	m_currentUnitIndex;
+
+	// 测试结果查询相关
+	QList<STRUCT_Reprot> m_reportList;
+	TestResult	*m_pTestResult;
+
+	// 用户账号相关
+	QStringListModel	*m_pAccountListModel;
+	STRUCT_Account		m_account;
+	UserAccount				*m_pAccountDB;
+	UIState						m_accountEditState;
 };
 
 #endif // WIDGET_H

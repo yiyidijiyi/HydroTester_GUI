@@ -134,6 +134,7 @@ public:
     QPushButton *pushButton_query;
     QPushButton *pushButton_delReport;
     QPushButton *pushButton_genReport;
+    QLabel *label_queryMessage;
     QWidget *tab_4;
     QLabel *label_accountManagement;
     QFrame *line_4;
@@ -707,6 +708,9 @@ public:
         pushButton_genReport->setGeometry(QRect(686, 465, 320, 34));
         pushButton_genReport->setMinimumSize(QSize(0, 34));
         pushButton_genReport->setFont(font1);
+        label_queryMessage = new QLabel(tab_3);
+        label_queryMessage->setObjectName(QStringLiteral("label_queryMessage"));
+        label_queryMessage->setGeometry(QRect(120, 5, 1000, 30));
         tabWidget->addTab(tab_3, QString());
         tab_4 = new QWidget();
         tab_4->setObjectName(QStringLiteral("tab_4"));
@@ -1167,6 +1171,7 @@ public:
         pushButton_query->setText(QApplication::translate("Widget", "\345\216\206\345\217\262\346\225\260\346\215\256\346\237\245\350\257\242", 0));
         pushButton_delReport->setText(QApplication::translate("Widget", "\345\210\240\351\231\244", 0));
         pushButton_genReport->setText(QApplication::translate("Widget", "\347\224\237\346\210\220\346\212\245\345\221\212", 0));
+        label_queryMessage->setText(QString());
         tabWidget->setTabText(tabWidget->indexOf(tab_3), QApplication::translate("Widget", "Tab 3", 0));
         label_accountManagement->setText(QApplication::translate("Widget", "\350\264\246\345\217\267\347\256\241\347\220\206", 0));
         label_accountList->setText(QApplication::translate("Widget", "  \350\264\246\345\217\267\345\210\227\350\241\250", 0));

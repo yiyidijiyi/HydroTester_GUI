@@ -51,9 +51,10 @@ QStringList& TestResult::GetMessageList()
 * ·µ»Ø£º
 * ¹¦ÄÜ£º
 */
-bool TestResult::GetPeportList(QList<STRUCT_Reprot> &reportList, const QString &startDate, const QString &endDate, int methodPlan, const QString &methodName, const QString &userName)
+bool TestResult::GetPeportList(QList<STRUCT_Reprot> &reportList, const QDateTime &startDate, const QDateTime &endDate, int methodPlan, const QString &methodName, const QString &userName)
 {
 	m_messageList.clear();
+	reportList.clear();
 	bool state = false;
 
 	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
@@ -61,40 +62,41 @@ bool TestResult::GetPeportList(QList<STRUCT_Reprot> &reportList, const QString &
 
 	if (db.open())
 	{
-		QString strQuery = "SELECT * FROM report WHERE testDate >= :startDate AND testDate <= endDate";
+		QString strQuery = "SELECT * FROM report WHERE testDate > ? AND testDate < ?";
 
 		if (-1 != methodPlan)
 		{
-			strQuery += " AND methodPlan = :methodPlan";
+			strQuery += " AND methodPlan = ?";
 		}
 
 		if (!methodName.isEmpty())
 		{
-			strQuery += " AND methodName = :methodName";
+			strQuery += " AND methodName = ?";
 		}
 
 		if (!userName.isEmpty())
 		{
-			strQuery += " AND userName = :userName";
+			strQuery += " AND userName = ?";
 		}
 
 		QSqlQuery query(strQuery, db);
-		query.bindValue(":startDate", startDate);
-		query.bindValue(":endDate", endDate);
+		int index = 0;
+		query.bindValue(index++, startDate);
+		query.bindValue(index++, endDate);
 
 		if (-1 != methodPlan)
 		{
-			query.bindValue(":methodPlan", methodPlan);
+			query.bindValue(index++, methodPlan);
 		}
 
 		if (!methodName.isEmpty())
 		{
-			query.bindValue(":methodName", methodName);
+			query.bindValue(index++, methodName);
 		}
 
 		if (!userName.isEmpty())
 		{
-			query.bindValue(":userName", userName);
+			query.bindValue(index, userName);
 		}
 
 		if (query.exec())
