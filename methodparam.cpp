@@ -43,6 +43,17 @@ QStringList& MethodParam::GetMessageList()
 
 
 /*
+* 参数：
+* 返回：
+* 功能：返回用户名列表
+*/
+QStringList& MethodParam::GetMethodNameList()
+{
+	return m_methodNameList;
+}
+
+
+/*
 * 参数：methodList--返回，测试方法列表
 * 返回：
 * 功能：查询测试方法参数数据库中所有的测试方法
@@ -50,6 +61,7 @@ QStringList& MethodParam::GetMessageList()
 bool MethodParam::GetMethodList(QStringList &methodList)
 {
 	bool state = false;
+	m_methodNameList.clear();
 	m_messageList.clear();
 
 	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
@@ -67,7 +79,10 @@ bool MethodParam::GetMethodList(QStringList &methodList)
 			while (query.next())
 			{
 				m_idMap.append(query.value(0).toInt());
-				methodList.append(query.value(1).toString());
+
+				QString methodName = query.value(1).toString();
+				methodList.append(methodName);
+				m_messageList.append(methodName);
 			}
 
 			state = true;

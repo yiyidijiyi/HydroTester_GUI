@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-12
-* 最后修改：2016-09-13
+* 最后修改：2016-09-18
 * 作      者：syf
 * 描      述：
 */
@@ -42,6 +42,17 @@ QStringList& UserAccount::GetMessageList()
 
 
 /*
+* 参数：
+* 返回：
+* 功能：返回用户名列表
+*/
+QStringList& UserAccount::GetUserNameList()
+{
+	return m_userNameList;
+}
+
+
+/*
 * 参数：userType--用户类型
 * 返回：
 * 功能：根据用户类型获取数据库中的账户列表
@@ -49,6 +60,7 @@ QStringList& UserAccount::GetMessageList()
 bool UserAccount::GetAccountList(QStringList &accountList, ENUM_AccountType userType)
 {
 	m_messageList.clear();
+	m_userNameList.clear();
 	accountList.clear();
 	bool state = false;
 
@@ -67,7 +79,9 @@ bool UserAccount::GetAccountList(QStringList &accountList, ENUM_AccountType user
 		{
 			while (query.next())
 			{
-				accountList.append(query.value(0).toString());
+				QString userName = query.value(0).toString();
+				accountList.append(userName);
+				m_userNameList.append(userName);
 			}
 
 			state = true;

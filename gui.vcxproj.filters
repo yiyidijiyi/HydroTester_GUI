@@ -99,6 +99,15 @@
     <ClCompile Include="Release\moc_methodparam.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="testresult.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_testresult.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_testresult.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="logindlg.h">
@@ -114,6 +123,9 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="methodparam.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="testresult.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>

@@ -26,6 +26,7 @@ public:
 	~MethodParam();
 
 	QStringList& GetMessageList();
+	QStringList& GetMethodNameList();
 	bool GetMethodList(QStringList &methodList);
 	bool GetMethodInfo(int index, STRUCT_MethodParam &method);
 	bool AddMethod(const STRUCT_MethodParam &method);
@@ -34,6 +35,7 @@ public:
 private:
 	QStringList		m_messageList;
 	QVector<int>	m_idMap;
+	QStringList		m_methodNameList;
 };
 
 #endif // METHODPARAM_H

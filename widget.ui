@@ -479,7 +479,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -1097,7 +1097,7 @@
        </rect>
       </property>
       <property name="text">
-       <string>测试方法：</string>
+       <string>测试方案：</string>
       </property>
      </widget>
      <widget class="QLabel" name="label_11">
@@ -1460,7 +1460,7 @@
     <widget class="QTableView" name="tableView_reportQuery">
      <property name="geometry">
       <rect>
-       <x>12</x>
+       <x>9</x>
        <y>45</y>
        <width>1330</width>
        <height>270</height>
@@ -1717,6 +1717,36 @@
        <height>0</height>
       </size>
      </property>
+     <item>
+      <property name="text">
+       <string>请选择测试方案</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>持续增压</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>定时计压</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>定时定压</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>绕曲松弛</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>渗水漏水</string>
+      </property>
+     </item>
     </widget>
     <widget class="QComboBox" name="comboBox_queryMethodName">
      <property name="geometry">

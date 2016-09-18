@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-12
-* 最后修改：2016-09-14
+* 最后修改：2016-09-18
 * 作      者：syf
 * 描      述：
 */
@@ -52,5 +52,15 @@ typedef struct{
 	QString discription;
 	QString lastTime;
 }STRUCT_MethodParam;
+
+// 测试结果报告
+typedef struct{
+	int id;
+	QString methodName;
+	int methodPlan;
+	QString testDate;
+	int endMode;
+	QString userName;
+}STRUCT_Reprot;
 
 #endif

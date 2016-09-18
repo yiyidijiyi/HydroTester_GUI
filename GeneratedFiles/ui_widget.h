@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'widget.ui'
 **
-** Created by: Qt User Interface Compiler version 5.7.0
+** Created by: Qt User Interface Compiler version 5.5.1
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -616,7 +616,7 @@ public:
         tab_3->setObjectName(QStringLiteral("tab_3"));
         tableView_reportQuery = new QTableView(tab_3);
         tableView_reportQuery->setObjectName(QStringLiteral("tableView_reportQuery"));
-        tableView_reportQuery->setGeometry(QRect(12, 45, 1330, 270));
+        tableView_reportQuery->setGeometry(QRect(9, 45, 1330, 270));
         tableView_reportQuery->setFrameShape(QFrame::StyledPanel);
         tableView_reportQuery->setFrameShadow(QFrame::Plain);
         tableView_reportQuery->setLineWidth(1);
@@ -1067,7 +1067,7 @@ public:
 
         retranslateUi(Widget);
 
-        tabWidget->setCurrentIndex(0);
+        tabWidget->setCurrentIndex(2);
         tabWidget_testInterface->setCurrentIndex(2);
 
 
@@ -1119,7 +1119,7 @@ public:
         label_9->setText(QApplication::translate("Widget", "\346\243\200\346\265\213\346\226\271\346\263\225", 0));
         label_methodParams->setText(QApplication::translate("Widget", "\346\226\271\346\263\225\345\217\202\346\225\260", 0));
         label_8->setText(QApplication::translate("Widget", "\346\226\271\346\263\225\345\220\215\347\247\260\357\274\232", 0));
-        label_10->setText(QApplication::translate("Widget", "\346\265\213\350\257\225\346\226\271\346\263\225\357\274\232", 0));
+        label_10->setText(QApplication::translate("Widget", "\346\265\213\350\257\225\346\226\271\346\241\210\357\274\232", 0));
         label_11->setText(QApplication::translate("Widget", "\345\274\225\347\224\250\346\240\207\345\207\206\357\274\232", 0));
         label_12->setText(QApplication::translate("Widget", "\345\242\236\345\216\213\351\200\237\347\216\207\357\274\232", 0));
         label_13->setText(QApplication::translate("Widget", "\345\256\232\346\227\266\346\227\266\351\227\264\357\274\232", 0));
@@ -1155,6 +1155,15 @@ public:
         label_testMethod->setText(QApplication::translate("Widget", "\346\265\213\350\257\225\346\226\271\346\241\210\357\274\232", 0));
         label_methodName->setText(QApplication::translate("Widget", "\346\226\271\346\263\225\345\220\215\347\247\260\357\274\232", 0));
         label_userName->setText(QApplication::translate("Widget", "\347\224\250\346\210\267\357\274\232", 0));
+        comboBox_queryTestMethod->clear();
+        comboBox_queryTestMethod->insertItems(0, QStringList()
+         << QApplication::translate("Widget", "\350\257\267\351\200\211\346\213\251\346\265\213\350\257\225\346\226\271\346\241\210", 0)
+         << QApplication::translate("Widget", "\346\214\201\347\273\255\345\242\236\345\216\213", 0)
+         << QApplication::translate("Widget", "\345\256\232\346\227\266\350\256\241\345\216\213", 0)
+         << QApplication::translate("Widget", "\345\256\232\346\227\266\345\256\232\345\216\213", 0)
+         << QApplication::translate("Widget", "\347\273\225\346\233\262\346\235\276\345\274\233", 0)
+         << QApplication::translate("Widget", "\346\270\227\346\260\264\346\274\217\346\260\264", 0)
+        );
         pushButton_query->setText(QApplication::translate("Widget", "\345\216\206\345\217\262\346\225\260\346\215\256\346\237\245\350\257\242", 0));
         pushButton_delReport->setText(QApplication::translate("Widget", "\345\210\240\351\231\244", 0));
         pushButton_genReport->setText(QApplication::translate("Widget", "\347\224\237\346\210\220\346\212\245\345\221\212", 0));

@@ -439,6 +439,11 @@ void Widget::UpdateAccountList()
 
 	m_pAccountListModel->setStringList(accountList);
 	ui->listView_accountList->setModel(m_pAccountListModel);
+
+	ui->comboBox_queryUserName->clear();
+	ui->comboBox_queryUserName->addItem(QStringLiteral("请选择用户"));
+	ui->comboBox_queryUserName->addItems(accountList);
+	
 }
 
 
@@ -466,6 +471,10 @@ void Widget::UpdateTestMethodList()
 	ui->comboBox_selMethod->addItem(QStringLiteral("请选择测试方法"));
 	ui->comboBox_selMethod->addItems(methodList);
 	ui->comboBox_selMethod->setCurrentIndex(0);
+
+	ui->comboBox_queryMethodName->clear();
+	ui->comboBox_queryMethodName->addItem(QStringLiteral("请选择方法名称"));
+	ui->comboBox_queryMethodName->addItems(methodList);
 }
 
 
