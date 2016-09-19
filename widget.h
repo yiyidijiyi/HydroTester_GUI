@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-02
-* 最后修改：2016-09-18
+* 最后修改：2016-09-19
 * 作      者：syf
 * 描      述：
 */
@@ -14,11 +14,13 @@
 #include <QCalendarWidget>
 #include <QtSql/QSqlRelationalTableModel>
 #include <QStringListModel>
+#include <QThread>
 
 #include "common.h"
 #include "useraccount.h"
 #include "methodparam.h"
 #include "testresult.h"
+#include "serialport.h"
 #include "ui_widget.h"
 
 // 自定义标题栏大小
@@ -71,6 +73,12 @@ public:
 
 private:
 	/*
+	* 串口相关
+	*/
+	void InitSerialPort();
+	void UpdateComUI();
+
+	/*
 	* 更新信息列表
 	*/
 	void UpdateAccountList();
@@ -115,6 +123,12 @@ public slots:
 	* 登录成功
 	*/
 	void OnLoginAccepted(int id);
+
+	/*
+	* 串口操作
+	*/
+	void OnBtnComOpClicked();
+	void OnRxDataReceived(const QByteArray& rxBuf);
 
 	/*
 	* 操作界面切换
@@ -182,9 +196,14 @@ private:
 
 	// 用户账号相关
 	QStringListModel	*m_pAccountListModel;
-	STRUCT_Account		m_account;
-	UserAccount				*m_pAccountDB;
-	UIState						m_accountEditState;
+	STRUCT_Account	m_account;
+	UserAccount			*m_pAccountDB;
+	UIState					m_accountEditState;
+
+	// 串口相关
+	QThread  *m_pRxThread;
+	SerialPort *m_pCom;
+	bool m_bIsComOpened;
 };
 
 #endif // WIDGET_H

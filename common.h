@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-12
-* 最后修改：2016-09-18
+* 最后修改：2016-09-19
 * 作      者：syf
 * 描      述：
 */
@@ -61,6 +61,7 @@ typedef struct{
 	QString testDate;
 	int endMode;
 	QString userName;
+	QString fileName;
 }STRUCT_Reprot;
 
 #endif

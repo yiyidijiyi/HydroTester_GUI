@@ -70,6 +70,8 @@ public:
     QWidget *tab_10;
     QLabel *label_video;
     QPushButton *pushButton_playback;
+    QTextEdit *textEdit_info;
+    QPushButton *pushButton_clearInfo;
     QWidget *tab_6;
     QWidget *tab_7;
     QFrame *frame_4;
@@ -408,12 +410,22 @@ public:
         tab_10->setObjectName(QStringLiteral("tab_10"));
         label_video = new QLabel(tab_10);
         label_video->setObjectName(QStringLiteral("label_video"));
-        label_video->setGeometry(QRect(20, 32, 427, 342));
+        label_video->setEnabled(false);
+        label_video->setGeometry(QRect(20, 10, 427, 342));
         label_video->setFrameShape(QFrame::StyledPanel);
         pushButton_playback = new QPushButton(tab_10);
         pushButton_playback->setObjectName(QStringLiteral("pushButton_playback"));
-        pushButton_playback->setGeometry(QRect(500, 340, 240, 34));
+        pushButton_playback->setGeometry(QRect(110, 360, 240, 34));
         pushButton_playback->setFlat(false);
+        textEdit_info = new QTextEdit(tab_10);
+        textEdit_info->setObjectName(QStringLiteral("textEdit_info"));
+        textEdit_info->setEnabled(false);
+        textEdit_info->setGeometry(QRect(463, 10, 427, 342));
+        textEdit_info->setFrameShadow(QFrame::Plain);
+        pushButton_clearInfo = new QPushButton(tab_10);
+        pushButton_clearInfo->setObjectName(QStringLiteral("pushButton_clearInfo"));
+        pushButton_clearInfo->setGeometry(QRect(560, 360, 240, 34));
+        pushButton_clearInfo->setFlat(false);
         tabWidget_testInterface->addTab(tab_10, QString());
         tab_6 = new QWidget();
         tab_6->setObjectName(QStringLiteral("tab_6"));
@@ -464,9 +476,10 @@ public:
         pushButton_print->setFlat(true);
         label_testInterfaceMessage = new QLabel(tab);
         label_testInterfaceMessage->setObjectName(QStringLiteral("label_testInterfaceMessage"));
-        label_testInterfaceMessage->setGeometry(QRect(120, 5, 800, 30));
+        label_testInterfaceMessage->setGeometry(QRect(120, 5, 431, 30));
         textEdit_methodInfo = new QTextEdit(tab);
         textEdit_methodInfo->setObjectName(QStringLiteral("textEdit_methodInfo"));
+        textEdit_methodInfo->setEnabled(false);
         textEdit_methodInfo->setGeometry(QRect(13, 70, 396, 430));
         textEdit_methodInfo->setFrameShape(QFrame::StyledPanel);
         textEdit_methodInfo->setFrameShadow(QFrame::Plain);
@@ -490,8 +503,8 @@ public:
         pushButton_openCloseCamera->raise();
         comboBox_selMethod->raise();
         frame_4->raise();
-        label_testInterfaceMessage->raise();
         textEdit_methodInfo->raise();
+        label_testInterfaceMessage->raise();
         tab_2 = new QWidget();
         tab_2->setObjectName(QStringLiteral("tab_2"));
         line_14 = new QFrame(tab_2);
@@ -1071,8 +1084,8 @@ public:
 
         retranslateUi(Widget);
 
-        tabWidget->setCurrentIndex(2);
-        tabWidget_testInterface->setCurrentIndex(2);
+        tabWidget->setCurrentIndex(0);
+        tabWidget_testInterface->setCurrentIndex(0);
 
 
         QMetaObject::connectSlotsByName(Widget);
@@ -1110,6 +1123,12 @@ public:
         );
         label_video->setText(QString());
         pushButton_playback->setText(QApplication::translate("Widget", "\350\247\206\351\242\221\345\233\236\346\224\276", 0));
+        textEdit_info->setHtml(QApplication::translate("Widget", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:'SimSun'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>", 0));
+        pushButton_clearInfo->setText(QApplication::translate("Widget", "\346\270\205\351\231\244\344\277\241\346\201\257", 0));
         tabWidget_testInterface->setTabText(tabWidget_testInterface->indexOf(tab_10), QApplication::translate("Widget", "\345\233\276\350\241\250", 0));
         tabWidget_testInterface->setTabText(tabWidget_testInterface->indexOf(tab_6), QApplication::translate("Widget", "\346\233\262\347\272\277", 0));
         tabWidget_testInterface->setTabText(tabWidget_testInterface->indexOf(tab_7), QApplication::translate("Widget", "\346\212\245\345\221\212", 0));

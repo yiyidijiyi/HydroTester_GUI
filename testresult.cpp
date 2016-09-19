@@ -110,6 +110,7 @@ bool TestResult::GetPeportList(QList<STRUCT_Reprot> &reportList, const QDateTime
 				report.testDate = query.value(3).toString();
 				report.endMode = query.value(4).toInt();
 				report.userName = query.value(5).toString();
+				report.fileName = query.value(6).toString();
 
 				reportList.append(report);
 			}
@@ -164,6 +165,7 @@ bool TestResult::GetReport(int id, STRUCT_Reprot &report)
 				report.testDate = query.value(3).toString();
 				report.endMode = query.value(4).toInt();
 				report.userName = query.value(5).toString();
+				report.fileName = query.value(6).toString();
 			}
 
 			state = true;

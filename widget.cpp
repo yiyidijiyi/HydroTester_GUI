@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-02
-* 最后修改：2016-09-18
+* 最后修改：2016-09-19
 * 作      者：syf
 * 描      述：
 */
@@ -24,6 +24,9 @@ Widget::Widget(QWidget *parent)
 	, m_methodEditState(Disable)
 	, m_methodListIndex(-1)
 	, m_currentUnitIndex(0)
+	, m_pCom(NULL)
+	, m_pRxThread(NULL)
+	, m_bIsComOpened(false)
 {
 	CreateUi();
 
@@ -44,6 +47,9 @@ Widget::Widget(QWidget *parent)
 	// 初始化测试结果查询相关成员
 	m_pTestResult = new TestResult();
 
+	// 初始化串口设备
+	InitSerialPort();
+
 	/*
 	* 链接信号与槽
 	*/
@@ -51,12 +57,17 @@ Widget::Widget(QWidget *parent)
 	connect(ui->pushButton_min, &QPushButton::clicked, this, &Widget::OnBtnMinClicked);
 	connect(ui->pushButton_close, &QPushButton::clicked, this, &Widget::OnBtnCloseClicked);
 
+	// 串口操作
+	connect(ui->pushButton_connectCom, &QPushButton::clicked, this, &Widget::OnBtnComOpClicked);
+	connect(m_pCom, &SerialPort::DataReceived, this, &Widget::OnRxDataReceived);
+
 	// 界面切换
 	connect(ui->pushButton_testInterface, &QPushButton::clicked, this, &Widget::OnBtnTestInterfaceClicked);
 	connect(ui->pushButton_testMethod, &QPushButton::clicked, this, &Widget::OnBtnTestMethodClicked);
 	connect(ui->pushButton_advance, &QPushButton::clicked, this, &Widget::OnBtnAdvanceClicked);
 	connect(ui->pushButton_reportQuery, &QPushButton::clicked, this, &Widget::OnBtnReportQueryClicked);
 	connect(ui->pushButton_help, &QPushButton::clicked, this, &Widget::OnBtnHelpClicked);
+	connect(ui->pushButton_clearInfo, &QPushButton::clicked, ui->textEdit_info, &QTextEdit::clear);
 
 	// 测试界面操作
 	connect(ui->pushButton_video, &QPushButton::clicked, this, &Widget::OnBtnChartVideoClicked);
@@ -94,6 +105,18 @@ Widget::Widget(QWidget *parent)
 */
 Widget::~Widget()
 {
+	if (m_pRxThread)
+	{
+		m_pRxThread->terminate();
+		m_pRxThread->wait();
+		delete m_pRxThread;
+	}
+
+	if (m_pCom)
+	{
+		delete m_pCom;
+	}
+
 	if (m_pAccountListModel)
 	{
 		delete m_pAccountListModel;
@@ -150,7 +173,7 @@ void Widget::CreateUi()
 	this->setStyleSheet("QLabel{font-family:'Microsoft YaHei'; font-size:14px;color:#979797;}"
 		"QPushButton{font-family:'Microsoft YaHei'; font-size:14px;}"
 		"QLineEdit{font-family:'Microsoft YaHei'; font-size:14px; color:#979797; }"
-		"QTextEdit{font-family:'Microsoft YaHei'; font-size:14px; color:#979797; }"
+		"QTextEdit{font-family:'Microsoft YaHei'; font-size:14px; color:#000000;  background-color:#ffffff}"
 		"QDateEdit{font-family:'Microsoft YaHei'; font-size:14px; color:#979797; background-color:#f7f7f7;}"
 		"QComboBox{font-family:'Microsoft YaHei'; font-size:14px; color:#979797; background-color:#f7f7f7}");
 
@@ -184,8 +207,11 @@ void Widget::CreateUi()
 	ui->pushButton_openCloseCamera->setStyleSheet("QPushButton{font-family:'Microsoft YaHei';font-size:14px; color:#979797}"
 		"QPushButton:hover{color:#ffffff; border-image: url(:/testInterface/resource/testInterface/testInterfaceBtn2.png);}");
 
-	// 设置视频回放按钮样式
+	// 设置视频回放、清除信息按钮样式
 	ui->pushButton_playback->setStyleSheet("QPushButton{font-family:'Microsoft YaHei';font-size:16px; color:#979797}"
+		"QPushButton:hover{color:#ffffff; border-image: url(:/testInterface/resource/testInterface/testInterfaceBtn1.png);}");
+
+	ui->pushButton_clearInfo->setStyleSheet("QPushButton{font-family:'Microsoft YaHei';font-size:16px; color:#979797}"
 		"QPushButton:hover{color:#ffffff; border-image: url(:/testInterface/resource/testInterface/testInterfaceBtn1.png);}");
 
 	// 图表显示功能选择
@@ -409,6 +435,43 @@ void Widget::SwitchChart(ChartIndex index)
 Widget::InterfaceIndex Widget::GetInterfaceIndex()
 {
 	return m_interfaceIndex;
+}
+
+
+/*
+* 参数：
+* 返回：
+* 功能：更新系统串口列表
+*/
+void Widget::InitSerialPort()
+{
+	m_pCom = new SerialPort();
+	m_pRxThread = new QThread;
+
+	m_pCom->moveToThread(m_pRxThread);
+	m_pRxThread->start();
+
+	QStringList comList = m_pCom->GetComList();
+	
+	ui->comboBox_selCom->addItems(comList);
+}
+
+
+/*
+* 参数：
+* 返回：
+* 功能：串口操作按钮提示
+*/
+void Widget::UpdateComUI()
+{
+	if (m_bIsComOpened)
+	{
+		ui->pushButton_connectCom->setText(QStringLiteral("断开"));
+	}
+	else
+	{
+		ui->pushButton_connectCom->setText(QStringLiteral("联机"));
+	}
 }
 
 
@@ -1063,9 +1126,9 @@ void Widget::OnCombSelMethodChanged(int index)
 
 
 /*
-* 参数：
+* 参数：id--账号在数据库表中的id号
 * 返回：
-* 功能：
+* 功能：登陆成功后，进入主界面前的事务处理
 */
 void Widget::OnLoginAccepted(int id)
 {
@@ -1080,6 +1143,48 @@ void Widget::OnLoginAccepted(int id)
 	UpdateAccountList();
 
 	UpdateTestMethodList();
+}
+
+
+/*
+* 参数：
+* 返回：
+* 功能：打开或关闭串口槽函数
+*/
+void Widget::OnBtnComOpClicked()
+{
+	if (m_bIsComOpened)
+	{
+		m_pCom->close();
+		m_bIsComOpened = false;
+		ui->textEdit_info->append(QStringLiteral("与设备断开连接！"));
+	}
+	else
+	{
+		m_bIsComOpened = m_pCom->Open(ui->comboBox_selCom->currentText());
+
+		if (m_bIsComOpened)
+		{
+			ui->textEdit_info->append(QStringLiteral("联机成功！"));
+		}
+		else
+		{
+			ui->textEdit_info->append(QStringLiteral("联机失败，请检查与设备的连接情况！"));
+		}
+	}
+
+	UpdateComUI();
+}
+
+
+/*
+* 参数：rxBuf--接收到的串口数据
+* 返回：
+* 功能：显示接收到串口数据
+*/
+void Widget::OnRxDataReceived(const QByteArray &rxBuf)
+{
+	ui->textEdit_info->append(rxBuf);
 }
 
 
