@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-02
-* 最后修改：2016-09-19
+* 最后修改：2016-09-20
 * 作      者：syf
 * 描      述：
 */
@@ -27,6 +27,9 @@ Widget::Widget(QWidget *parent)
 	, m_pCom(NULL)
 	, m_pRxThread(NULL)
 	, m_bIsComOpened(false)
+	, m_testState(Init)
+	, m_bIsWaterIn(false)
+	, m_bIsWaterOut(false)
 {
 	CreateUi();
 
@@ -38,14 +41,14 @@ Widget::Widget(QWidget *parent)
 	m_account.passward = "";
 	m_account.id = 0;
 
-	m_pAccountDB = new UserAccount();
+	m_pAccountDB = new UserAccount(this);
 
 	// 初始化测试方法相关数据成员
 	m_pMethodListModel = new QStringListModel(this);
-	m_pMethodParam = new MethodParam();
+	m_pMethodParam = new MethodParam(this);
 
 	// 初始化测试结果查询相关成员
-	m_pTestResult = new TestResult();
+	m_pTestResult = new TestResult(this);
 
 	// 初始化串口设备
 	InitSerialPort();
@@ -57,9 +60,12 @@ Widget::Widget(QWidget *parent)
 	connect(ui->pushButton_min, &QPushButton::clicked, this, &Widget::OnBtnMinClicked);
 	connect(ui->pushButton_close, &QPushButton::clicked, this, &Widget::OnBtnCloseClicked);
 
-	// 串口操作
+	// 设备操作
 	connect(ui->pushButton_connectCom, &QPushButton::clicked, this, &Widget::OnBtnComOpClicked);
+	connect(ui->pushButton_waterIn, &QPushButton::clicked, this, &Widget::OnBtnWaterInClicked);
+	connect(ui->pushButton_waterOff, &QPushButton::clicked, this, &Widget::OnBtnWaterOffClicked);
 	connect(m_pCom, &SerialPort::DataReceived, this, &Widget::OnRxDataReceived);
+	connect(m_pCom, &SerialPort::HandshakeState, this, &Widget::OnHandShakeStateReceived);
 
 	// 界面切换
 	connect(ui->pushButton_testInterface, &QPushButton::clicked, this, &Widget::OnBtnTestInterfaceClicked);
@@ -251,7 +257,7 @@ void Widget::CreateUi()
 	/*
 	* 设置结果查询界面样式
 	*/
-	m_pReportQueryModel = new QStandardItemModel();
+	m_pReportQueryModel = new QStandardItemModel(this);
 	CreateReportViewTable();
 
 
@@ -445,7 +451,7 @@ Widget::InterfaceIndex Widget::GetInterfaceIndex()
 */
 void Widget::InitSerialPort()
 {
-	m_pCom = new SerialPort();
+	m_pCom = new SerialPort(this);
 	m_pRxThread = new QThread;
 
 	m_pCom->moveToThread(m_pRxThread);
@@ -919,7 +925,7 @@ void Widget::UpdateMethodInfoUI(UIState state)
 */
 void Widget::OnBtnMinClicked()
 {
-	showMinimized();
+	this->showMinimized();
 }
 
 
@@ -930,7 +936,7 @@ void Widget::OnBtnMinClicked()
 */
 void Widget::OnBtnCloseClicked()
 {
-	close();
+	this->close();
 }
 
 
@@ -1109,18 +1115,18 @@ void Widget::OnCombSelMethodChanged(int index)
 		return;
 	}
 
-	STRUCT_MethodParam method;
 	bool state = false;
 
-	state = m_pMethodParam->GetMethodInfo(index - 1, method);
+	state = m_pMethodParam->GetMethodInfo(index - 1, m_methodParam);
 
 	if (!state)
 	{
 		ui->label_testInterfaceMessage->setText(m_pMethodParam->GetMessageList()[0]);
+		ui->comboBox_selMethod->setCurrentIndex(0);
 	}
 	else
 	{
-		ShowMethodParam(method);
+		ShowMethodParam(m_methodParam);
 	}
 }
 
@@ -1155,8 +1161,9 @@ void Widget::OnBtnComOpClicked()
 {
 	if (m_bIsComOpened)
 	{
-		m_pCom->close();
+		m_pCom->Close();
 		m_bIsComOpened = false;
+		m_testState = Init;
 		ui->textEdit_info->append(QStringLiteral("与设备断开连接！"));
 	}
 	else
@@ -1165,15 +1172,111 @@ void Widget::OnBtnComOpClicked()
 
 		if (m_bIsComOpened)
 		{
-			ui->textEdit_info->append(QStringLiteral("联机成功！"));
+			ui->textEdit_info->append(QStringLiteral("打开串口成功！"));
+			m_pCom->TxReadState();
 		}
 		else
 		{
-			ui->textEdit_info->append(QStringLiteral("联机失败，请检查与设备的连接情况！"));
+			ui->textEdit_info->append(QStringLiteral("打开串口失败，请检查串口设备！"));
 		}
 	}
 
 	UpdateComUI();
+}
+
+
+/*
+* 参数：
+* 返回：
+* 功能：进水或停止进水命令槽函数
+*/
+void Widget::OnBtnWaterInClicked()
+{
+	// 进水命令:0x07， 开始进水：1，停止进水：0
+	if (m_bIsWaterIn)
+	{
+		m_pCom->TxCmd(0x07, 0x0, 0x0);
+		m_bIsWaterIn = false;
+		ui->pushButton_waterIn->setText(QStringLiteral("进水"));
+	}
+	else
+	{
+		m_pCom->TxCmd(0x07, 0x01, 0x0);
+		m_bIsWaterIn = true;
+		ui->pushButton_waterIn->setText(QStringLiteral("停止进水"));
+	}
+}
+
+
+/*
+* 参数：
+* 返回：
+* 功能：排水或停止排水命令槽函数
+*/
+void Widget::OnBtnWaterOffClicked()
+{
+	// 排水命令:0x08， 开始排水：1，停止排水：0
+	if (m_bIsWaterOut)
+	{
+		m_pCom->TxCmd(0x08, 0x0, 0x0);
+		m_bIsWaterOut = false;
+		ui->pushButton_waterOff->setText(QStringLiteral("排水"));
+	}
+	else
+	{
+		m_pCom->TxCmd(0x08, 0x01, 0x0);
+		m_bIsWaterOut = true;
+		ui->pushButton_waterOff->setText(QStringLiteral("停止排水"));
+	}
+}
+
+
+/*
+* 参数：
+* 返回：
+* 功能：开始或停止测试命令槽函数
+*/
+void Widget::OnBtnStartTestClicked()
+{
+	if ((Connected == m_testState) || (End == m_testState))
+	{
+		// 串口连接状态或测试结束状态，开始行的测试，先设置参数
+		if (0 == ui->comboBox_selMethod->currentIndex())
+		{
+			ui->textEdit_info->append(QStringLiteral("请先选择正确的测试方法！"));
+			return;
+		}
+
+		m_pCom->TxSetParam(m_methodParam);
+
+
+	}
+	else if (Start == m_testState)
+	{
+		// 测试为进行状态，停止测试
+		m_pCom->TxCmd(0x01, 0x0, 0x0);
+	}
+
+}
+
+
+/*
+* 参数：
+* 返回：
+* 功能：暂停或继续测试命令槽函数
+*/
+void Widget::OnBtnPauseTestClicked()
+{
+	if (Start == m_testState)
+	{
+		// 测试为进行状态，暂停测试
+		m_pCom->TxCmd(0x01, 0xff, 0x0);
+	}
+	else if (Pause == m_testState)
+	{
+		// 测试暂停状态，测试继续进行
+		m_pCom->TxCmd(0x01, static_cast<quint8>(m_methodParam.plan), 0x0);
+	}
 }
 
 
@@ -1184,7 +1287,123 @@ void Widget::OnBtnComOpClicked()
 */
 void Widget::OnRxDataReceived(const QByteArray &rxBuf)
 {
-	ui->textEdit_info->append(rxBuf);
+	QString str;
+	HexToString(rxBuf, str);
+	ui->textEdit_info->append(str);
+}
+
+
+/*
+* 参数：handshake--与设备通信的握手状态
+* 返回：
+* 功能：根据与设备通信的握手状态，做相应的提示与处理
+*/
+void Widget::OnHandShakeStateReceived(STRUCT_HandShake &handshake)
+{
+	switch (handshake.state)
+	{
+	case SetParamOk:
+		// 只在开始测试前才会设置参数
+		ui->textEdit_info->append(QStringLiteral("设置参数成功！"));
+
+		// 发送测试开始命令
+		m_pCom->TxCmd(0x01, static_cast<quint8>(m_methodParam.plan), 0x0);
+		break;
+	case SetParamError:
+		ui->textEdit_info->append(QStringLiteral("设置参数失败！"));
+		break;
+	case SetParamAckTimeOut:
+		ui->textEdit_info->append(QStringLiteral("设置参数，等待应答超时，请检查与设备的连接情况！"));
+		break;
+	case ReadParamOk:
+		ui->textEdit_info->append(QStringLiteral("读取参数成功！"));
+		break;
+	case ReadParamError:
+		ui->textEdit_info->append(QStringLiteral("读取参数失败！"));
+		break;
+	case ReadParamAckTimeOut:
+		ui->textEdit_info->append(QStringLiteral("读取参数，等待应答超时，请检查与设备的连接情况！"));
+		break;
+	case ReadStateOk:
+		if (Init == m_testState)
+		{
+			ui->textEdit_info->append(QStringLiteral("与设备联机成功！"));
+			m_testState = Connected;
+		}
+		//else
+		//{
+		//	ui->textEdit_info->append(QStringLiteral("读取设备实时数据与状态成功！"));
+		//}	
+		break;
+	case ReadStateError:
+		if (Init == m_testState)
+		{
+			ui->textEdit_info->append(QStringLiteral("与设备联机成功！"));
+			m_testState = Connected;
+		}
+		//else
+		//{
+		//	ui->textEdit_info->append(QStringLiteral("读取设备实时数据与状态失败！"));
+		//}
+		break;
+	case ReadStateAckTimeOut:
+		if (Init == m_testState)
+		{
+			ui->textEdit_info->append(QStringLiteral("与设备联机失败，请检查与设备的连接情况！"));
+		}
+		//else
+		//{
+		//	ui->textEdit_info->append(QStringLiteral("读取设备实时数据与状态，等待应答超时，请检查与设备的连接情况！"));
+		//}	
+		break;
+	case CmdOk:
+		QString strCmd;
+		switch(handshake.cmd)
+		{
+		case 0x01:
+			if ((Connected == m_testState) || (End == m_testState))
+			{
+				// 参数设置成功，开始命令操作成功，新的测试开始
+				m_testState = Start;
+				ui->textEdit_info->append(QStringLiteral("开始测试:"));
+			}
+			else if (Start == m_testState)
+			{
+
+			}
+			break;
+		case 0x02:
+			break;
+		case 0x03:
+			break;
+		case 0x04:
+			break;
+		case 0x05:
+			break;
+		case 0x06:
+			break;
+		case 0x07:
+			break;
+		case 0x08:
+			break;
+		case 0x09:
+			break;
+		case 0x0b:
+			break;
+		default:
+			break;
+		}
+		ui->textEdit_info->append(QStringLiteral("对设备的操作命令成功！"));
+		break;
+	case CmdError:
+		ui->textEdit_info->append(QStringLiteral("对设备的操作命令失败！"));
+		break;
+	case CmdAckTimeOut:
+		ui->textEdit_info->append(QStringLiteral("对设备的操作命令，等待应答超时，请检查与设备的连接情况！"));
+		break;
+	default:
+		break;
+	}
 }
 
 

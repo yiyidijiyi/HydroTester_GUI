@@ -170,7 +170,6 @@ public:
     QLineEdit *lineEdit_dropArea;
     QLineEdit *lineEdit_sensitivity;
     QLineEdit *lineEdit_ignoreWidth;
-    QLineEdit *lineEdit_pressureRange;
     QLineEdit *lineEdit_centerX;
     QLineEdit *lineEdit_centerY;
     QLineEdit *lineEdit_r;
@@ -193,6 +192,7 @@ public:
     QPushButton *pushButton_saveAccount;
     QPushButton *pushButton_saveParams;
     QLabel *label_advanceMessage;
+    QComboBox *comboBox_pressureRange;
     QWidget *tab_5;
     QFrame *line_5;
     QFrame *line_6;
@@ -873,10 +873,6 @@ public:
         lineEdit_ignoreWidth->setObjectName(QStringLiteral("lineEdit_ignoreWidth"));
         lineEdit_ignoreWidth->setEnabled(false);
         lineEdit_ignoreWidth->setGeometry(QRect(608, 300, 242, 30));
-        lineEdit_pressureRange = new QLineEdit(tab_4);
-        lineEdit_pressureRange->setObjectName(QStringLiteral("lineEdit_pressureRange"));
-        lineEdit_pressureRange->setEnabled(false);
-        lineEdit_pressureRange->setGeometry(QRect(608, 339, 242, 30));
         lineEdit_centerX = new QLineEdit(tab_4);
         lineEdit_centerX->setObjectName(QStringLiteral("lineEdit_centerX"));
         lineEdit_centerX->setEnabled(false);
@@ -972,6 +968,9 @@ public:
         label_advanceMessage = new QLabel(tab_4);
         label_advanceMessage->setObjectName(QStringLiteral("label_advanceMessage"));
         label_advanceMessage->setGeometry(QRect(120, 5, 1000, 30));
+        comboBox_pressureRange = new QComboBox(tab_4);
+        comboBox_pressureRange->setObjectName(QStringLiteral("comboBox_pressureRange"));
+        comboBox_pressureRange->setGeometry(QRect(608, 339, 242, 30));
         tabWidget->addTab(tab_4, QString());
         label_accountManagement->raise();
         line_4->raise();
@@ -996,7 +995,6 @@ public:
         lineEdit_dropArea->raise();
         lineEdit_sensitivity->raise();
         lineEdit_ignoreWidth->raise();
-        lineEdit_pressureRange->raise();
         lineEdit_centerX->raise();
         lineEdit_centerY->raise();
         lineEdit_r->raise();
@@ -1019,6 +1017,7 @@ public:
         pushButton_saveAccount->raise();
         pushButton_saveParams->raise();
         label_advanceMessage->raise();
+        comboBox_pressureRange->raise();
         tab_5 = new QWidget();
         tab_5->setObjectName(QStringLiteral("tab_5"));
         tabWidget->addTab(tab_5, QString());
@@ -1084,7 +1083,7 @@ public:
 
         retranslateUi(Widget);
 
-        tabWidget->setCurrentIndex(0);
+        tabWidget->setCurrentIndex(3);
         tabWidget_testInterface->setCurrentIndex(0);
 
 
@@ -1222,6 +1221,13 @@ public:
         pushButton_saveAccount->setText(QString());
         pushButton_saveParams->setText(QString());
         label_advanceMessage->setText(QString());
+        comboBox_pressureRange->clear();
+        comboBox_pressureRange->insertItems(0, QStringList()
+         << QApplication::translate("Widget", "5\347\261\263", 0)
+         << QApplication::translate("Widget", "10\347\261\263", 0)
+         << QApplication::translate("Widget", "20\347\261\263", 0)
+         << QApplication::translate("Widget", "50\347\261\263", 0)
+        );
         tabWidget->setTabText(tabWidget->indexOf(tab_4), QApplication::translate("Widget", "Tab 4", 0));
         tabWidget->setTabText(tabWidget->indexOf(tab_5), QApplication::translate("Widget", "Tab 5", 0));
         label_6->setText(QString());

@@ -479,7 +479,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>3</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -2487,19 +2487,6 @@ p, li { white-space: pre-wrap; }
       </rect>
      </property>
     </widget>
-    <widget class="QLineEdit" name="lineEdit_pressureRange">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="geometry">
-      <rect>
-       <x>608</x>
-       <y>339</y>
-       <width>242</width>
-       <height>30</height>
-      </rect>
-     </property>
-    </widget>
     <widget class="QLineEdit" name="lineEdit_centerX">
      <property name="enabled">
       <bool>false</bool>
@@ -2840,6 +2827,36 @@ p, li { white-space: pre-wrap; }
       <string/>
      </property>
     </widget>
+    <widget class="QComboBox" name="comboBox_pressureRange">
+     <property name="geometry">
+      <rect>
+       <x>608</x>
+       <y>339</y>
+       <width>242</width>
+       <height>30</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>5米</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>10米</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>20米</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>50米</string>
+      </property>
+     </item>
+    </widget>
     <zorder>label_accountManagement</zorder>
     <zorder>line_4</zorder>
     <zorder>listView_accountList</zorder>
@@ -2863,7 +2880,6 @@ p, li { white-space: pre-wrap; }
     <zorder>lineEdit_dropArea</zorder>
     <zorder>lineEdit_sensitivity</zorder>
     <zorder>lineEdit_ignoreWidth</zorder>
-    <zorder>lineEdit_pressureRange</zorder>
     <zorder>lineEdit_centerX</zorder>
     <zorder>lineEdit_centerY</zorder>
     <zorder>lineEdit_r</zorder>
@@ -2886,6 +2902,7 @@ p, li { white-space: pre-wrap; }
     <zorder>pushButton_saveAccount</zorder>
     <zorder>pushButton_saveParams</zorder>
     <zorder>label_advanceMessage</zorder>
+    <zorder>comboBox_pressureRange</zorder>
    </widget>
    <widget class="QWidget" name="tab_5">
     <attribute name="title">

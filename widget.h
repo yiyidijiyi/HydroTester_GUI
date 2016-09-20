@@ -125,10 +125,15 @@ public slots:
 	void OnLoginAccepted(int id);
 
 	/*
-	* 串口操作
+	* 设备操作
 	*/
 	void OnBtnComOpClicked();
+	void OnBtnWaterInClicked();
+	void OnBtnStartTestClicked();
+	void OnBtnPauseTestClicked();
+	void OnBtnWaterOffClicked();
 	void OnRxDataReceived(const QByteArray& rxBuf);
+	void OnHandShakeStateReceived(STRUCT_HandShake &handshake);
 
 	/*
 	* 操作界面切换
@@ -187,6 +192,7 @@ private:
 	QStringListModel *m_pMethodListModel;
 	MethodParam	*m_pMethodParam;
 	UIState	m_methodEditState;
+	STRUCT_MethodParam m_methodParam;
 	int	m_methodListIndex;
 	int	m_currentUnitIndex;
 
@@ -204,6 +210,13 @@ private:
 	QThread  *m_pRxThread;
 	SerialPort *m_pCom;
 	bool m_bIsComOpened;
+
+	// 测试状态
+	ENUM_TestState m_testState;
+
+	// 设备操作
+	bool m_bIsWaterIn;
+	bool m_bIsWaterOut;
 };
 
 #endif // WIDGET_H

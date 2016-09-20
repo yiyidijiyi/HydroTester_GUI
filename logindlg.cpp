@@ -21,7 +21,7 @@ LoginDlg::LoginDlg(QWidget *parent)
 {	
 	CreateUi();
 
-	m_pAccount = new UserAccount();
+	m_pAccount = new UserAccount(this);
 
 	connect(ui->pushButton_login, &QPushButton::clicked, this, &LoginDlg::OnLoginClicked);
 	connect(ui->pushButton_cancel, &QPushButton::clicked, this, &LoginDlg::OnCancelClicked);
