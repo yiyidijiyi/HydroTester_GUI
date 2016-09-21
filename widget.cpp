@@ -1248,12 +1248,10 @@ void Widget::OnBtnStartTestClicked()
 		}
 
 		m_pCom->TxSetParam(m_methodParam);
-
-
 	}
-	else if (Start == m_testState)
+	else if ((Start == m_testState) || (Pause == m_testState))
 	{
-		// 测试为进行状态，停止测试
+		// 测试为开始或暂停状态，停止测试
 		m_pCom->TxCmd(0x01, 0x0, 0x0);
 	}
 
@@ -1269,7 +1267,7 @@ void Widget::OnBtnPauseTestClicked()
 {
 	if (Start == m_testState)
 	{
-		// 测试为进行状态，暂停测试
+		// 测试开始状态，暂停测试
 		m_pCom->TxCmd(0x01, 0xff, 0x0);
 	}
 	else if (Pause == m_testState)
@@ -1357,49 +1355,70 @@ void Widget::OnHandShakeStateReceived(STRUCT_HandShake &handshake)
 		//}	
 		break;
 	case CmdOk:
-		QString strCmd;
 		switch(handshake.cmd)
 		{
-		case 0x01:
+		case 0x01:	// 测试开始，暂停，结束命令
 			if ((Connected == m_testState) || (End == m_testState))
 			{
 				// 参数设置成功，开始命令操作成功，新的测试开始
 				m_testState = Start;
-				ui->textEdit_info->append(QStringLiteral("开始测试:"));
+				ui->textEdit_info->append(QStringLiteral("试验开始："));
+				ui->pushButton_startStop->setText(QStringLiteral("结束"));
 			}
 			else if (Start == m_testState)
 			{
-
+				if (0 == handshake.data)
+				{
+					// 结束测试
+					m_testState = End;
+					ui->textEdit_info->append(QStringLiteral("试验结束！"));
+					ui->pushButton_startStop->setText(QStringLiteral("开始"));
+					ui->pushButton_pauseConti->setText(QStringLiteral("暂停"));
+				}
+				else if (0xff == handshake.data)
+				{
+					// 暂停测试
+					m_testState = Pause;
+					ui->textEdit_info->append(QStringLiteral("试验暂停。。。"));
+					ui->pushButton_pauseConti->setText(QStringLiteral("继续"));
+				}
+			}
+			else if (Pause == m_testState)
+			{
+				// 继续测试
+				m_testState = Start;
+				ui->textEdit_info->append(QStringLiteral("试验继续。。。"));
+				ui->pushButton_pauseConti->setText(QStringLiteral("暂停"));
 			}
 			break;
-		case 0x02:
+		case 0x02:	// 压头控制
 			break;
-		case 0x03:
+		case 0x03:	// 灯光控制
 			break;
-		case 0x04:
+		case 0x04:	// 保留
 			break;
-		case 0x05:
+		case 0x05:	// 去皮
 			break;
-		case 0x06:
+		case 0x06:	// 回复出厂控制
 			break;
-		case 0x07:
+		case 0x07:	// 进水控制
 			break;
-		case 0x08:
+		case 0x08:	// 排水控制
 			break;
-		case 0x09:
+		case 0x09:	// 压力标定
 			break;
-		case 0x0b:
+		case 0x0b:	// 通知设备当前选择测试项
 			break;
 		default:
 			break;
 		}
-		ui->textEdit_info->append(QStringLiteral("对设备的操作命令成功！"));
+		//ui->textEdit_info->append(QStringLiteral("对设备的操作命令成功！"));
 		break;
 	case CmdError:
-		ui->textEdit_info->append(QStringLiteral("对设备的操作命令失败！"));
+		//ui->textEdit_info->append(QStringLiteral("对设备的操作命令失败！"));
 		break;
 	case CmdAckTimeOut:
-		ui->textEdit_info->append(QStringLiteral("对设备的操作命令，等待应答超时，请检查与设备的连接情况！"));
+		//ui->textEdit_info->append(QStringLiteral("对设备的操作命令，等待应答超时，请检查与设备的连接情况！"));
 		break;
 	default:
 		break;

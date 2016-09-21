@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-12
-* 最后修改：2016-09-20
+* 最后修改：2016-09-21
 * 作      者：syf
 * 描      述：
 */
@@ -103,6 +103,7 @@ enum ENUM_HandShakeState{
 struct STRUCT_HandShake{
 	ENUM_HandShakeState state;
 	quint8  cmd;
+	quint8 data;
 };
 
 struct STRUCT_DeviceState{

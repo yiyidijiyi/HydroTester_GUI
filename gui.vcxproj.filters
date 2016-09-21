@@ -120,6 +120,15 @@
     <ClCompile Include="common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Debug\moc_mercamera.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_mercamera.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="mercamera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="logindlg.h">
@@ -141,6 +150,9 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="serialport.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="mercamera.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>

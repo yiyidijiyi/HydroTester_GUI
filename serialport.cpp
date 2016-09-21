@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-19
-* 最后修改：2016-09-20
+* 最后修改：2016-09-21
 * 作      者：syf
 * 描      述：
 */
@@ -10,7 +10,7 @@
 /*
 * 参数：
 * 返回：
-* 功能：够着函数
+* 功能：构造函数
 */
 SerialPort::SerialPort(QObject *parent)
 : QSerialPort(parent)
@@ -168,7 +168,7 @@ void SerialPort::ProtocolDecode(const QByteArray &data, int index)
 	switch (funcCode)
 	{
 	case 0:	// 参数设置读取	
-		m_handshake.cmd = 0;
+		m_handshake.cmd = 0x0;
 		if (WaitForSetParamAck == m_handshakeState)
 		{
 			if (data[index + 4])
@@ -730,6 +730,7 @@ void SerialPort::TxCmd(quint8 cmd, quint8 val1, int val2)
 	QByteArray txData;
 	quint8 checkSum = 0;
 	m_handshake.cmd = cmd;
+	m_handshake.data = val1;
 
 	// 帧头
 	txData.append(static_cast<char>(0x68));
