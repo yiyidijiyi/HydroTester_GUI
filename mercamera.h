@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-21
-* 最后修改：2016-09-21
+* 最后修改：2016-09-22
 * 作      者：syf
 * 描      述：
 */
@@ -61,18 +61,6 @@ public:
 		SoftwareTriggerMode = 2
 	};
 
-	enum ENUM_WhiteBalanceChannel{
-		R = 0,
-		G = 1,
-		B = 2
-	};
-
-	enum ENUM_WorkingMode{
-		Off = 0,
-		Continuous = 1,
-		Once = 2
-	};
-
 	MerCamera(QObject *parent = 0);
 	~MerCamera();
 
@@ -116,22 +104,46 @@ public:
 	BOOL SoftwareTrigger(void);
 
 	// 设置自动白平衡
-	BOOL SetAutoWhiteBalance(ENUM_WorkingMode mode);
+	BOOL SetAutoWhiteBalance(GX_BALANCE_WHITE_AUTO_ENTRY mode);
 
 	// 设置白平衡系数
-	BOOL SetBalanceRatio(ENUM_WhiteBalanceChannel channel, double val);
+	BOOL SetBalanceRatio(GX_BALANCE_RATIO_SELECTOR_ENTRY channel, double val);
 
 	// 获取白平衡系数
-	BOOL GetBalanceRatio(ENUM_WhiteBalanceChannel channel, double *val);
+	BOOL GetBalanceRatio(GX_BALANCE_RATIO_SELECTOR_ENTRY channel, double *val);
+
+	// 设置黑电平通道通道
+	BOOL SetBlackLevelSelector(GX_BLACKLEVEL_SELECTOR_ENTRY selector);
+
+	// 设置自动黑电平
+	BOOL SetAutoBlackLevel(GX_BLACKLEVEL_AUTO_ENTRY mode);
+
+	// 设置增益通道
+	BOOL SetGainSelector(GX_GAIN_SELECTOR_ENTRY selector);
+
+	// 设置自动增益
+	BOOL SetAutoGain(GX_GAIN_AUTO_ENTRY mode);
+
+	// 设定增益值
+	BOOL SetGain(double gian);
+
+	// 获取增益值
+	BOOL GetGain(double *gain);
 
 	// 设置自动曝光
-	BOOL SetAutoExposure(ENUM_WorkingMode mode);
+	BOOL SetAutoExposure(GX_EXPOSURE_AUTO_ENTRY mode);
 
 	// 设置曝光时间
 	BOOL SetExposure(double t);
 
 	// 获取曝光时间
 	BOOL GetExposure(double *t);
+
+	// 设置自动曝光的期望灰度值
+	BOOL SetExpectedGray(int64_t gray);
+
+	// 相机是否已打开
+	BOOL IsCameraOpened();
 
 	// 连接mat的图像数据
 	void BitMap2Mat(BYTE* pBuffer);
@@ -159,20 +171,20 @@ private:
 private:
 	QStringList m_messageList;
 	//----------------大恒相机图像采集相关成员--------------------------
-	GX_DEV_HANDLE           m_hDevice;                ///< 设备句柄
+	GX_DEV_HANDLE     m_hDevice;                ///< 设备句柄
 	int64_t                 m_nImageWidth;            ///< 相机输出图像宽度
 	int64_t                 m_nImageHeight;           ///< 相机输出图像高度
 	int64_t                 m_nPayLoadSize;           ///< 设备输出原始图像大小
-	int64_t                 m_nPixelColorFilter;      ///< 彩色相机的Bayer格式
+	int64_t                 m_nPixelColorFilter;       ///< 彩色相机的Bayer格式
 
 	GX_FLOAT_RANGE          m_stShutterFloatRange;    ///< 保存曝光时间范围
 	GX_FLOAT_RANGE          m_stGainFloatRange;       ///< 保存增益值范围           
 
 	BITMAPINFO             *m_pBmpInfo;	              ///< BITMAPINFO 结构指针，显示图像时使用
-	GX_FRAME_DATA			m_stFrameData;			  ///< GetImage获取的图像地址
+	GX_FRAME_DATA		m_stFrameData;			  ///< GetImage获取的图像地址
 
 	BOOL               m_bDevOpened;             ///< 标识设备是否已打开
-	BOOL               m_bIsSnap;                ///< 标识设备是否已开采
+	BOOL               m_bDevSnaped;                ///< 标识设备是否已开采
 	bool					m_bIsImgSnaped;		///< 图像数据采集标志
 	bool                 m_bIsColorFilter;         ///< 判断相机是否支持Bayer格式
 	bool                 m_bImplementAutoGain;     ///< 是否支持自动增益

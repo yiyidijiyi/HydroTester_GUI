@@ -21,6 +21,7 @@
 #include "methodparam.h"
 #include "testresult.h"
 #include "serialport.h"
+#include "mercamera.h"
 #include "ui_widget.h"
 
 // 自定义标题栏大小
@@ -72,6 +73,11 @@ public:
 	Widget::InterfaceIndex GetInterfaceIndex(void);
 
 private:
+	/*
+	* 显示图像
+	*/
+	void ShowImage(Mat &image);
+
 	/*
 	* 串口相关
 	*/
@@ -127,6 +133,7 @@ public slots:
 	/*
 	* 设备操作
 	*/
+	void OnBtnOpenCameraClicked();
 	void OnBtnComOpClicked();
 	void OnBtnWaterInClicked();
 	void OnBtnStartTestClicked();
@@ -210,6 +217,9 @@ private:
 	QThread  *m_pRxThread;
 	SerialPort *m_pCom;
 	bool m_bIsComOpened;
+
+	// 相机
+	MerCamera *m_pCamera;
 
 	// 测试状态
 	ENUM_TestState m_testState;

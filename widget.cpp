@@ -26,6 +26,7 @@ Widget::Widget(QWidget *parent)
 	, m_currentUnitIndex(0)
 	, m_pCom(NULL)
 	, m_pRxThread(NULL)
+	, m_pCamera(NULL)
 	, m_bIsComOpened(false)
 	, m_testState(Init)
 	, m_bIsWaterIn(false)
@@ -53,6 +54,9 @@ Widget::Widget(QWidget *parent)
 	// 初始化串口设备
 	InitSerialPort();
 
+	// 相机
+	m_pCamera = new MerCamera(this);
+
 	/*
 	* 链接信号与槽
 	*/
@@ -61,6 +65,7 @@ Widget::Widget(QWidget *parent)
 	connect(ui->pushButton_close, &QPushButton::clicked, this, &Widget::OnBtnCloseClicked);
 
 	// 设备操作
+	connect(ui->pushButton_openCloseCamera, &QPushButton::clicked, this, &Widget::OnBtnOpenCameraClicked);
 	connect(ui->pushButton_connectCom, &QPushButton::clicked, this, &Widget::OnBtnComOpClicked);
 	connect(ui->pushButton_waterIn, &QPushButton::clicked, this, &Widget::OnBtnWaterInClicked);
 	connect(ui->pushButton_waterOff, &QPushButton::clicked, this, &Widget::OnBtnWaterOffClicked);
@@ -151,6 +156,11 @@ Widget::~Widget()
 	if (m_pTestResult)
 	{
 		delete m_pTestResult;
+	}
+
+	if (m_pCamera)
+	{
+		delete m_pCamera;
 	}
 
 	delete ui;
@@ -441,6 +451,39 @@ void Widget::SwitchChart(ChartIndex index)
 Widget::InterfaceIndex Widget::GetInterfaceIndex()
 {
 	return m_interfaceIndex;
+}
+
+
+/*
+* 参数：image:显示的图像数据
+* 返回：
+* 功能：显示图像
+*/
+void Widget::ShowImage(Mat &image)
+{
+	QImage showImage;
+	Mat resizeImage;
+	Mat rgbImage;
+
+	cv::resize(image, resizeImage, Size(427, 342));
+
+	if (3 == resizeImage.channels())
+	{
+		cvtColor(resizeImage, rgbImage, CV_BGR2RGB);
+		showImage = QImage((const uchar*)(rgbImage.data),
+			rgbImage.cols, rgbImage.rows,
+			rgbImage.step,
+			QImage::Format_RGB888);
+	}
+	else
+	{
+		showImage = QImage((const uchar*)(resizeImage.data),
+			resizeImage.cols, resizeImage.rows,
+			resizeImage.step,
+			QImage::Format_Indexed8);
+	}
+
+	ui->label_video->setPixmap(QPixmap::fromImage(showImage));
 }
 
 
@@ -1149,6 +1192,79 @@ void Widget::OnLoginAccepted(int id)
 	UpdateAccountList();
 
 	UpdateTestMethodList();
+}
+
+
+/*
+* 参数：
+* 返回：
+* 功能：打开或关闭相机槽函数
+*/
+void Widget::OnBtnOpenCameraClicked()
+{
+	BOOL state = FALSE;
+
+	if ((m_pCamera != NULL) && (FALSE == m_pCamera->IsCameraOpened()))
+	{
+		// 打开相机
+		state = m_pCamera->OpenCamera();
+
+		if (FALSE == state)
+		{
+			ui->textEdit_info->append(QStringLiteral("打开相机失败！"));
+			return;
+		}
+
+		// 设置采集
+		state = m_pCamera->StartSnap(MerCamera::SoftwareTriggerMode);
+
+		if (FALSE == state)
+		{
+			ui->textEdit_info->append(QStringLiteral("初始化相机采集失败！"));
+			m_pCamera->CloseCamera();
+			return;
+		}
+
+		// 设置自动曝光
+		state = m_pCamera->SetAutoExposure(GX_EXPOSURE_AUTO_CONTINUOUS);
+
+		if (FALSE == state)
+		{
+			ui->textEdit_info->append(QStringLiteral("相机设置自动曝光失败！"));
+			m_pCamera->CloseCamera();
+			return;
+		}
+
+		// 设定光照和期望灰度
+		state = m_pCamera->SetExpectedGray(64);
+
+		if (FALSE == state)
+		{
+			ui->textEdit_info->append(QStringLiteral("相机设置期望灰度失败！"));
+			m_pCamera->CloseCamera();
+			return;
+		}
+
+		ui->textEdit_info->append(QStringLiteral("相机已打开！"));
+		ui->pushButton_openCloseCamera->setText(QStringLiteral("关闭相机"));
+	}
+	else if ((m_pCamera != NULL) && (TRUE == m_pCamera->IsCameraOpened()))
+	{
+		state = m_pCamera->CloseCamera();
+
+		if (FALSE == state)
+		{
+			ui->textEdit_info->append(QStringLiteral("关闭相机失败，请复位后重试！"));
+		}
+		else
+		{
+			ui->textEdit_info->append(QStringLiteral("相机已关闭！"));
+		}
+
+		ui->pushButton_openCloseCamera->setText(QStringLiteral("打开相机"));
+	}
+	
+	
 }
 
 

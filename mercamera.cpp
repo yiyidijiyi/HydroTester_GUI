@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-21
-* 最后修改：2016-09-21
+* 最后修改：2016-09-22
 * 作      者：syf
 * 描      述：
 */
@@ -15,7 +15,7 @@
 MerCamera::MerCamera(QObject *parent)
 	: QObject(parent)
 	, m_bDevOpened(FALSE)
-	, m_bIsSnap(FALSE)
+	, m_bDevSnaped(FALSE)
 	, m_bIsImgSnaped(false)
 	, m_bIsSingleSnap(false)
 	, m_snapMode(ClosedMode)
@@ -69,7 +69,10 @@ MerCamera::MerCamera(QObject *parent)
 */
 MerCamera::~MerCamera()
 {
-
+	if (m_bDevOpened)
+	{
+		CloseCamera();
+	}
 }
 
 
@@ -463,13 +466,6 @@ BOOL MerCamera::OpenCamera(void)
 	// 清除原有信息
 	m_messageList.clear();
 
-	//判断句柄是否有效，避免设备掉线后关闭程序出现的异常
-	if (m_hDevice == NULL)
-	{
-		m_messageList.append(QStringLiteral("设备句柄无效！"));
-		return FALSE;
-	}
-
 	// 初始化设备打开参数
 	stOpenParam.accessMode = GX_ACCESS_EXCLUSIVE;
 	stOpenParam.openMode = GX_OPEN_INDEX;
@@ -535,7 +531,7 @@ BOOL MerCamera::CloseCamera(void)
 	}
 
 	// 相机正在采集时则先停止采集
-	if (m_bIsSnap)
+	if (m_bDevSnaped)
 	{
 		//发送停止采集命令
 		emStatus = GXSendCommand(m_hDevice, GX_COMMAND_ACQUISITION_STOP);
@@ -564,7 +560,7 @@ BOOL MerCamera::CloseCamera(void)
 		// 释放为采集图像开辟的图像Buffer
 		UnPrepareForShowImg();
 
-		m_bIsSnap = FALSE;
+		m_bDevSnaped = FALSE;
 		//m_bIsSingleSnap = FALSE;
 	}
 
@@ -618,7 +614,7 @@ BOOL MerCamera::StartSnap(ENUM_SnapMode mode)
 	emStatus = GXSendCommand(m_hDevice, GX_COMMAND_ACQUISITION_START);
 	GX_VERIFY(emStatus);
 
-	m_bIsSnap = TRUE;
+	m_bDevSnaped = TRUE;
 	m_snapMode = mode;
 
 	return TRUE;
@@ -656,7 +652,7 @@ BOOL MerCamera::StopSnap(ENUM_SnapMode mode)
 	// 释放为采集图像开辟的图像Buffer
 	UnPrepareForShowImg();
 
-	m_bIsSnap = FALSE;
+	m_bDevSnaped = FALSE;
 	m_snapMode = ClosedMode;
 	return TRUE;
 }
@@ -710,7 +706,7 @@ BOOL MerCamera::SoftwareTrigger(void)
 * 返回：
 * 功能：设置自动白平衡
 */
-BOOL MerCamera::SetAutoWhiteBalance(ENUM_WorkingMode mode)
+BOOL MerCamera::SetAutoWhiteBalance(GX_BALANCE_WHITE_AUTO_ENTRY mode)
 {
 	GX_STATUS emStatus = GX_STATUS_SUCCESS;
 	m_messageList.clear();
@@ -749,7 +745,7 @@ BOOL MerCamera::SetAutoWhiteBalance(ENUM_WorkingMode mode)
 * 返回：
 * 功能：
 */
-BOOL MerCamera::SetBalanceRatio(ENUM_WhiteBalanceChannel channel, double val)
+BOOL MerCamera::SetBalanceRatio(GX_BALANCE_RATIO_SELECTOR_ENTRY channel, double val)
 {
 	m_messageList.clear();
 
@@ -784,7 +780,7 @@ BOOL MerCamera::SetBalanceRatio(ENUM_WhiteBalanceChannel channel, double val)
 * 返回：
 * 功能：
 */
-BOOL MerCamera::GetBalanceRatio(ENUM_WhiteBalanceChannel channel, double *val)
+BOOL MerCamera::GetBalanceRatio(GX_BALANCE_RATIO_SELECTOR_ENTRY channel, double *val)
 {
 	m_messageList.clear();
 
@@ -809,11 +805,160 @@ BOOL MerCamera::GetBalanceRatio(ENUM_WhiteBalanceChannel channel, double *val)
 
 
 /*
+* 参数：selector：选择增益通道
+* 返回：
+* 功能：设置相机增益通道
+*/
+BOOL MerCamera::SetBlackLevelSelector(GX_BLACKLEVEL_SELECTOR_ENTRY selector)
+{
+	m_messageList.clear();
+
+	//判断句柄是否有效，避免设备掉线后关闭程序出现的异常
+	if (m_hDevice == NULL)
+	{
+		m_messageList.append(QStringLiteral("设备句柄无效！"));
+		return FALSE;
+	}
+
+	GX_STATUS emStatus = GX_STATUS_SUCCESS;
+
+	emStatus = GXSetEnum(m_hDevice, GX_ENUM_BLACKLEVEL_SELECTOR, static_cast<int64_t>(selector));
+	GX_VERIFY(emStatus);
+
+	return TRUE;
+}
+
+
+/*
+* 参数：mode：自动增益工作模式
+* 返回：
+* 功能：设置相机增益工作模式
+*/
+BOOL MerCamera::SetAutoBlackLevel(GX_BLACKLEVEL_AUTO_ENTRY mode)
+{
+	m_messageList.clear();
+
+	//判断句柄是否有效，避免设备掉线后关闭程序出现的异常
+	if (m_hDevice == NULL)
+	{
+		m_messageList.append(QStringLiteral("设备句柄无效！"));
+		return FALSE;
+	}
+
+	GX_STATUS emStatus = GX_STATUS_SUCCESS;
+
+	emStatus = GXSetEnum(m_hDevice, GX_ENUM_BLACKLEVEL_AUTO, static_cast<int64_t>(mode));
+	GX_VERIFY(emStatus);
+
+	return TRUE;
+}
+
+
+/*
+* 参数：selector：选择增益通道
+* 返回：
+* 功能：设置相机增益通道
+*/
+BOOL MerCamera::SetGainSelector(GX_GAIN_SELECTOR_ENTRY selector)
+{
+	m_messageList.clear();
+
+	//判断句柄是否有效，避免设备掉线后关闭程序出现的异常
+	if (m_hDevice == NULL)
+	{
+		m_messageList.append(QStringLiteral("设备句柄无效！"));
+		return FALSE;
+	}
+
+	GX_STATUS emStatus = GX_STATUS_SUCCESS;
+
+	emStatus = GXSetEnum(m_hDevice, GX_ENUM_GAIN_SELECTOR, static_cast<int64_t>(selector));
+	GX_VERIFY(emStatus);
+
+	return TRUE;
+}
+
+
+/*
+* 参数：mode：自动增益工作模式
+* 返回：
+* 功能：设置相机增益工作模式
+*/
+BOOL MerCamera::SetAutoGain(GX_GAIN_AUTO_ENTRY mode)
+{
+	m_messageList.clear();
+
+	//判断句柄是否有效，避免设备掉线后关闭程序出现的异常
+	if (m_hDevice == NULL)
+	{
+		m_messageList.append(QStringLiteral("设备句柄无效！"));
+		return FALSE;
+	}
+
+	GX_STATUS emStatus = GX_STATUS_SUCCESS;
+
+	emStatus = GXSetEnum(m_hDevice, GX_ENUM_GAIN_AUTO, static_cast<int64_t>(mode));
+	GX_VERIFY(emStatus);
+
+	return TRUE;
+}
+
+
+/*
+* 参数：val：增益值
+* 返回：
+* 功能：设置相机增益值
+*/
+BOOL MerCamera::SetGain(double gain)
+{
+	m_messageList.clear();
+
+	//判断句柄是否有效，避免设备掉线后关闭程序出现的异常
+	if (m_hDevice == NULL)
+	{
+		m_messageList.append(QStringLiteral("设备句柄无效！"));
+		return FALSE;
+	}
+
+	GX_STATUS emStatus = GX_STATUS_SUCCESS;
+
+	emStatus = GXSetFloat(m_hDevice, GX_FLOAT_GAIN, gain);
+	GX_VERIFY(emStatus);
+
+	return TRUE;
+}
+
+
+/*
+* 参数：gain:输出，增益值
+* 返回：
+* 功能：获取相机的增益值
+*/
+BOOL MerCamera::GetGain(double *gain)
+{
+	m_messageList.clear();
+
+	//判断句柄是否有效，避免设备掉线后关闭程序出现的异常
+	if (m_hDevice == NULL)
+	{
+		m_messageList.append(QStringLiteral("设备句柄无效！"));
+		return FALSE;
+	}
+
+	GX_STATUS emStatus = GX_STATUS_SUCCESS;
+
+	emStatus = GXGetFloat(m_hDevice, GX_FLOAT_GAIN, gain);
+
+	return TRUE;
+}
+
+
+/*
 * 参数：mode：曝光工作模式
 * 返回：
 * 功能：设置曝光工作模式
 */
-BOOL MerCamera::SetAutoExposure(ENUM_WorkingMode mode)
+BOOL MerCamera::SetAutoExposure(GX_EXPOSURE_AUTO_ENTRY mode)
 {
 	GX_STATUS emStatus = GX_STATUS_SUCCESS;
 
@@ -879,9 +1024,51 @@ BOOL MerCamera::GetExposure(double *t)
 
 	GX_STATUS emStatus = GX_STATUS_SUCCESS;
 
-	emStatus = GXGetFloat(m_hDevice, GX_FLOAT_EXPOSURE_TIME, t);;
+	emStatus = GXGetFloat(m_hDevice, GX_FLOAT_EXPOSURE_TIME, t);
 
 	return TRUE;
+}
+
+
+/*
+* 参数：gray:期望平均灰度值
+* 返回：
+* 功能：设置自动曝光时，图像期望平均灰度值
+*/
+BOOL MerCamera::SetExpectedGray(int64_t gray)
+{
+	m_messageList.clear();
+
+	//判断句柄是否有效，避免设备掉线后关闭程序出现的异常
+	if (m_hDevice == NULL)
+	{
+		m_messageList.append(QStringLiteral("设备句柄无效！"));
+		return FALSE;
+	}
+
+	GX_STATUS emStatus = GX_STATUS_SUCCESS;
+
+	// 光照类型0：自然光，1：50Hz日光灯，2：60Hz日光灯
+	emStatus = GXSetEnum(m_hDevice, GX_ENUM_AA_LIGHT_ENVIRONMENT, 0);
+	GX_VERIFY(emStatus);
+
+	// 期望灰度值
+	emStatus = GXSetInt(m_hDevice, GX_INT_GRAY_VALUE, gray);
+	GX_VERIFY(emStatus);
+
+	return TRUE;
+}
+
+
+/*
+* 参数：
+* 返回：
+* 功能：返回相机状态
+*/
+BOOL MerCamera::IsCameraOpened()
+{
+	// 开采标记置位，才表示相机已正常工作
+	return m_bDevSnaped;
 }
 
 
