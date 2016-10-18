@@ -25,6 +25,7 @@
 #include <QtWidgets/QTableView>
 #include <QtWidgets/QTextEdit>
 #include <QtWidgets/QWidget>
+#include "qwt_plot.h"
 
 QT_BEGIN_NAMESPACE
 
@@ -73,7 +74,10 @@ public:
     QTextEdit *textEdit_info;
     QPushButton *pushButton_clearInfo;
     QWidget *tab_6;
+    QwtPlot *qwtPlot;
+    QPushButton *pushButton_saveCurve;
     QWidget *tab_7;
+    QTextEdit *textEdit_report;
     QFrame *frame_4;
     QPushButton *pushButton_video;
     QFrame *line_24;
@@ -429,9 +433,21 @@ public:
         tabWidget_testInterface->addTab(tab_10, QString());
         tab_6 = new QWidget();
         tab_6->setObjectName(QStringLiteral("tab_6"));
+        qwtPlot = new QwtPlot(tab_6);
+        qwtPlot->setObjectName(QStringLiteral("qwtPlot"));
+        qwtPlot->setGeometry(QRect(10, 25, 860, 380));
+        pushButton_saveCurve = new QPushButton(tab_6);
+        pushButton_saveCurve->setObjectName(QStringLiteral("pushButton_saveCurve"));
+        pushButton_saveCurve->setGeometry(QRect(850, 5, 15, 15));
+        QIcon icon8;
+        icon8.addFile(QString::fromUtf8("resource/\351\253\230\347\272\247\350\256\276\347\275\256/\344\277\235\345\255\230\345\233\276\346\240\207\347\201\260\350\211\262.png"), QSize(), QIcon::Normal, QIcon::Off);
+        pushButton_saveCurve->setIcon(icon8);
         tabWidget_testInterface->addTab(tab_6, QString());
         tab_7 = new QWidget();
         tab_7->setObjectName(QStringLiteral("tab_7"));
+        textEdit_report = new QTextEdit(tab_7);
+        textEdit_report->setObjectName(QStringLiteral("textEdit_report"));
+        textEdit_report->setGeometry(QRect(10, 10, 880, 380));
         tabWidget_testInterface->addTab(tab_7, QString());
         frame_4 = new QFrame(tab);
         frame_4->setObjectName(QStringLiteral("frame_4"));
@@ -618,9 +634,9 @@ public:
         pushButton_saveMethod = new QPushButton(tab_2);
         pushButton_saveMethod->setObjectName(QStringLiteral("pushButton_saveMethod"));
         pushButton_saveMethod->setGeometry(QRect(1305, 54, 15, 15));
-        QIcon icon8;
-        icon8.addFile(QStringLiteral("resource/testmethod/methodSave.png"), QSize(), QIcon::Normal, QIcon::Off);
-        pushButton_saveMethod->setIcon(icon8);
+        QIcon icon9;
+        icon9.addFile(QStringLiteral("resource/testmethod/methodSave.png"), QSize(), QIcon::Normal, QIcon::Off);
+        pushButton_saveMethod->setIcon(icon9);
         pushButton_saveMethod->setFlat(true);
         label_testMethodMessage = new QLabel(tab_2);
         label_testMethodMessage->setObjectName(QStringLiteral("label_testMethodMessage"));
@@ -955,16 +971,16 @@ public:
         pushButton_saveAccount = new QPushButton(tab_4);
         pushButton_saveAccount->setObjectName(QStringLiteral("pushButton_saveAccount"));
         pushButton_saveAccount->setGeometry(QRect(1310, 53, 15, 15));
-        QIcon icon9;
-        icon9.addFile(QStringLiteral("resource/advance/advanceSave0.png"), QSize(), QIcon::Normal, QIcon::Off);
-        pushButton_saveAccount->setIcon(icon9);
+        QIcon icon10;
+        icon10.addFile(QStringLiteral("resource/advance/advanceSave0.png"), QSize(), QIcon::Normal, QIcon::Off);
+        pushButton_saveAccount->setIcon(icon10);
         pushButton_saveAccount->setFlat(true);
         pushButton_saveParams = new QPushButton(tab_4);
         pushButton_saveParams->setObjectName(QStringLiteral("pushButton_saveParams"));
         pushButton_saveParams->setGeometry(QRect(1310, 228, 15, 15));
-        QIcon icon10;
-        icon10.addFile(QStringLiteral("resource/advance/advanceSave1.png"), QSize(), QIcon::Normal, QIcon::Off);
-        pushButton_saveParams->setIcon(icon10);
+        QIcon icon11;
+        icon11.addFile(QStringLiteral("resource/advance/advanceSave1.png"), QSize(), QIcon::Normal, QIcon::Off);
+        pushButton_saveParams->setIcon(icon11);
         label_advanceMessage = new QLabel(tab_4);
         label_advanceMessage->setObjectName(QStringLiteral("label_advanceMessage"));
         label_advanceMessage->setGeometry(QRect(120, 5, 1000, 30));
@@ -1084,7 +1100,7 @@ public:
         retranslateUi(Widget);
 
         tabWidget->setCurrentIndex(0);
-        tabWidget_testInterface->setCurrentIndex(0);
+        tabWidget_testInterface->setCurrentIndex(2);
 
 
         QMetaObject::connectSlotsByName(Widget);
@@ -1129,6 +1145,7 @@ public:
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>", 0));
         pushButton_clearInfo->setText(QApplication::translate("Widget", "\346\270\205\351\231\244\344\277\241\346\201\257", 0));
         tabWidget_testInterface->setTabText(tabWidget_testInterface->indexOf(tab_10), QApplication::translate("Widget", "\345\233\276\350\241\250", 0));
+        pushButton_saveCurve->setText(QString());
         tabWidget_testInterface->setTabText(tabWidget_testInterface->indexOf(tab_6), QApplication::translate("Widget", "\346\233\262\347\272\277", 0));
         tabWidget_testInterface->setTabText(tabWidget_testInterface->indexOf(tab_7), QApplication::translate("Widget", "\346\212\245\345\221\212", 0));
         pushButton_video->setText(QApplication::translate("Widget", "\345\233\276\350\241\250", 0));

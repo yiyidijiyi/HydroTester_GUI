@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-02
-* 最后修改：2016-09-20
+* 最后修改：2016-09-23
 * 作      者：syf
 * 描      述：
 */
@@ -31,6 +31,8 @@ Widget::Widget(QWidget *parent)
 	, m_testState(Init)
 	, m_bIsWaterIn(false)
 	, m_bIsWaterOut(false)
+	, m_pCurve(NULL)
+	, m_oldSize(0)
 {
 	CreateUi();
 
@@ -57,6 +59,9 @@ Widget::Widget(QWidget *parent)
 	// 相机
 	m_pCamera = new MerCamera(this);
 
+	// 压力曲线
+	InitCurve();
+
 	/*
 	* 链接信号与槽
 	*/
@@ -71,6 +76,7 @@ Widget::Widget(QWidget *parent)
 	connect(ui->pushButton_waterOff, &QPushButton::clicked, this, &Widget::OnBtnWaterOffClicked);
 	connect(m_pCom, &SerialPort::DataReceived, this, &Widget::OnRxDataReceived);
 	connect(m_pCom, &SerialPort::HandshakeState, this, &Widget::OnHandShakeStateReceived);
+	connect(ui->pushButton_print, &QPushButton::clicked, this, &Widget::OnBtnPrintReportClicked);
 
 	// 界面切换
 	connect(ui->pushButton_testInterface, &QPushButton::clicked, this, &Widget::OnBtnTestInterfaceClicked);
@@ -84,7 +90,6 @@ Widget::Widget(QWidget *parent)
 	connect(ui->pushButton_video, &QPushButton::clicked, this, &Widget::OnBtnChartVideoClicked);
 	connect(ui->pushButton_curve, &QPushButton::clicked, this, &Widget::OnBtnChartCurveClicked);
 	connect(ui->pushButton_report, &QPushButton::clicked, this, &Widget::OnBtnChartReportClicked);
-	connect(ui->pushButton_print, &QPushButton::clicked, this, &Widget::OnBtnChartPrintClicked);
 	connect(ui->comboBox_selMethod, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &Widget::OnCombSelMethodChanged);
 
 	// 测试方法操作
@@ -163,6 +168,11 @@ Widget::~Widget()
 		delete m_pCamera;
 	}
 
+	if (m_pCurve)
+	{
+		delete m_pCurve;
+	}
+
 	delete ui;
 }
 
@@ -222,6 +232,8 @@ void Widget::CreateUi()
 		"QPushButton:hover{color:#ffffff; border-image: url(:/testInterface/resource/testInterface/testInterfaceBtn2.png);}");
 	ui->pushButton_openCloseCamera->setStyleSheet("QPushButton{font-family:'Microsoft YaHei';font-size:14px; color:#979797}"
 		"QPushButton:hover{color:#ffffff; border-image: url(:/testInterface/resource/testInterface/testInterfaceBtn2.png);}");
+	//ui->pushButton_saveCurve->setStyleSheet("QPushButton{font-family:'Microsoft YaHei';font-size:14px; color:#979797}"
+	//	"QPushButton:hover{color:#ffffff; border-image: url(:/testInterface/resource/testInterface/testInterfaceBtn2.png);}");
 
 	// 设置视频回放、清除信息按钮样式
 	ui->pushButton_playback->setStyleSheet("QPushButton{font-family:'Microsoft YaHei';font-size:16px; color:#979797}"
@@ -503,6 +515,35 @@ void Widget::InitSerialPort()
 	QStringList comList = m_pCom->GetComList();
 	
 	ui->comboBox_selCom->addItems(comList);
+}
+
+
+/*
+* 参数：
+* 返回：
+* 功能：初始化压力曲线
+*/
+void Widget::InitCurve()
+{
+	if (NULL == m_pCurve)
+	{
+		m_pCurve = new QwtPlotCurve("Pressure");
+	}
+
+	ui->qwtPlot->setTitle(QStringLiteral("压力曲线"));
+	ui->qwtPlot->setAxisTitle(QwtPlot::xBottom, QStringLiteral("时间（S）"));
+	ui->qwtPlot->setAxisTitle(QwtPlot::yLeft, QStringLiteral("压力（Pa）"));
+	ui->qwtPlot->setAxisScale(QwtPlot::xBottom, 0, 60.0, 5.0);
+	ui->qwtPlot->setAxisScale(QwtPlot::yLeft, 0, 100000.0);
+
+	m_vectorX.clear();
+	m_vectorY.clear();
+
+	m_pCurve->setStyle(QwtPlotCurve::Lines);
+	m_pCurve->setCurveAttribute(QwtPlotCurve::Fitted, true);
+	m_pCurve->setPen(QPen(Qt::red));
+
+	m_pCurve->attach(ui->qwtPlot);
 }
 
 
@@ -824,7 +865,7 @@ void Widget::ShowMethodParam(const STRUCT_MethodParam &method)
 {
 	ui->textEdit_methodInfo->append(QStringLiteral("方法名称：") + method.name);
 	ui->textEdit_methodInfo->append(QStringLiteral("应用标准：") + method.standard);
-	ui->textEdit_methodInfo->append(QStringLiteral("描述：") + method.discription);
+	
 
 	QString unit;
 
@@ -879,6 +920,8 @@ void Widget::ShowMethodParam(const STRUCT_MethodParam &method)
 	default:
 		break;
 	}
+
+	ui->textEdit_methodInfo->append(QStringLiteral("描述：") + method.discription);
 }
 
 
@@ -902,6 +945,26 @@ void Widget::DeleteReportInList(int id)
 			m_reportList.removeAt(i);
 			break;
 		}
+	}
+}
+
+/*
+* 参数：
+* 返回：
+* 功能：打印测试报告
+*/
+void Widget::PrintReport()
+{
+	QPrinter printer;
+
+	QPrintDialog printDialog(&printer, this);
+
+	if (printDialog.exec())
+	{
+		QTextDocument textDoc;
+		textDoc.setHtml(ui->textEdit_report->toHtml());
+		textDoc.print(&printer);
+
 	}
 }
 
@@ -958,6 +1021,21 @@ void Widget::UpdateMethodInfoUI(UIState state)
 	default:
 		break;
 	}
+}
+
+
+/*
+* 参数：
+* 返回：
+* 功能：设置对设备的操作状态
+*/
+void Widget::SetDeviceOprateEnabled(bool state)
+{
+	ui->pushButton_connectCom->setEnabled(state);
+	ui->pushButton_waterIn->setEnabled(state);
+	ui->pushButton_waterOff->setEnabled(state);
+	ui->pushButton_startStop->setEnabled(state);
+	ui->pushButton_pauseConti->setEnabled(state);
 }
 
 
@@ -1133,16 +1211,6 @@ void Widget::OnBtnChartReportClicked()
 }
 
 
-/*
-* 参数：
-* 返回：
-* 功能：图表显示选择打印功能
-*/
-void Widget::OnBtnChartPrintClicked()
-{
-	
-}
-
 
 /*
 * 参数：
@@ -1171,6 +1239,17 @@ void Widget::OnCombSelMethodChanged(int index)
 	{
 		ShowMethodParam(m_methodParam);
 	}
+}
+
+
+/*
+* 参数：
+* 返回：
+* 功能：答应实验报告，按钮槽函数
+*/
+void Widget::OnBtnPrintReportClicked()
+{
+	PrintReport();
 }
 
 
@@ -1286,10 +1365,11 @@ void Widget::OnBtnComOpClicked()
 	{
 		m_bIsComOpened = m_pCom->Open(ui->comboBox_selCom->currentText());
 
-		if (m_bIsComOpened)
+		if (m_bIsComOpened) 
 		{
 			ui->textEdit_info->append(QStringLiteral("打开串口成功！"));
 			m_pCom->TxReadState();
+			SetDeviceOprateEnabled(false);
 		}
 		else
 		{
@@ -1321,6 +1401,8 @@ void Widget::OnBtnWaterInClicked()
 		m_bIsWaterIn = true;
 		ui->pushButton_waterIn->setText(QStringLiteral("停止进水"));
 	}
+
+	SetDeviceOprateEnabled(false);
 }
 
 
@@ -1344,6 +1426,8 @@ void Widget::OnBtnWaterOffClicked()
 		m_bIsWaterOut = true;
 		ui->pushButton_waterOff->setText(QStringLiteral("停止排水"));
 	}
+
+	SetDeviceOprateEnabled(false);
 }
 
 
@@ -1371,6 +1455,7 @@ void Widget::OnBtnStartTestClicked()
 		m_pCom->TxCmd(0x01, 0x0, 0x0);
 	}
 
+	SetDeviceOprateEnabled(false);
 }
 
 
@@ -1391,6 +1476,8 @@ void Widget::OnBtnPauseTestClicked()
 		// 测试暂停状态，测试继续进行
 		m_pCom->TxCmd(0x01, static_cast<quint8>(m_methodParam.plan), 0x0);
 	}
+
+	SetDeviceOprateEnabled(false);
 }
 
 
@@ -1425,9 +1512,11 @@ void Widget::OnHandShakeStateReceived(STRUCT_HandShake &handshake)
 		break;
 	case SetParamError:
 		ui->textEdit_info->append(QStringLiteral("设置参数失败！"));
+		SetDeviceOprateEnabled(true);
 		break;
 	case SetParamAckTimeOut:
 		ui->textEdit_info->append(QStringLiteral("设置参数，等待应答超时，请检查与设备的连接情况！"));
+		SetDeviceOprateEnabled(true);
 		break;
 	case ReadParamOk:
 		ui->textEdit_info->append(QStringLiteral("读取参数成功！"));
@@ -1443,6 +1532,7 @@ void Widget::OnHandShakeStateReceived(STRUCT_HandShake &handshake)
 		{
 			ui->textEdit_info->append(QStringLiteral("与设备联机成功！"));
 			m_testState = Connected;
+			SetDeviceOprateEnabled(true);
 		}
 		//else
 		//{
@@ -1454,6 +1544,7 @@ void Widget::OnHandShakeStateReceived(STRUCT_HandShake &handshake)
 		{
 			ui->textEdit_info->append(QStringLiteral("与设备联机成功！"));
 			m_testState = Connected;
+			SetDeviceOprateEnabled(true);
 		}
 		//else
 		//{
@@ -1464,6 +1555,7 @@ void Widget::OnHandShakeStateReceived(STRUCT_HandShake &handshake)
 		if (Init == m_testState)
 		{
 			ui->textEdit_info->append(QStringLiteral("与设备联机失败，请检查与设备的连接情况！"));
+			SetDeviceOprateEnabled(true);
 		}
 		//else
 		//{
@@ -1518,6 +1610,14 @@ void Widget::OnHandShakeStateReceived(STRUCT_HandShake &handshake)
 		case 0x06:	// 回复出厂控制
 			break;
 		case 0x07:	// 进水控制
+			if (1 == handshake.data)
+			{
+				ui->textEdit_info->append(QStringLiteral("开始进水！"));
+			}
+			else if(0 == handshake.data)
+			{
+				ui->textEdit_info->append(QStringLiteral("开始排水！"));
+			}
 			break;
 		case 0x08:	// 排水控制
 			break;
@@ -1528,13 +1628,16 @@ void Widget::OnHandShakeStateReceived(STRUCT_HandShake &handshake)
 		default:
 			break;
 		}
+		SetDeviceOprateEnabled(true);
 		//ui->textEdit_info->append(QStringLiteral("对设备的操作命令成功！"));
 		break;
 	case CmdError:
 		//ui->textEdit_info->append(QStringLiteral("对设备的操作命令失败！"));
+		SetDeviceOprateEnabled(true);
 		break;
 	case CmdAckTimeOut:
 		//ui->textEdit_info->append(QStringLiteral("对设备的操作命令，等待应答超时，请检查与设备的连接情况！"));
+		SetDeviceOprateEnabled(true);
 		break;
 	default:
 		break;

@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-02
-* 最后修改：2016-09-19
+* 最后修改：2016-09-23
 * 作      者：syf
 * 描      述：
 */
@@ -15,6 +15,9 @@
 #include <QtSql/QSqlRelationalTableModel>
 #include <QStringListModel>
 #include <QThread>
+#include <QtPrintSupport/QPrinter>
+#include <QtPrintSupport/QPrintDialog>
+#include <QtPrintSupport/QPrintPreviewDialog>
 
 #include "common.h"
 #include "useraccount.h"
@@ -23,6 +26,12 @@
 #include "serialport.h"
 #include "mercamera.h"
 #include "ui_widget.h"
+
+#include "QWT/qwt_plot_curve.h"
+//#include "QWT/qwt_plot_magnifier.h"
+//#include "QWT/qwt_plot_panner.h"
+#include "QWT/qwt_legend.h"
+#include "QWT/qwt_plot_renderer.h"
 
 // 自定义标题栏大小
 #define TITLEBAR_WIDTH	1366
@@ -34,7 +43,8 @@
 #define DRAG_POS_MIN_Y	5
 #define DRAG_POS_MAX_Y	125
 
-
+// 压力曲线默认横坐标点数
+#define DEFAUT_CURVE_X	60
 
 
 
@@ -85,6 +95,11 @@ private:
 	void UpdateComUI();
 
 	/*
+	* 压力曲线相关
+	*/
+	void InitCurve();
+
+	/*
 	* 更新信息列表
 	*/
 	void UpdateAccountList();
@@ -96,6 +111,7 @@ private:
 	*/
 	void UpdateAcountInfoUI(UIState state);
 	void UpdateMethodInfoUI(UIState state);
+	void SetDeviceOprateEnabled(bool state);
 
 	/*
 	* 设置值超限判断
@@ -116,6 +132,11 @@ private:
 	* 删除测试结果列表中选中的项目
 	*/
 	void DeleteReportInList(int id);
+
+	/*
+	*打印报告
+	*/
+	void PrintReport();
 
 protected slots:
 	void OnBtnMinClicked();
@@ -157,8 +178,8 @@ public slots:
 	void OnBtnChartVideoClicked();
 	void OnBtnChartCurveClicked();
 	void OnBtnChartReportClicked();
-	void OnBtnChartPrintClicked();
 	void OnCombSelMethodChanged(int index);
+	void OnBtnPrintReportClicked();
 
 	/*
 	* 测试方法操作
@@ -227,6 +248,12 @@ private:
 	// 设备操作
 	bool m_bIsWaterIn;
 	bool m_bIsWaterOut;
+
+	// 压力曲线
+	QVector<double> m_vectorX;
+	QVector<double> m_vectorY;
+	QwtPlotCurve	*m_pCurve;
+	size_t	m_oldSize;
 };
 
 #endif // WIDGET_H

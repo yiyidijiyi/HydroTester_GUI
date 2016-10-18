@@ -20,7 +20,7 @@
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_Widget_t {
     QByteArrayData data[47];
-    char stringdata0[903];
+    char stringdata0[904];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -59,23 +59,23 @@ QT_MOC_LITERAL(26, 424, 16), // "OnBtnHelpClicked"
 QT_MOC_LITERAL(27, 441, 22), // "OnBtnChartVideoClicked"
 QT_MOC_LITERAL(28, 464, 22), // "OnBtnChartCurveClicked"
 QT_MOC_LITERAL(29, 487, 23), // "OnBtnChartReportClicked"
-QT_MOC_LITERAL(30, 511, 22), // "OnBtnChartPrintClicked"
-QT_MOC_LITERAL(31, 534, 22), // "OnCombSelMethodChanged"
-QT_MOC_LITERAL(32, 557, 5), // "index"
-QT_MOC_LITERAL(33, 563, 23), // "OnMethodListItemClicked"
-QT_MOC_LITERAL(34, 587, 23), // "OnCombMethodPlanChanged"
-QT_MOC_LITERAL(35, 611, 25), // "OnCombPressureUnitChanged"
-QT_MOC_LITERAL(36, 637, 21), // "OnBtnNewMethodClicked"
-QT_MOC_LITERAL(37, 659, 22), // "OnBtnSaveMethodClicked"
-QT_MOC_LITERAL(38, 682, 24), // "OnBtnDeleteMethodClicked"
-QT_MOC_LITERAL(39, 707, 24), // "OnBtnModifyMethodClicked"
-QT_MOC_LITERAL(40, 732, 17), // "OnBtnQueryClicked"
-QT_MOC_LITERAL(41, 750, 28), // "OnBtnDeleteReportListClicked"
-QT_MOC_LITERAL(42, 779, 24), // "OnAccountListItemClicked"
-QT_MOC_LITERAL(43, 804, 22), // "OnBtnNewAccountClicked"
-QT_MOC_LITERAL(44, 827, 23), // "OnBtnSaveAccountClicked"
-QT_MOC_LITERAL(45, 851, 25), // "OnBtnDeleteAccountClicked"
-QT_MOC_LITERAL(46, 877, 25) // "OnBtnModifyAccountClicked"
+QT_MOC_LITERAL(30, 511, 22), // "OnCombSelMethodChanged"
+QT_MOC_LITERAL(31, 534, 5), // "index"
+QT_MOC_LITERAL(32, 540, 23), // "OnBtnPrintReportClicked"
+QT_MOC_LITERAL(33, 564, 23), // "OnMethodListItemClicked"
+QT_MOC_LITERAL(34, 588, 23), // "OnCombMethodPlanChanged"
+QT_MOC_LITERAL(35, 612, 25), // "OnCombPressureUnitChanged"
+QT_MOC_LITERAL(36, 638, 21), // "OnBtnNewMethodClicked"
+QT_MOC_LITERAL(37, 660, 22), // "OnBtnSaveMethodClicked"
+QT_MOC_LITERAL(38, 683, 24), // "OnBtnDeleteMethodClicked"
+QT_MOC_LITERAL(39, 708, 24), // "OnBtnModifyMethodClicked"
+QT_MOC_LITERAL(40, 733, 17), // "OnBtnQueryClicked"
+QT_MOC_LITERAL(41, 751, 28), // "OnBtnDeleteReportListClicked"
+QT_MOC_LITERAL(42, 780, 24), // "OnAccountListItemClicked"
+QT_MOC_LITERAL(43, 805, 22), // "OnBtnNewAccountClicked"
+QT_MOC_LITERAL(44, 828, 23), // "OnBtnSaveAccountClicked"
+QT_MOC_LITERAL(45, 852, 25), // "OnBtnDeleteAccountClicked"
+QT_MOC_LITERAL(46, 878, 25) // "OnBtnModifyAccountClicked"
 
     },
     "Widget\0OnBtnMinClicked\0\0OnBtnCloseClicked\0"
@@ -91,8 +91,8 @@ QT_MOC_LITERAL(46, 877, 25) // "OnBtnModifyAccountClicked"
     "OnBtnTestMethodClicked\0OnBtnReportQueryClicked\0"
     "OnBtnAdvanceClicked\0OnBtnHelpClicked\0"
     "OnBtnChartVideoClicked\0OnBtnChartCurveClicked\0"
-    "OnBtnChartReportClicked\0OnBtnChartPrintClicked\0"
-    "OnCombSelMethodChanged\0index\0"
+    "OnBtnChartReportClicked\0OnCombSelMethodChanged\0"
+    "index\0OnBtnPrintReportClicked\0"
     "OnMethodListItemClicked\0OnCombMethodPlanChanged\0"
     "OnCombPressureUnitChanged\0"
     "OnBtnNewMethodClicked\0OnBtnSaveMethodClicked\0"
@@ -142,8 +142,8 @@ static const uint qt_meta_data_Widget[] = {
       27,    0,  235,    2, 0x0a /* Public */,
       28,    0,  236,    2, 0x0a /* Public */,
       29,    0,  237,    2, 0x0a /* Public */,
-      30,    0,  238,    2, 0x0a /* Public */,
-      31,    1,  239,    2, 0x0a /* Public */,
+      30,    1,  238,    2, 0x0a /* Public */,
+      32,    0,  241,    2, 0x0a /* Public */,
       33,    1,  242,    2, 0x0a /* Public */,
       34,    1,  245,    2, 0x0a /* Public */,
       35,    1,  248,    2, 0x0a /* Public */,
@@ -182,18 +182,18 @@ static const uint qt_meta_data_Widget[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
+    QMetaType::Void, QMetaType::Int,   31,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::Int,   32,
-    QMetaType::Void, QMetaType::QModelIndex,   32,
-    QMetaType::Void, QMetaType::Int,   32,
-    QMetaType::Void, QMetaType::Int,   32,
-    QMetaType::Void,
-    QMetaType::Void,
+    QMetaType::Void, QMetaType::QModelIndex,   31,
+    QMetaType::Void, QMetaType::Int,   31,
+    QMetaType::Void, QMetaType::Int,   31,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, QMetaType::QModelIndex,   32,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void, QMetaType::QModelIndex,   31,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -230,8 +230,8 @@ void Widget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
         case 19: _t->OnBtnChartVideoClicked(); break;
         case 20: _t->OnBtnChartCurveClicked(); break;
         case 21: _t->OnBtnChartReportClicked(); break;
-        case 22: _t->OnBtnChartPrintClicked(); break;
-        case 23: _t->OnCombSelMethodChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 22: _t->OnCombSelMethodChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 23: _t->OnBtnPrintReportClicked(); break;
         case 24: _t->OnMethodListItemClicked((*reinterpret_cast< const QModelIndex(*)>(_a[1]))); break;
         case 25: _t->OnCombMethodPlanChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
         case 26: _t->OnCombPressureUnitChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
