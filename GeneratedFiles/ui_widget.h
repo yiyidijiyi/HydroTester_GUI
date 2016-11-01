@@ -17,6 +17,7 @@
 #include <QtWidgets/QDateEdit>
 #include <QtWidgets/QFrame>
 #include <QtWidgets/QHeaderView>
+#include <QtWidgets/QLCDNumber>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QListView>
@@ -205,6 +206,8 @@ public:
     QFrame *line_9;
     QLabel *label_6;
     QLabel *label_bottom;
+    QLCDNumber *lcdNumber_pressure;
+    QLCDNumber *lcdNumber_time;
 
     void setupUi(QWidget *Widget)
     {
@@ -277,12 +280,12 @@ public:
         label_testState->setFont(font);
         label_pressure = new QLabel(Widget);
         label_pressure->setObjectName(QStringLiteral("label_pressure"));
-        label_pressure->setGeometry(QRect(360, 90, 191, 20));
+        label_pressure->setGeometry(QRect(490, 100, 61, 20));
         label_pressure->setMinimumSize(QSize(0, 20));
         label_pressure->setFont(font);
         label_holdingTime = new QLabel(Widget);
         label_holdingTime->setObjectName(QStringLiteral("label_holdingTime"));
-        label_holdingTime->setGeometry(QRect(630, 90, 231, 20));
+        label_holdingTime->setGeometry(QRect(650, 10, 231, 20));
         label_holdingTime->setMinimumSize(QSize(0, 20));
         label_holdingTime->setFont(font);
         pushButton_testInterface = new QPushButton(Widget);
@@ -1072,6 +1075,22 @@ public:
         QFont font2;
         font2.setPointSize(7);
         label_bottom->setFont(font2);
+        lcdNumber_pressure = new QLCDNumber(Widget);
+        lcdNumber_pressure->setObjectName(QStringLiteral("lcdNumber_pressure"));
+        lcdNumber_pressure->setGeometry(QRect(350, 90, 121, 30));
+        lcdNumber_pressure->setFont(font);
+        lcdNumber_pressure->setFrameShape(QFrame::NoFrame);
+        lcdNumber_pressure->setDigitCount(8);
+        lcdNumber_pressure->setSegmentStyle(QLCDNumber::Flat);
+        lcdNumber_pressure->setProperty("value", QVariant(0));
+        lcdNumber_time = new QLCDNumber(Widget);
+        lcdNumber_time->setObjectName(QStringLiteral("lcdNumber_time"));
+        lcdNumber_time->setGeometry(QRect(620, 90, 120, 30));
+        lcdNumber_time->setFont(font);
+        lcdNumber_time->setFrameShape(QFrame::NoFrame);
+        lcdNumber_time->setDigitCount(6);
+        lcdNumber_time->setSegmentStyle(QLCDNumber::Flat);
+        lcdNumber_time->setProperty("value", QVariant(0));
         label->raise();
         pushButton_min->raise();
         pushButton_max->raise();
@@ -1096,6 +1115,8 @@ public:
         tabWidget->raise();
         label_6->raise();
         label_bottom->raise();
+        lcdNumber_pressure->raise();
+        lcdNumber_time->raise();
 
         retranslateUi(Widget);
 
@@ -1118,8 +1139,8 @@ public:
         label_4->setText(QString());
         label_5->setText(QString());
         label_testState->setText(QApplication::translate("Widget", "\346\265\213\350\257\225\347\212\266\346\200\201", 0));
-        label_pressure->setText(QApplication::translate("Widget", "\345\216\213\345\212\233", 0));
-        label_holdingTime->setText(QApplication::translate("Widget", "\346\265\213\350\257\225\346\227\266\351\227\264", 0));
+        label_pressure->setText(QApplication::translate("Widget", "Pa\357\274\210\345\270\225\357\274\211", 0));
+        label_holdingTime->setText(QString());
         pushButton_testInterface->setText(QString());
         pushButton_testMethod->setText(QString());
         pushButton_reportQuery->setText(QString());

@@ -10,6 +10,10 @@
 #include <QString>
 #include <QByteArray>
 
+// 相机采样图像的分辨率
+#define IMAGE_WIDTH	1280
+#define IMAGE_HEIGHT	1024
+
 // 账户类型
 enum ENUM_AccountType{
 	Tester		= 1,
@@ -123,9 +127,10 @@ struct STRUCT_DeviceState{
 enum ENUM_TestState{
 	Init = 0,
 	Connected = 1,
-	Start = 2,
-	Pause = 3,
-	End = 4
+	SetParams = 2,
+	Start = 3,
+	Pause = 4,
+	End = 5
 };
 
 char ConvertCharHex(char ch);

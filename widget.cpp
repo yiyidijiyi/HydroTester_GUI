@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-02
-* 最后修改：2016-09-23
+* 最后修改：2016-11-01
 * 作      者：syf
 * 描      述：
 */
@@ -28,14 +28,18 @@ Widget::Widget(QWidget *parent)
 	, m_pRxThread(NULL)
 	, m_pCamera(NULL)
 	, m_bIsComOpened(false)
+	, m_pImgProc(NULL)
+	, m_pImgProcThread(NULL)
+	, m_dropNum(0)
 	, m_testState(Init)
+	, m_pTimer(NULL)
 	, m_bIsWaterIn(false)
 	, m_bIsWaterOut(false)
 	, m_pCurve(NULL)
 	, m_oldSize(0)
+	, m_maxY(0)
 {
 	CreateUi();
-
 	// 初始化用户账号相关数据成员
 	m_pAccountListModel = new QStringListModel(this);
 
@@ -59,8 +63,22 @@ Widget::Widget(QWidget *parent)
 	// 相机
 	m_pCamera = new MerCamera(this);
 
+	// 识别算法初始化
+	InitImageProc();
+
 	// 压力曲线
 	InitCurve();
+
+	// 初始化显示实验时间和设备当前压力值
+	m_time = QTime(0, 0, 0);
+	ui->lcdNumber_time->setDigitCount(8);
+	ui->lcdNumber_pressure->setDigitCount(8);
+	ui->lcdNumber_time->display(m_time.toString("hh:mm:ss"));
+	ui->lcdNumber_pressure->display(QString::number(0));
+
+	// 启动定时器
+	m_pTimer = new QTimer(this);
+	m_pTimer->start(1000);
 
 	/*
 	* 链接信号与槽
@@ -74,7 +92,9 @@ Widget::Widget(QWidget *parent)
 	connect(ui->pushButton_connectCom, &QPushButton::clicked, this, &Widget::OnBtnComOpClicked);
 	connect(ui->pushButton_waterIn, &QPushButton::clicked, this, &Widget::OnBtnWaterInClicked);
 	connect(ui->pushButton_waterOff, &QPushButton::clicked, this, &Widget::OnBtnWaterOffClicked);
-	connect(m_pCom, &SerialPort::DataReceived, this, &Widget::OnRxDataReceived);
+	connect(ui->pushButton_startStop, &QPushButton::clicked, this, &Widget::OnBtnStartTestClicked);
+	connect(ui->pushButton_pauseConti, &QPushButton::clicked, this, &Widget::OnBtnPauseTestClicked);
+	//connect(m_pCom, &SerialPort::DataReceived, this, &Widget::OnRxDataReceived);
 	connect(m_pCom, &SerialPort::HandshakeState, this, &Widget::OnHandShakeStateReceived);
 	connect(ui->pushButton_print, &QPushButton::clicked, this, &Widget::OnBtnPrintReportClicked);
 
@@ -111,6 +131,13 @@ Widget::Widget(QWidget *parent)
 	connect(ui->pushButton_saveAccount, &QPushButton::clicked, this, &Widget::OnBtnSaveAccountClicked);
 	connect(ui->pushButton_delAccount, &QPushButton::clicked, this, &Widget::OnBtnDeleteAccountClicked);
 	connect(ui->pushButton_modifyAccount, &QPushButton::clicked, this, &Widget::OnBtnModifyAccountClicked);
+
+	// 图像显示
+	connect(m_pImgProc, &ImageProc::ImageProcessed, this, &Widget::OnImagePrepared);
+
+	// 定时器
+	connect(m_pTimer, &QTimer::timeout, this, &Widget::OnTimer);
+	//connect(m_pCom, &SerialPort::DeviceStateReceived, this, &Widget::OnUpdateDeviceState);
 }
 
 
@@ -126,6 +153,18 @@ Widget::~Widget()
 		m_pRxThread->terminate();
 		m_pRxThread->wait();
 		delete m_pRxThread;
+	}
+
+	if (m_pImgProcThread)
+	{
+		m_pImgProcThread->terminate();
+		m_pImgProcThread->wait();
+		delete m_pImgProcThread;
+	}
+
+	if (m_pImgProc)
+	{
+		delete m_pImgProc;
 	}
 
 	if (m_pCom)
@@ -173,6 +212,12 @@ Widget::~Widget()
 		delete m_pCurve;
 	}
 
+	if (m_pTimer)
+	{
+		m_pTimer->stop();
+		delete m_pTimer;
+	}
+
 	delete ui;
 }
 
@@ -194,6 +239,15 @@ void Widget::CreateUi()
 
 	// 隐藏tabBar
 	ui->tabWidget->tabBar()->hide();
+
+	// 设置lcdnumber字体
+	QPalette lcdtimepat = ui->lcdNumber_time->palette();
+	lcdtimepat.setColor(QPalette::Normal, QPalette::WindowText, Qt::white);
+	ui->lcdNumber_time->setPalette(lcdtimepat);
+
+	QPalette lcdpressurepat = ui->lcdNumber_pressure->palette();
+	lcdpressurepat.setColor(QPalette::Normal, QPalette::WindowText, Qt::white);
+	ui->lcdNumber_pressure->setPalette(lcdpressurepat);
 
 	// 设置通用样式
 	this->setStyleSheet("QLabel{font-family:'Microsoft YaHei'; font-size:14px;color:#979797;}"
@@ -325,7 +379,6 @@ void Widget::CreateUi()
 	ui->pushButton_pressureCali->setStyleSheet("QPushButton{font-family:'Microsoft YaHei'; font-size:14px; color:#979797}"
 		"QPushButton{border-image: url(:/login/resource/login/btn4.png);}"
 		"QPushButton:hover{color:#ffffff; border-image: url(:/login/resource/login/btn2.png);}");
-
 	ui->listView_accountList->setStyleSheet("font-family:'Microsoft YaHei'; font-size:14px;");
 
 	// 用户名和密码只能有字母和数字构成
@@ -489,7 +542,7 @@ void Widget::ShowImage(Mat &image)
 	}
 	else
 	{
-		showImage = QImage((const uchar*)(resizeImage.data),
+		showImage = QImage(resizeImage.data,
 			resizeImage.cols, resizeImage.rows,
 			resizeImage.step,
 			QImage::Format_Indexed8);
@@ -506,11 +559,11 @@ void Widget::ShowImage(Mat &image)
 */
 void Widget::InitSerialPort()
 {
-	m_pCom = new SerialPort(this);
-	m_pRxThread = new QThread;
+	m_pCom = new SerialPort;
+	//m_pRxThread = new QThread;
 
-	m_pCom->moveToThread(m_pRxThread);
-	m_pRxThread->start();
+	//m_pCom->moveToThread(m_pRxThread);
+	//m_pRxThread->start();
 
 	QStringList comList = m_pCom->GetComList();
 	
@@ -536,6 +589,7 @@ void Widget::InitCurve()
 	ui->qwtPlot->setAxisScale(QwtPlot::xBottom, 0, 60.0, 5.0);
 	ui->qwtPlot->setAxisScale(QwtPlot::yLeft, 0, 100000.0);
 
+	m_maxY = 0;
 	m_vectorX.clear();
 	m_vectorY.clear();
 
@@ -544,6 +598,57 @@ void Widget::InitCurve()
 	m_pCurve->setPen(QPen(Qt::red));
 
 	m_pCurve->attach(ui->qwtPlot);
+}
+
+
+/*
+* 参数：
+* 返回：
+* 功能：重置压力曲线
+*/
+void Widget::ResetCurve()
+{
+	m_vectorX.clear();
+	m_vectorY.clear();
+
+	m_pCurve->setSamples(m_vectorX.data(), m_vectorY.data(), m_vectorX.size());
+	ui->qwtPlot->replot();
+}
+
+
+/*
+* 参数：
+* 返回：
+* 功能：绘制压力曲线
+*/
+void Widget::DrawCurve()
+{
+	double x = m_time.second() + m_time.minute() * 60 + m_time.hour() * 3600;
+	double y = ui->lcdNumber_pressure->intValue();
+
+	m_vectorX.append(x);
+	m_vectorY.append(y);
+
+	if (y > m_maxY)
+	{
+		m_maxY = y;
+	}
+	
+	int count = m_vectorX.size();
+
+	if (count < 60)
+	{
+		ui->qwtPlot->setAxisScale(QwtPlot::xBottom, 0, 60.0, 5.0);
+	}
+	else
+	{
+		ui->qwtPlot->setAxisScale(QwtPlot::xBottom, 0, count + 15, ((count + 15) / 25 / 5 + 1) * 5);
+	}
+	
+	ui->qwtPlot->setAxisScale(QwtPlot::yLeft, 0, m_maxY * 1.2);
+
+	m_pCurve->setSamples(m_vectorX.data(), m_vectorY.data(), count);
+	ui->qwtPlot->replot();
 }
 
 
@@ -564,6 +669,21 @@ void Widget::UpdateComUI()
 	}
 }
 
+
+/*
+* 参数：
+* 返回：
+* 功能：识别算法初始化
+*/
+void Widget::InitImageProc()
+{
+	m_pImgProc = new ImageProc;
+	m_pImgProcThread = new QThread;
+
+	m_pImgProc->SetCamera(m_pCamera);
+	m_pImgProc->moveToThread(m_pImgProcThread);
+	m_pImgProcThread->start();
+}
 
 /*
 * 参数：
@@ -951,6 +1071,56 @@ void Widget::DeleteReportInList(int id)
 /*
 * 参数：
 * 返回：
+* 功能：根据识别到的数珠个数，输出相应信息
+*/
+void Widget::GetDropNum()
+{
+	int num = m_pImgProc->GetDropNum();
+
+	if ((num > 0) && (m_dropNum == 0))
+	{
+		ui->textEdit_info->clear();
+	}
+
+	int n = num - m_dropNum;
+
+	for (int i = 0; i < n; i++)
+	{
+		ui->textEdit_info->append(QStringLiteral("第%1个水珠出现时间：").arg(m_dropNum + i + 1) + m_time.toString("hh:mm:ss"));
+		ui->textEdit_info->append(QStringLiteral("当前压力值为：") + QString::number(m_pCom->GetCurrentPressure()) + QString("\n"));
+	}
+
+	m_dropNum = num;
+
+	if (m_dropNum >= 3)
+	{
+		// 发送测试停止命令
+		m_pCom->TxCmd(0x01, 0x0, 0x0);
+
+		// 生成测试报告
+		GenTestReport();
+	}
+}
+
+/*
+* 参数：
+* 返回：
+* 功能：生成测试报告
+*/
+
+void Widget::GenTestReport(void)
+{
+	ui->textEdit_report->clear();
+
+	// 获取保存的实验结果图片
+	QString htmlPath = QString("<img src=\"%1\"/>").arg(QString("report.bmp"));
+	QString htmlText = ui->textEdit_info->toHtml();
+	ui->textEdit_report->insertHtml(htmlPath + htmlText);
+}
+
+/*
+* 参数：
+* 返回：
 * 功能：打印测试报告
 */
 void Widget::PrintReport()
@@ -1029,13 +1199,61 @@ void Widget::UpdateMethodInfoUI(UIState state)
 * 返回：
 * 功能：设置对设备的操作状态
 */
-void Widget::SetDeviceOprateEnabled(bool state)
+void Widget::SetDeviceOprateEnabled(quint8 state)
 {
-	ui->pushButton_connectCom->setEnabled(state);
-	ui->pushButton_waterIn->setEnabled(state);
-	ui->pushButton_waterOff->setEnabled(state);
-	ui->pushButton_startStop->setEnabled(state);
-	ui->pushButton_pauseConti->setEnabled(state);
+	if (0x20 & state)
+	{
+		ui->pushButton_connectCom->setEnabled(true);
+	}
+	else
+	{
+		ui->pushButton_connectCom->setEnabled(false);
+	}
+
+	if (0x10 & state)
+	{
+		ui->pushButton_waterIn->setEnabled(true);
+	}
+	else
+	{
+		ui->pushButton_waterIn->setEnabled(false);
+	}
+
+	if (0x08 & state)
+	{
+		ui->pushButton_waterOff->setEnabled(true);
+	}
+	else
+	{
+		ui->pushButton_waterOff->setEnabled(false);
+	}
+
+	if (0x04 & state)
+	{
+		ui->pushButton_startStop->setEnabled(true);
+	}
+	else
+	{
+		ui->pushButton_startStop->setEnabled(false);
+	}
+
+	if (0x02 & state)
+	{
+		ui->pushButton_pauseConti->setEnabled(true);
+	}
+	else
+	{
+		ui->pushButton_pauseConti->setEnabled(false);
+	}
+
+	if (0x01 & state)
+	{
+		ui->pushButton_openCloseCamera->setEnabled(true);
+	}
+	else
+	{
+		ui->pushButton_openCloseCamera->setEnabled(false);
+	}
 }
 
 
@@ -1295,7 +1513,7 @@ void Widget::OnBtnOpenCameraClicked()
 		}
 
 		// 设置采集
-		state = m_pCamera->StartSnap(MerCamera::SoftwareTriggerMode);
+		state = m_pCamera->StartSnap(MerCamera::ContinuousMode);
 
 		if (FALSE == state)
 		{
@@ -1342,8 +1560,6 @@ void Widget::OnBtnOpenCameraClicked()
 
 		ui->pushButton_openCloseCamera->setText(QStringLiteral("打开相机"));
 	}
-	
-	
 }
 
 
@@ -1356,6 +1572,9 @@ void Widget::OnBtnComOpClicked()
 {
 	if (m_bIsComOpened)
 	{
+		//m_pRxThread->quit();
+		//m_pRxThread->wait();
+
 		m_pCom->Close();
 		m_bIsComOpened = false;
 		m_testState = Init;
@@ -1369,7 +1588,10 @@ void Widget::OnBtnComOpClicked()
 		{
 			ui->textEdit_info->append(QStringLiteral("打开串口成功！"));
 			m_pCom->TxReadState();
-			SetDeviceOprateEnabled(false);
+//			SetDeviceOprateEnabled(false);
+
+			//m_pCom->moveToThread(m_pRxThread);
+			//m_pRxThread->start();
 		}
 		else
 		{
@@ -1402,7 +1624,7 @@ void Widget::OnBtnWaterInClicked()
 		ui->pushButton_waterIn->setText(QStringLiteral("停止进水"));
 	}
 
-	SetDeviceOprateEnabled(false);
+//	SetDeviceOprateEnabled(false);
 }
 
 
@@ -1427,7 +1649,7 @@ void Widget::OnBtnWaterOffClicked()
 		ui->pushButton_waterOff->setText(QStringLiteral("停止排水"));
 	}
 
-	SetDeviceOprateEnabled(false);
+//	SetDeviceOprateEnabled(false);
 }
 
 
@@ -1448,6 +1670,8 @@ void Widget::OnBtnStartTestClicked()
 		}
 
 		m_pCom->TxSetParam(m_methodParam);
+
+		//m_testState = SetParams;
 	}
 	else if ((Start == m_testState) || (Pause == m_testState))
 	{
@@ -1455,7 +1679,7 @@ void Widget::OnBtnStartTestClicked()
 		m_pCom->TxCmd(0x01, 0x0, 0x0);
 	}
 
-	SetDeviceOprateEnabled(false);
+//	SetDeviceOprateEnabled(false);
 }
 
 
@@ -1466,18 +1690,18 @@ void Widget::OnBtnStartTestClicked()
 */
 void Widget::OnBtnPauseTestClicked()
 {
-	if (Start == m_testState)
-	{
-		// 测试开始状态，暂停测试
-		m_pCom->TxCmd(0x01, 0xff, 0x0);
-	}
-	else if (Pause == m_testState)
-	{
-		// 测试暂停状态，测试继续进行
-		m_pCom->TxCmd(0x01, static_cast<quint8>(m_methodParam.plan), 0x0);
-	}
+	//if (Start == m_testState)
+	//{
+	//	// 测试开始状态，暂停测试
+	//	m_pCom->TxCmd(0x01, 0xff, 0x0);
+	//}
+	//else if (Pause == m_testState)
+	//{
+	//	// 测试暂停状态，测试继续进行
+	//	m_pCom->TxCmd(0x01, static_cast<quint8>(m_methodParam.plan), 0x0);
+	//}
 
-	SetDeviceOprateEnabled(false);
+//	SetDeviceOprateEnabled(false);
 }
 
 
@@ -1503,20 +1727,23 @@ void Widget::OnHandShakeStateReceived(STRUCT_HandShake &handshake)
 {
 	switch (handshake.state)
 	{
+	case Busy:
+		ui->textEdit_info->append(QStringLiteral("通信正忙，请稍后再尝试！"));
+		break;
 	case SetParamOk:
 		// 只在开始测试前才会设置参数
 		ui->textEdit_info->append(QStringLiteral("设置参数成功！"));
 
 		// 发送测试开始命令
-		m_pCom->TxCmd(0x01, static_cast<quint8>(m_methodParam.plan), 0x0);
+		m_pCom->TxCmd(0x01, static_cast<quint8>(m_methodParam.plan + 1), 0x0);
 		break;
 	case SetParamError:
 		ui->textEdit_info->append(QStringLiteral("设置参数失败！"));
-		SetDeviceOprateEnabled(true);
+		//SetDeviceOprateEnabled(true);
 		break;
 	case SetParamAckTimeOut:
 		ui->textEdit_info->append(QStringLiteral("设置参数，等待应答超时，请检查与设备的连接情况！"));
-		SetDeviceOprateEnabled(true);
+		//SetDeviceOprateEnabled(true);
 		break;
 	case ReadParamOk:
 		ui->textEdit_info->append(QStringLiteral("读取参数成功！"));
@@ -1532,7 +1759,7 @@ void Widget::OnHandShakeStateReceived(STRUCT_HandShake &handshake)
 		{
 			ui->textEdit_info->append(QStringLiteral("与设备联机成功！"));
 			m_testState = Connected;
-			SetDeviceOprateEnabled(true);
+			//SetDeviceOprateEnabled(true);
 		}
 		//else
 		//{
@@ -1544,7 +1771,7 @@ void Widget::OnHandShakeStateReceived(STRUCT_HandShake &handshake)
 		{
 			ui->textEdit_info->append(QStringLiteral("与设备联机成功！"));
 			m_testState = Connected;
-			SetDeviceOprateEnabled(true);
+//			SetDeviceOprateEnabled(true);
 		}
 		//else
 		//{
@@ -1555,7 +1782,7 @@ void Widget::OnHandShakeStateReceived(STRUCT_HandShake &handshake)
 		if (Init == m_testState)
 		{
 			ui->textEdit_info->append(QStringLiteral("与设备联机失败，请检查与设备的连接情况！"));
-			SetDeviceOprateEnabled(true);
+//			SetDeviceOprateEnabled(true);
 		}
 		//else
 		//{
@@ -1570,6 +1797,12 @@ void Widget::OnHandShakeStateReceived(STRUCT_HandShake &handshake)
 			{
 				// 参数设置成功，开始命令操作成功，新的测试开始
 				m_testState = Start;
+				m_time = QTime(0, 0, 0);
+				ui->lcdNumber_time->display(m_time.toString("hh:mm:ss"));
+				ui->lcdNumber_pressure->display(QString::number(0));
+				ResetCurve();
+				m_pImgProc->InitCalc();
+				m_pImgProc->StartCalc();
 				ui->textEdit_info->append(QStringLiteral("试验开始："));
 				ui->pushButton_startStop->setText(QStringLiteral("结束"));
 			}
@@ -1579,6 +1812,8 @@ void Widget::OnHandShakeStateReceived(STRUCT_HandShake &handshake)
 				{
 					// 结束测试
 					m_testState = End;
+					m_dropNum = 0;
+					m_pImgProc->StopCalc();
 					ui->textEdit_info->append(QStringLiteral("试验结束！"));
 					ui->pushButton_startStop->setText(QStringLiteral("开始"));
 					ui->pushButton_pauseConti->setText(QStringLiteral("暂停"));
@@ -1587,6 +1822,7 @@ void Widget::OnHandShakeStateReceived(STRUCT_HandShake &handshake)
 				{
 					// 暂停测试
 					m_testState = Pause;
+					m_pImgProc->StopCalc();
 					ui->textEdit_info->append(QStringLiteral("试验暂停。。。"));
 					ui->pushButton_pauseConti->setText(QStringLiteral("继续"));
 				}
@@ -1616,10 +1852,18 @@ void Widget::OnHandShakeStateReceived(STRUCT_HandShake &handshake)
 			}
 			else if(0 == handshake.data)
 			{
-				ui->textEdit_info->append(QStringLiteral("开始排水！"));
+				ui->textEdit_info->append(QStringLiteral("停止进水！"));
 			}
 			break;
 		case 0x08:	// 排水控制
+			if (1 == handshake.data)
+			{
+				ui->textEdit_info->append(QStringLiteral("开始排水！"));
+			}
+			else if (0 == handshake.data)
+			{
+				ui->textEdit_info->append(QStringLiteral("停止排水！"));
+			}
 			break;
 		case 0x09:	// 压力标定
 			break;
@@ -1628,16 +1872,16 @@ void Widget::OnHandShakeStateReceived(STRUCT_HandShake &handshake)
 		default:
 			break;
 		}
-		SetDeviceOprateEnabled(true);
+		//SetDeviceOprateEnabled(true);
 		//ui->textEdit_info->append(QStringLiteral("对设备的操作命令成功！"));
 		break;
 	case CmdError:
 		//ui->textEdit_info->append(QStringLiteral("对设备的操作命令失败！"));
-		SetDeviceOprateEnabled(true);
+		//SetDeviceOprateEnabled(true);
 		break;
 	case CmdAckTimeOut:
 		//ui->textEdit_info->append(QStringLiteral("对设备的操作命令，等待应答超时，请检查与设备的连接情况！"));
-		SetDeviceOprateEnabled(true);
+		//SetDeviceOprateEnabled(true);
 		break;
 	default:
 		break;
@@ -2363,6 +2607,80 @@ void Widget::OnBtnDeleteReportListClicked()
 		UpdateReportQueryView(m_reportList);
 	}
 }
+
+
+/*
+* 参数：
+* 返回：
+* 功能：显示图像
+*/
+void Widget::OnImagePrepared()
+{
+	ShowImage(m_pImgProc->GetImage());
+	m_pCamera->ResetImgSnapedFlag();
+}
+
+
+/*
+* 参数：
+* 返回：
+* 功能：定时器槽函数
+*/
+void Widget::OnTimer()
+{
+	if (Start == m_testState)
+	{
+		// 显示测试时间与设备当前压力值
+		m_time = m_time.addSecs(1);
+		ui->lcdNumber_time->display(m_time.toString("hh:mm:ss"));
+		ui->lcdNumber_pressure->display(m_pCom->GetCurrentPressure());
+
+		// 获取检测到的水珠数
+		GetDropNum();
+
+		m_pCom->TxReadState();
+
+		DrawCurve();
+	}
+}
+
+
+/*
+* 参数：
+* 返回：
+* 功能：更新状态信息
+*/
+void Widget::OnUpdateDeviceState(STRUCT_DeviceState &deviceState)
+{
+	ui->lcdNumber_pressure->display(QString::number(deviceState.pressure));
+}
+
+/*
+* 参数：
+* 返回：
+* 功能：
+*/
+
+
+/*
+* 参数：
+* 返回：
+* 功能：
+*/
+
+
+/*
+* 参数：
+* 返回：
+* 功能：
+*/
+
+
+/*
+* 参数：
+* 返回：
+* 功能：
+*/
 
 /*
 * 参数：

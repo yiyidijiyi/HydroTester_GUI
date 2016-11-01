@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-02
-* 最后修改：2016-09-23
+* 最后修改：2016-11-01
 * 作      者：syf
 * 描      述：
 */
@@ -18,6 +18,7 @@
 #include <QtPrintSupport/QPrinter>
 #include <QtPrintSupport/QPrintDialog>
 #include <QtPrintSupport/QPrintPreviewDialog>
+#include <QDebug>
 
 #include "common.h"
 #include "useraccount.h"
@@ -25,6 +26,7 @@
 #include "testresult.h"
 #include "serialport.h"
 #include "mercamera.h"
+#include "imageproc.h"
 #include "ui_widget.h"
 
 #include "QWT/qwt_plot_curve.h"
@@ -95,9 +97,16 @@ private:
 	void UpdateComUI();
 
 	/*
+	* 算法相关
+	*/
+	void InitImageProc();
+
+	/*
 	* 压力曲线相关
 	*/
 	void InitCurve();
+	void ResetCurve();
+	void DrawCurve();
 
 	/*
 	* 更新信息列表
@@ -111,7 +120,7 @@ private:
 	*/
 	void UpdateAcountInfoUI(UIState state);
 	void UpdateMethodInfoUI(UIState state);
-	void SetDeviceOprateEnabled(bool state);
+	void SetDeviceOprateEnabled(quint8 state);
 
 	/*
 	* 设置值超限判断
@@ -134,8 +143,14 @@ private:
 	void DeleteReportInList(int id);
 
 	/*
-	*打印报告
+	* 判断水珠个数
 	*/
+	void GetDropNum();
+
+	/*
+	* 生成、打印报告
+	*/
+	void GenTestReport();
 	void PrintReport();
 
 protected slots:
@@ -206,6 +221,17 @@ public slots:
 	void OnBtnSaveAccountClicked();
 	void OnBtnDeleteAccountClicked();
 	void OnBtnModifyAccountClicked();
+
+	/*
+	* 图像显示
+	*/
+	void OnImagePrepared();
+
+	/*
+	* 测试
+	*/
+	void OnTimer();
+	void OnUpdateDeviceState(STRUCT_DeviceState &deviceState);
 private:
 	Ui::Widget* ui;
 
@@ -239,11 +265,18 @@ private:
 	SerialPort *m_pCom;
 	bool m_bIsComOpened;
 
+	// 算法
+	QThread *m_pImgProcThread;
+	ImageProc *m_pImgProc;
+	int m_dropNum;
+
 	// 相机
 	MerCamera *m_pCamera;
 
 	// 测试状态
 	ENUM_TestState m_testState;
+	QTime m_time;
+	QTimer *m_pTimer;
 
 	// 设备操作
 	bool m_bIsWaterIn;
@@ -254,6 +287,7 @@ private:
 	QVector<double> m_vectorY;
 	QwtPlotCurve	*m_pCurve;
 	size_t	m_oldSize;
+	int m_maxY = 0;
 };
 
 #endif // WIDGET_H

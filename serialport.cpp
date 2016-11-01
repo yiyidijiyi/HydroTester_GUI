@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-19
-* 最后修改：2016-09-21
+* 最后修改：2016-11-01
 * 作      者：syf
 * 描      述：
 */
@@ -13,11 +13,12 @@
 * 功能：构造函数
 */
 SerialPort::SerialPort(QObject *parent)
-: QSerialPort(parent)
-, m_pTimer(NULL)
-, m_handshakeState(Idle)
+	: QSerialPort(parent)
+	, m_pTimer(NULL)
+	, m_handshakeState(Idle)
+	, m_currentPressure(0)
 {
-	m_pTimer = new QTimer(this);
+	m_pTimer = new QTimer;
 
 	connect(this, &QSerialPort::readyRead, this, &SerialPort::OnReadyRead);
 	connect(m_pTimer, &QTimer::timeout, this, &SerialPort::OnTimer);
@@ -72,7 +73,7 @@ bool SerialPort::Open(const QString &comName)
 
 	if (state)
 	{
-		this->setBaudRate(9600);
+		this->setBaudRate(19200);
 		this->setDataBits(QSerialPort::Data8);
 		this->setStopBits(QSerialPort::OneStop);
 		this->setParity(QSerialPort::NoParity);
@@ -85,7 +86,7 @@ bool SerialPort::Open(const QString &comName)
 	{
 		m_messageList.append("open serial port failed!");
 	}
-
+	
 	return state;
 }
 
@@ -103,6 +104,7 @@ void SerialPort::Close()
 	}
 
 	this->close();
+	m_handshakeState = Idle;
 }
 
 /*
@@ -145,11 +147,17 @@ void SerialPort::RxDataDecode()
 			{
 				ProtocolDecode(m_rxBuf, index);
 			}
+
+			// 清除处理完的数据
+			m_rxBuf.clear();
 		}
 	}
 	
-	// 清除处理完的数据
-	m_rxBuf.clear();
+	// 防止发生错误时，数据堆积导致解析错误
+	if (len >= 128)
+	{
+		m_rxBuf.clear();
+	}
 }
 
 
@@ -181,7 +189,7 @@ void SerialPort::ProtocolDecode(const QByteArray &data, int index)
 				// 应答，参数设置成功
 				m_handshake.state = SetParamOk;
 			}
-
+			m_handshakeState = Idle;
 			emit HandshakeState(m_handshake);
 		}
 		else if (WaitForReadParamAck == m_handshakeState)
@@ -197,11 +205,11 @@ void SerialPort::ProtocolDecode(const QByteArray &data, int index)
 			// 当前压力值
 			m_deviceState.pressure = static_cast<int>(data[index + 7]);
 			m_deviceState.pressure <<= 8;
-			m_deviceState.pressure = static_cast<int>(data[index + 6]);
+			m_deviceState.pressure += static_cast<int>(data[index + 6]);
 			m_deviceState.pressure <<= 8;
-			m_deviceState.pressure = static_cast<int>(data[index + 5]);
+			m_deviceState.pressure += static_cast<int>(data[index + 5]);
 			m_deviceState.pressure <<= 8;
-			m_deviceState.pressure = static_cast<int>(data[index + 4]);
+			m_deviceState.pressure += static_cast<int>(data[index + 4]);
 
 			// 流进工作台谁的体积
 			m_deviceState.waterInVolum = static_cast<int>(data[index + 11]);
@@ -241,10 +249,11 @@ void SerialPort::ProtocolDecode(const QByteArray &data, int index)
 			// 剩余周期
 			m_deviceState.restCycle = static_cast<quint8>(data[index + 21]); 
 			
-			emit DeviceStateReceived(m_deviceState);
+			//emit DeviceStateReceived(m_deviceState);
 
 			m_handshake.state = ReadStateOk;
 			m_handshake.cmd = 0x0;
+			m_handshakeState = Idle;
 			emit HandshakeState(m_handshake);
 		}
 		
@@ -264,12 +273,12 @@ void SerialPort::ProtocolDecode(const QByteArray &data, int index)
 				m_handshake.state = CmdOk;
 			}
 		}
-		
+		m_handshakeState = Idle;
 		emit HandshakeState(m_handshake);
 		break;
 	case 3:	// 设备主动上报
 		
-		
+		m_handshakeState = Idle;
 		break;
 	default:
 		break;
@@ -290,6 +299,7 @@ void SerialPort::TxSetParam(STRUCT_MethodParam &method)
 		m_handshake.state = Busy;
 		m_handshake.cmd = 0x0;
 		emit HandshakeState(m_handshake);
+		return;
 	}
 
 	QByteArray txData;
@@ -317,7 +327,7 @@ void SerialPort::TxSetParam(STRUCT_MethodParam &method)
 		txData.append(static_cast<char>(0x01));
 		checkSum += static_cast<quint8>(0x01);
 
-		value = method.rate;
+		value = static_cast<int>(method.rate);
 		ch = static_cast<char>(value);
 		txData.append(ch);
 		checkSum += static_cast<quint8>(ch);
@@ -343,7 +353,7 @@ void SerialPort::TxSetParam(STRUCT_MethodParam &method)
 		txData.append(static_cast<char>(0x02));
 		checkSum += static_cast<quint8>(0x02);
 
-		value = method.rate;
+		value = static_cast<int>(method.rate);
 		ch = static_cast<char>(value);
 		txData.append(ch);
 		checkSum += static_cast<quint8>(ch);
@@ -364,7 +374,7 @@ void SerialPort::TxSetParam(STRUCT_MethodParam &method)
 		txData.append(static_cast<char>(0x03));
 		checkSum += static_cast<quint8>(0x03);
 
-		value = method.timing;
+		value = static_cast<int>(method.timing);
 		ch = static_cast<char>(value);
 		txData.append(ch);
 		checkSum += static_cast<quint8>(ch);
@@ -390,7 +400,7 @@ void SerialPort::TxSetParam(STRUCT_MethodParam &method)
 		txData.append(static_cast<char>(0x04));
 		checkSum += static_cast<quint8>(0x04);
 
-		value = method.rate;
+		value = static_cast<int>(method.rate);
 		ch = static_cast<char>(value);
 		txData.append(ch);
 		checkSum += static_cast<quint8>(ch);
@@ -411,7 +421,7 @@ void SerialPort::TxSetParam(STRUCT_MethodParam &method)
 		txData.append(static_cast<char>(0x05));
 		checkSum += static_cast<quint8>(0x05);
 
-		value = method.pressure;
+		value = static_cast<int>(method.pressure);
 		ch = static_cast<char>(value);
 		txData.append(ch);
 		checkSum += static_cast<quint8>(ch);
@@ -432,7 +442,7 @@ void SerialPort::TxSetParam(STRUCT_MethodParam &method)
 		txData.append(static_cast<char>(0x06));
 		checkSum += static_cast<quint8>(0x06);
 
-		value = method.timing;
+		value = static_cast<int>(method.timing);
 		ch = static_cast<char>(value);
 		txData.append(ch);
 		checkSum += static_cast<quint8>(ch);
@@ -458,7 +468,7 @@ void SerialPort::TxSetParam(STRUCT_MethodParam &method)
 		txData.append(static_cast<char>(0x07));
 		checkSum += static_cast<quint8>(0x07);
 
-		value = method.rate;
+		value = static_cast<int>(method.rate);
 		ch = static_cast<char>(value);
 		txData.append(ch);
 		checkSum += static_cast<quint8>(ch);
@@ -479,7 +489,7 @@ void SerialPort::TxSetParam(STRUCT_MethodParam &method)
 		txData.append(static_cast<char>(0x08));
 		checkSum += static_cast<quint8>(0x08);
 
-		value = method.pressure;
+		value = static_cast<int>(method.pressure);
 		ch = static_cast<char>(value);
 		txData.append(ch);
 		checkSum += static_cast<quint8>(ch);
@@ -521,7 +531,7 @@ void SerialPort::TxSetParam(STRUCT_MethodParam &method)
 		txData.append(static_cast<char>(0x0a));
 		checkSum += static_cast<quint8>(0x0a);
 
-		value = method.holdingTime;
+		value = static_cast<int>(method.holdingTime);
 		ch = static_cast<char>(value);
 		txData.append(ch);
 		checkSum += static_cast<quint8>(ch);
@@ -547,7 +557,7 @@ void SerialPort::TxSetParam(STRUCT_MethodParam &method)
 		txData.append(static_cast<char>(0x0b));
 		checkSum += static_cast<quint8>(0x0b);
 
-		value = method.rate;
+		value = static_cast<int>(method.rate);
 		ch = static_cast<char>(value);
 		txData.append(ch);
 		checkSum += static_cast<quint8>(ch);
@@ -568,7 +578,7 @@ void SerialPort::TxSetParam(STRUCT_MethodParam &method)
 		txData.append(static_cast<char>(0x05));
 		checkSum += static_cast<quint8>(0x05);
 
-		value = method.pressure;
+		value = static_cast<int>(method.pressure);
 		ch = static_cast<char>(value);
 		txData.append(ch);
 		checkSum += static_cast<quint8>(ch);
@@ -589,7 +599,7 @@ void SerialPort::TxSetParam(STRUCT_MethodParam &method)
 		txData.append(static_cast<char>(0x0d));
 		checkSum += static_cast<quint8>(0x0d);
 
-		value = method.timing;
+		value = static_cast<int>(method.timing);
 		ch = static_cast<char>(value);
 		txData.append(ch);
 		checkSum += static_cast<quint8>(ch);
@@ -669,9 +679,11 @@ void SerialPort::TxReadState()
 	// 串口非空闲状态，不发送新数据
 	if (Idle != m_handshakeState)
 	{
-		m_handshake.state = Busy;
-		m_handshake.cmd = 0x0;
-		emit HandshakeState(m_handshake);
+		//m_handshake.state = Busy;
+		//m_handshake.cmd = 0x0;
+		//emit HandshakeState(m_handshake);
+
+		return;
 	}
 
 	QByteArray txData;
@@ -703,9 +715,6 @@ void SerialPort::TxReadState()
 	// 方案参数设置，等待返回
 	m_handshakeState = WaitForReadStateAck;
 	m_ackTime = QTime::currentTime().addSecs(2);
-
-	//m_handshake.state = ReadStateAckTimeOut;
-	//emit HandshakeState(m_handshake);
 }
 
 
@@ -719,13 +728,15 @@ void SerialPort::TxReadState()
 void SerialPort::TxCmd(quint8 cmd, quint8 val1, int val2)
 {
 	// 串口非空闲状态，不发送新数据
-	if (Idle != m_handshakeState)
-	{
-		m_handshake.state = Busy;
-		m_handshake.cmd = 0x0;
+	//if (Idle != m_handshakeState)
+	//{
+	//	m_handshake.state = Busy;
+	//	m_handshake.cmd = 0x0;
 
-		emit HandshakeState(m_handshake);
-	}
+	//	emit HandshakeState(m_handshake);
+	//	
+	//	return;
+	//}
 
 	QByteArray txData;
 	quint8 checkSum = 0;
@@ -887,6 +898,39 @@ void SerialPort::TxCmd(quint8 cmd, quint8 val1, int val2)
 }
 
 
+/*
+* 参数：
+* 返回：
+* 功能：读取串口接收数据
+*/
+void SerialPort::ResetHandshakeState()
+{
+	m_handshakeState = Idle;
+
+	ResetCurrentPressure();
+}
+
+
+/*
+* 参数：
+* 返回：
+* 功能：获取实时压力值
+*/
+int SerialPort::GetCurrentPressure()
+{
+	return m_deviceState.pressure;
+}
+
+/*
+* 参数：
+* 返回：
+* 功能：复位当前压力值
+*/
+void SerialPort::ResetCurrentPressure()
+{
+	m_deviceState.pressure = 0;
+}
+
 
 /*
 * 参数：
@@ -895,18 +939,23 @@ void SerialPort::TxCmd(quint8 cmd, quint8 val1, int val2)
 */
 void SerialPort::OnReadyRead()
 {
-	m_rxBuf.clear();
+	//m_rxBuf.clear();
+	qDebug() << "serailport thread:" << QThread::currentThreadId() << endl;
 
 	m_rxBuf.append(this->readAll());
 
+
 	// 确保读取到一整帧数据，5ms内无新数据到来认为一帧数据传输完成
-	while (this->waitForReadyRead(5))
-	{
-		m_rxBuf.append(this->readAll());
-	}
+	//while (this->waitForReadyRead(20))
+	//{
+	//	m_rxBuf.append(this->readAll());
+	//}
 
-	emit DataReceived(m_rxBuf);
-
+	//if (0x16 == m_rxBuf[m_rxBuf.size() - 1])
+	//{
+	//	emit DataReceived(m_rxBuf);
+	//}
+	
 	RxDataDecode();
 }
 
@@ -925,10 +974,8 @@ void SerialPort::OnTimer()
 		{
 			m_handshake.state = SetParamAckTimeOut;
 			m_handshake.cmd = 0x0;
-
-			emit HandshakeState(m_handshake);
-
 			m_handshakeState = Idle;
+			emit HandshakeState(m_handshake);		
 		}
 		break;
 	case WaitForReadParamAck:
@@ -936,10 +983,8 @@ void SerialPort::OnTimer()
 		{
 			m_handshake.state = ReadParamAckTimeOut;
 			m_handshake.cmd = 0x0;
-
-			emit HandshakeState(m_handshake);
-
 			m_handshakeState = Idle;
+			emit HandshakeState(m_handshake);	
 		}
 		break;
 	case WaitForReadStateAck:
@@ -947,26 +992,31 @@ void SerialPort::OnTimer()
 		{
 			m_handshake.state = ReadStateAckTimeOut;
 			m_handshake.cmd = 0x0;
-
-			emit HandshakeState(m_handshake);
-
 			m_handshakeState = Idle;
+			emit HandshakeState(m_handshake);		
 		}
 		break;
 	case WaitForCmdAck:
 		if (QTime::currentTime() > m_ackTime)
 		{
 			m_handshake.state = CmdAckTimeOut;
-
-			emit HandshakeState(m_handshake);
-
 			m_handshakeState = Idle;
+			emit HandshakeState(m_handshake);	
 		}
 		break;
 	default:
 		break;
 	}
 }
+
+
+
+/*
+* 参数：
+* 返回：
+* 功能：
+*/
+
 
 
 

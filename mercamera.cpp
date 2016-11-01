@@ -155,9 +155,9 @@ void __stdcall MerCamera::OnFrameCallbackFun(GX_FRAME_CALLBACK_PARAM *pFrame)
 				memcpy(pCamera->m_pImgBuffer, pFrame->pImgBuf, pFrame->nImgSize);
 			}
 
-			pCamera->BitMap2Mat(pCamera->m_pImgBuffer);
-			pCamera->m_bIsImgSnaped = true;
+			pCamera->BitMap2Mat(pCamera->m_pImgBuffer);		
 			emit pCamera->ImageSnaped();
+			pCamera->m_bIsImgSnaped = true;
 		}
 	}
 }

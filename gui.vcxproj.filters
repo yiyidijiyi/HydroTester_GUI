@@ -129,6 +129,15 @@
     <ClCompile Include="mercamera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="imageproc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_imageproc.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_imageproc.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="logindlg.h">
@@ -153,6 +162,9 @@
       <Filter>Header Files</Filter>
     </CustomBuild>
     <CustomBuild Include="mercamera.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="imageproc.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
   </ItemGroup>

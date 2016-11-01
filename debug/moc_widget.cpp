@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_Widget_t {
-    QByteArrayData data[47];
-    char stringdata0[904];
+    QByteArrayData data[52];
+    char stringdata0[980];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -75,7 +75,12 @@ QT_MOC_LITERAL(42, 780, 24), // "OnAccountListItemClicked"
 QT_MOC_LITERAL(43, 805, 22), // "OnBtnNewAccountClicked"
 QT_MOC_LITERAL(44, 828, 23), // "OnBtnSaveAccountClicked"
 QT_MOC_LITERAL(45, 852, 25), // "OnBtnDeleteAccountClicked"
-QT_MOC_LITERAL(46, 878, 25) // "OnBtnModifyAccountClicked"
+QT_MOC_LITERAL(46, 878, 25), // "OnBtnModifyAccountClicked"
+QT_MOC_LITERAL(47, 904, 15), // "OnImagePrepared"
+QT_MOC_LITERAL(48, 920, 7), // "OnTimer"
+QT_MOC_LITERAL(49, 928, 19), // "OnUpdateDeviceState"
+QT_MOC_LITERAL(50, 948, 19), // "STRUCT_DeviceState&"
+QT_MOC_LITERAL(51, 968, 11) // "deviceState"
 
     },
     "Widget\0OnBtnMinClicked\0\0OnBtnCloseClicked\0"
@@ -102,7 +107,9 @@ QT_MOC_LITERAL(46, 878, 25) // "OnBtnModifyAccountClicked"
     "OnAccountListItemClicked\0"
     "OnBtnNewAccountClicked\0OnBtnSaveAccountClicked\0"
     "OnBtnDeleteAccountClicked\0"
-    "OnBtnModifyAccountClicked"
+    "OnBtnModifyAccountClicked\0OnImagePrepared\0"
+    "OnTimer\0OnUpdateDeviceState\0"
+    "STRUCT_DeviceState&\0deviceState"
 };
 #undef QT_MOC_LITERAL
 
@@ -112,7 +119,7 @@ static const uint qt_meta_data_Widget[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      38,   14, // methods
+      41,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -120,44 +127,47 @@ static const uint qt_meta_data_Widget[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,  204,    2, 0x09 /* Protected */,
-       3,    0,  205,    2, 0x09 /* Protected */,
-       4,    1,  206,    2, 0x09 /* Protected */,
-       7,    1,  209,    2, 0x09 /* Protected */,
-       8,    1,  212,    2, 0x09 /* Protected */,
-       9,    1,  215,    2, 0x0a /* Public */,
-      11,    0,  218,    2, 0x0a /* Public */,
-      12,    0,  219,    2, 0x0a /* Public */,
-      13,    0,  220,    2, 0x0a /* Public */,
-      14,    0,  221,    2, 0x0a /* Public */,
-      15,    0,  222,    2, 0x0a /* Public */,
-      16,    0,  223,    2, 0x0a /* Public */,
-      17,    1,  224,    2, 0x0a /* Public */,
-      19,    1,  227,    2, 0x0a /* Public */,
-      22,    0,  230,    2, 0x0a /* Public */,
-      23,    0,  231,    2, 0x0a /* Public */,
-      24,    0,  232,    2, 0x0a /* Public */,
-      25,    0,  233,    2, 0x0a /* Public */,
-      26,    0,  234,    2, 0x0a /* Public */,
-      27,    0,  235,    2, 0x0a /* Public */,
-      28,    0,  236,    2, 0x0a /* Public */,
-      29,    0,  237,    2, 0x0a /* Public */,
-      30,    1,  238,    2, 0x0a /* Public */,
-      32,    0,  241,    2, 0x0a /* Public */,
-      33,    1,  242,    2, 0x0a /* Public */,
-      34,    1,  245,    2, 0x0a /* Public */,
-      35,    1,  248,    2, 0x0a /* Public */,
-      36,    0,  251,    2, 0x0a /* Public */,
-      37,    0,  252,    2, 0x0a /* Public */,
-      38,    0,  253,    2, 0x0a /* Public */,
-      39,    0,  254,    2, 0x0a /* Public */,
-      40,    0,  255,    2, 0x0a /* Public */,
-      41,    0,  256,    2, 0x0a /* Public */,
-      42,    1,  257,    2, 0x0a /* Public */,
-      43,    0,  260,    2, 0x0a /* Public */,
-      44,    0,  261,    2, 0x0a /* Public */,
-      45,    0,  262,    2, 0x0a /* Public */,
-      46,    0,  263,    2, 0x0a /* Public */,
+       1,    0,  219,    2, 0x09 /* Protected */,
+       3,    0,  220,    2, 0x09 /* Protected */,
+       4,    1,  221,    2, 0x09 /* Protected */,
+       7,    1,  224,    2, 0x09 /* Protected */,
+       8,    1,  227,    2, 0x09 /* Protected */,
+       9,    1,  230,    2, 0x0a /* Public */,
+      11,    0,  233,    2, 0x0a /* Public */,
+      12,    0,  234,    2, 0x0a /* Public */,
+      13,    0,  235,    2, 0x0a /* Public */,
+      14,    0,  236,    2, 0x0a /* Public */,
+      15,    0,  237,    2, 0x0a /* Public */,
+      16,    0,  238,    2, 0x0a /* Public */,
+      17,    1,  239,    2, 0x0a /* Public */,
+      19,    1,  242,    2, 0x0a /* Public */,
+      22,    0,  245,    2, 0x0a /* Public */,
+      23,    0,  246,    2, 0x0a /* Public */,
+      24,    0,  247,    2, 0x0a /* Public */,
+      25,    0,  248,    2, 0x0a /* Public */,
+      26,    0,  249,    2, 0x0a /* Public */,
+      27,    0,  250,    2, 0x0a /* Public */,
+      28,    0,  251,    2, 0x0a /* Public */,
+      29,    0,  252,    2, 0x0a /* Public */,
+      30,    1,  253,    2, 0x0a /* Public */,
+      32,    0,  256,    2, 0x0a /* Public */,
+      33,    1,  257,    2, 0x0a /* Public */,
+      34,    1,  260,    2, 0x0a /* Public */,
+      35,    1,  263,    2, 0x0a /* Public */,
+      36,    0,  266,    2, 0x0a /* Public */,
+      37,    0,  267,    2, 0x0a /* Public */,
+      38,    0,  268,    2, 0x0a /* Public */,
+      39,    0,  269,    2, 0x0a /* Public */,
+      40,    0,  270,    2, 0x0a /* Public */,
+      41,    0,  271,    2, 0x0a /* Public */,
+      42,    1,  272,    2, 0x0a /* Public */,
+      43,    0,  275,    2, 0x0a /* Public */,
+      44,    0,  276,    2, 0x0a /* Public */,
+      45,    0,  277,    2, 0x0a /* Public */,
+      46,    0,  278,    2, 0x0a /* Public */,
+      47,    0,  279,    2, 0x0a /* Public */,
+      48,    0,  280,    2, 0x0a /* Public */,
+      49,    1,  281,    2, 0x0a /* Public */,
 
  // slots: parameters
     QMetaType::Void,
@@ -198,6 +208,9 @@ static const uint qt_meta_data_Widget[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void,
+    QMetaType::Void, 0x80000000 | 50,   51,
 
        0        // eod
 };
@@ -246,6 +259,9 @@ void Widget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
         case 35: _t->OnBtnSaveAccountClicked(); break;
         case 36: _t->OnBtnDeleteAccountClicked(); break;
         case 37: _t->OnBtnModifyAccountClicked(); break;
+        case 38: _t->OnImagePrepared(); break;
+        case 39: _t->OnTimer(); break;
+        case 40: _t->OnUpdateDeviceState((*reinterpret_cast< STRUCT_DeviceState(*)>(_a[1]))); break;
         default: ;
         }
     }
@@ -276,13 +292,13 @@ int Widget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 38)
+        if (_id < 41)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 38;
+        _id -= 41;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 38)
+        if (_id < 41)
             *reinterpret_cast<int*>(_a[0]) = -1;
-        _id -= 38;
+        _id -= 41;
     }
     return _id;
 }

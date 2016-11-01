@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-19
-* 最后修改：2016-09-20
+* 最后修改：2016-11-01
 * 作      者：syf
 * 描      述：
 */
@@ -13,7 +13,8 @@
 #include <QStringList>
 #include <QTimer>
 #include <QDateTime>
-
+#include <QThread>
+#include <QDebug>
 #include "common.h"
 
 class SerialPort : public QSerialPort
@@ -36,6 +37,10 @@ public:
 	void TxSetParam(STRUCT_MethodParam &mthod);
 	void TxReadState();
 	void TxCmd(quint8 cmd, quint8 val1, int val2);
+
+	void ResetHandshakeState();
+	int GetCurrentPressure();
+	void ResetCurrentPressure();
 public slots:
 	void OnReadyRead();
 	void OnTimer();
@@ -52,6 +57,7 @@ private:
 	STRUCT_HandShake m_handshake;
 	QTime m_ackTime;
 	QTimer *m_pTimer;
+	int m_currentPressure;
 };
 
 #endif // SERIALPORT_H

@@ -276,9 +276,9 @@
   <widget class="QLabel" name="label_pressure">
    <property name="geometry">
     <rect>
-     <x>360</x>
-     <y>90</y>
-     <width>191</width>
+     <x>490</x>
+     <y>100</y>
+     <width>61</width>
      <height>20</height>
     </rect>
    </property>
@@ -294,14 +294,14 @@
     </font>
    </property>
    <property name="text">
-    <string>压力</string>
+    <string>Pa（帕）</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_holdingTime">
    <property name="geometry">
     <rect>
-     <x>630</x>
-     <y>90</y>
+     <x>650</x>
+     <y>10</y>
      <width>231</width>
      <height>20</height>
     </rect>
@@ -318,7 +318,7 @@
     </font>
    </property>
    <property name="text">
-    <string>测试时间</string>
+    <string/>
    </property>
   </widget>
   <widget class="QPushButton" name="pushButton_testInterface">
@@ -3046,6 +3046,60 @@ p, li { white-space: pre-wrap; }
     <string>CopyRight(C) 2015 NingBo Textile Instrument Factory</string>
    </property>
   </widget>
+  <widget class="QLCDNumber" name="lcdNumber_pressure">
+   <property name="geometry">
+    <rect>
+     <x>350</x>
+     <y>90</y>
+     <width>121</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::NoFrame</enum>
+   </property>
+   <property name="digitCount">
+    <number>8</number>
+   </property>
+   <property name="segmentStyle">
+    <enum>QLCDNumber::Flat</enum>
+   </property>
+   <property name="value" stdset="0">
+    <double>0.000000000000000</double>
+   </property>
+  </widget>
+  <widget class="QLCDNumber" name="lcdNumber_time">
+   <property name="geometry">
+    <rect>
+     <x>620</x>
+     <y>90</y>
+     <width>120</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>12</pointsize>
+    </font>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::NoFrame</enum>
+   </property>
+   <property name="digitCount">
+    <number>6</number>
+   </property>
+   <property name="segmentStyle">
+    <enum>QLCDNumber::Flat</enum>
+   </property>
+   <property name="value" stdset="0">
+    <double>0.000000000000000</double>
+   </property>
+  </widget>
   <zorder>label</zorder>
   <zorder>pushButton_min</zorder>
   <zorder>pushButton_max</zorder>
@@ -3070,6 +3124,8 @@ p, li { white-space: pre-wrap; }
   <zorder>tabWidget</zorder>
   <zorder>label_6</zorder>
   <zorder>label_bottom</zorder>
+  <zorder>lcdNumber_pressure</zorder>
+  <zorder>lcdNumber_time</zorder>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <customwidgets>
