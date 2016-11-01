@@ -203,22 +203,24 @@ void SerialPort::ProtocolDecode(const QByteArray &data, int index)
 		if (WaitForReadStateAck == m_handshakeState)
 		{
 			// 当前压力值
-			m_deviceState.pressure = static_cast<int>(data[index + 7]);
-			m_deviceState.pressure <<= 8;
-			m_deviceState.pressure += static_cast<int>(data[index + 6]);
-			m_deviceState.pressure <<= 8;
-			m_deviceState.pressure += static_cast<int>(data[index + 5]);
-			m_deviceState.pressure <<= 8;
-			m_deviceState.pressure += static_cast<int>(data[index + 4]);
+			int pressure = static_cast<int>(data[index + 7]);
+			pressure <<= 8;
+			pressure += static_cast<int>(data[index + 6]);
+			pressure <<= 8;
+			pressure += static_cast<int>(data[index + 5]);
+			pressure <<= 8;
+			pressure += static_cast<int>(data[index + 4]);
+			m_deviceState.pressure = static_cast<double>(pressure);
+
 
 			// 流进工作台谁的体积
 			m_deviceState.waterInVolum = static_cast<int>(data[index + 11]);
 			m_deviceState.waterInVolum <<= 8;
-			m_deviceState.waterInVolum = static_cast<int>(data[index + 10]);
+			m_deviceState.waterInVolum += static_cast<int>(data[index + 10]);
 			m_deviceState.waterInVolum <<= 8;
-			m_deviceState.waterInVolum = static_cast<int>(data[index + 9]);
+			m_deviceState.waterInVolum += static_cast<int>(data[index + 9]);
 			m_deviceState.waterInVolum <<= 8;
-			m_deviceState.waterInVolum = static_cast<int>(data[index + 8]);
+			m_deviceState.waterInVolum += static_cast<int>(data[index + 8]);
 			
 			// 水箱位置
 			m_deviceState.waterLevelState = static_cast<quint8>(data[index + 12]);
@@ -940,7 +942,7 @@ void SerialPort::ResetCurrentPressure()
 void SerialPort::OnReadyRead()
 {
 	//m_rxBuf.clear();
-	qDebug() << "serailport thread:" << QThread::currentThreadId() << endl;
+	//qDebug() << "serailport thread:" << QThread::currentThreadId() << endl;
 
 	m_rxBuf.append(this->readAll());
 
@@ -951,10 +953,10 @@ void SerialPort::OnReadyRead()
 	//	m_rxBuf.append(this->readAll());
 	//}
 
-	//if (0x16 == m_rxBuf[m_rxBuf.size() - 1])
-	//{
-	//	emit DataReceived(m_rxBuf);
-	//}
+	if (0x16 == m_rxBuf[m_rxBuf.size() - 1])
+	{
+		emit DataReceived(m_rxBuf);
+	}
 	
 	RxDataDecode();
 }

@@ -94,7 +94,7 @@ Widget::Widget(QWidget *parent)
 	connect(ui->pushButton_waterOff, &QPushButton::clicked, this, &Widget::OnBtnWaterOffClicked);
 	connect(ui->pushButton_startStop, &QPushButton::clicked, this, &Widget::OnBtnStartTestClicked);
 	connect(ui->pushButton_pauseConti, &QPushButton::clicked, this, &Widget::OnBtnPauseTestClicked);
-	//connect(m_pCom, &SerialPort::DataReceived, this, &Widget::OnRxDataReceived);
+	connect(m_pCom, &SerialPort::DataReceived, this, &Widget::OnRxDataReceived);
 	connect(m_pCom, &SerialPort::HandshakeState, this, &Widget::OnHandShakeStateReceived);
 	connect(ui->pushButton_print, &QPushButton::clicked, this, &Widget::OnBtnPrintReportClicked);
 
