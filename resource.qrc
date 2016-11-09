@@ -1,0 +1,52 @@
+<RCC>
+    <qresource prefix="/login">
+        <file>resource/login/bg.png</file>
+        <file>resource/login/dlg.png</file>
+        <file>resource/login/btn1.png</file>
+        <file>resource/login/btn3.png</file>
+        <file>resource/login/btn4.png</file>
+        <file>resource/login/btn2.png</file>
+        <file>resource/login/icon1.png</file>
+        <file>resource/login/icon3.png</file>
+        <file>resource/login/input.png</file>
+    </qresource>
+    <qresource prefix="/main">
+        <file>resource/main/close.png</file>
+        <file>resource/main/logo.png</file>
+        <file>resource/main/max.png</file>
+        <file>resource/main/min.png</file>
+        <file>resource/main/title.png</file>
+        <file>resource/main/holdingTime.png</file>
+        <file>resource/main/pressure.png</file>
+        <file>resource/main/testState.png</file>
+        <file>resource/main/advance.png</file>
+        <file>resource/main/advance0.png</file>
+        <file>resource/main/help.png</file>
+        <file>resource/main/help0.png</file>
+        <file>resource/main/reportQuery.png</file>
+        <file>resource/main/reportQuery0.png</file>
+        <file>resource/main/testInterface.png</file>
+        <file>resource/main/testInterface0.png</file>
+        <file>resource/main/testMethod.png</file>
+        <file>resource/main/testMethod0.png</file>
+        <file>resource/main/queryBtn0.png</file>
+        <file>resource/main/queryBtn1.png</file>
+    </qresource>
+    <qresource prefix="/advance">
+        <file>resource/advance/advanceBtn0.png</file>
+        <file>resource/advance/advanceBtn1.png</file>
+        <file>resource/advance/advanceSave0.png</file>
+        <file>resource/advance/advanceSave1.png</file>
+    </qresource>
+    <qresource prefix="/testMethod">
+        <file>resource/testmethod/methodBtn0.png</file>
+        <file>resource/testmethod/methodBtn1.png</file>
+        <file>resource/testmethod/methodSave.png</file>
+    </qresource>
+    <qresource prefix="/testInterface">
+        <file>resource/testInterface/testInterfaceBtn1.png</file>
+        <file>resource/testInterface/testInterfaceBtn2.png</file>
+        <file>resource/testInterface/testInterfaceBtn3.png</file>
+        <file>resource/testInterface/testInterfaceBtn4.png</file>
+    </qresource>
+</RCC>
