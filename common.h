@@ -130,6 +130,20 @@ enum ENUM_TestState{
 	End
 };
 
+enum ENUM_TxData{
+	TxNoData = 0,
+	TxConnect,
+	TxWaterInStart,
+	TxWaterInStop,
+	TxWaterOffStart,
+	TxWaterOffStop,
+	TxSetParams,
+	TxReadDeviceState,
+	TxStartTest,
+	TxStopTest,
+	TxPauseTest
+};
+
 char ConvertCharHex(char ch);
 void HexToString(const QByteArray &hexData, QString &str);
 

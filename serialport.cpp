@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-19
-* 最后修改：2016-11-01
+* 最后修改：2016-11-09
 * 作      者：syf
 * 描      述：
 */
@@ -18,6 +18,7 @@ SerialPort::SerialPort(QObject *parent)
 	, m_handshakeState(Idle)
 	, m_currentPressure(0)
 {
+	m_handshakeState = Idle;
 	m_pTimer = new QTimer;
 
 	connect(this, &QSerialPort::readyRead, this, &SerialPort::OnReadyRead);
@@ -280,9 +281,11 @@ void SerialPort::ProtocolDecode(const QByteArray &data, int index)
 				// 命令成功
 				m_handshake.state = CmdOk;
 			}
+
+			emit HandshakeState(&m_handshake);
 		}
 		m_handshakeState = Idle;
-		emit HandshakeState(&m_handshake);
+		
 		break;
 	case 3:	// 设备主动上报
 		
@@ -937,6 +940,23 @@ int SerialPort::GetCurrentPressure()
 void SerialPort::ResetCurrentPressure()
 {
 	m_currentPressure = 0;
+}
+
+/*
+* 参数：
+* 返回：
+* 功能：返回通信状态，空闲返回1
+*/
+bool SerialPort::IsIdle()
+{
+	if (m_handshakeState == Idle)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
 
 

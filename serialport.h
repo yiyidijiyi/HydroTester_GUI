@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-19
-* 最后修改：2016-11-01
+* 最后修改：2016-11-09
 * 作      者：syf
 * 描      述：
 */
@@ -51,6 +51,7 @@ public:
 	void ResetHandshakeState();
 	int GetCurrentPressure();
 	void ResetCurrentPressure();
+	bool IsIdle();
 	//STRUCT_HandShake GetHandshake();
 
 public slots:

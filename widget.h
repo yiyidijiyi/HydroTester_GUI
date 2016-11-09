@@ -249,7 +249,7 @@ private:
 	QPoint m_mousePos;
 
 	QStandardItemModel* m_pReportQueryModel;
-	InterfaceIndex m_interfaceIndex;
+	InterfaceIndex	m_interfaceIndex;
 	ChartIndex	      m_chartIndex;
 
 	// 测试方法相关
@@ -267,7 +267,7 @@ private:
 	// 用户账号相关
 	QStringListModel	*m_pAccountListModel;
 	STRUCT_Account	m_account;
-	UserAccount			*m_pAccountDB;
+	UserAccount		*m_pAccountDB;
 	UIState					m_accountEditState;
 
 	// 串口相关
@@ -285,6 +285,7 @@ private:
 
 	// 测试状态
 	ENUM_TestState m_testState;
+	ENUM_TxData m_txData;
 	QTime m_time;
 	QTimer *m_pTimer;
 
@@ -297,7 +298,8 @@ private:
 	QVector<double> m_vectorY;
 	QwtPlotCurve	*m_pCurve;
 	size_t	m_oldSize;
-	int m_maxY = 0;
+	int m_maxY;
+	double m_avgY;
 };
 
 #endif // WIDGET_H

@@ -32,12 +32,14 @@ Widget::Widget(QWidget *parent)
 	, m_pImgProcThread(NULL)
 	, m_dropNum(0)
 	, m_testState(Init)
+	, m_txData(TxNoData)
 	, m_pTimer(NULL)
 	, m_bIsWaterIn(false)
 	, m_bIsWaterOff(false)
 	, m_pCurve(NULL)
 	, m_oldSize(0)
 	, m_maxY(0)
+	, m_avgY(0)
 {
 	CreateUi();
 	// 初始化用户账号相关数据成员
@@ -78,7 +80,7 @@ Widget::Widget(QWidget *parent)
 
 	// 启动定时器
 	m_pTimer = new QTimer(this);
-	m_pTimer->start(1000);
+	m_pTimer->start(200);
 
 	// 可操作按钮
 	SetDeviceOprateEnabled(ConnectDevice | Camera);
@@ -599,6 +601,7 @@ void Widget::InitCurve()
 	ui->qwtPlot->setAxisScale(QwtPlot::yLeft, 0, 100000.0);
 
 	m_maxY = 0;
+	m_avgY = 0;
 	m_vectorX.clear();
 	m_vectorY.clear();
 
@@ -634,13 +637,25 @@ void Widget::DrawCurve()
 {
 	double x = m_time.second() + m_time.minute() * 60 + m_time.hour() * 3600;
 	double y = ui->lcdNumber_pressure->intValue();
+	size_t ySize = m_vectorY.size();
+
+	if (ySize < 10)
+	{
+		m_avgY = m_avgY * ySize + y;
+		m_avgY /= ySize + 1;
+	}
+	else
+	{
+		m_avgY = m_avgY * 9 + y;
+		m_avgY /= 10;
+	}
 
 	m_vectorX.append(x);
-	m_vectorY.append(y);
+	m_vectorY.append(m_avgY);
 
-	if (y > m_maxY)
+	if (m_avgY > m_maxY)
 	{
-		m_maxY = y;
+		m_maxY = m_avgY;
 	}
 	
 	int count = m_vectorX.size();
@@ -654,7 +669,7 @@ void Widget::DrawCurve()
 		ui->qwtPlot->setAxisScale(QwtPlot::xBottom, 0, count + 15, ((count + 15) / 25 / 5 + 1) * 5);
 	}
 	
-	ui->qwtPlot->setAxisScale(QwtPlot::yLeft, 0, m_maxY * 1.2);
+	ui->qwtPlot->setAxisScale(QwtPlot::yLeft, 0, m_maxY * 1.1);
 
 	m_pCurve->setSamples(m_vectorX.data(), m_vectorY.data(), count);
 	ui->qwtPlot->replot();
@@ -1104,10 +1119,11 @@ void Widget::GetDropNum()
 	if (m_dropNum >= 3)
 	{
 		// 发送测试停止命令
-		m_pCom->TxCmd(0x01, 0x0, 0x0);
+		//m_pCom->TxCmd(0x01, 0x0, 0x0);
+		m_txData = TxStopTest;
 
 		// 生成测试报告
-		GenTestReport();
+		//GenTestReport();
 	}
 }
 
@@ -1618,7 +1634,8 @@ void Widget::OnBtnComOpClicked()
 		if (m_bIsComOpened) 
 		{
 			//ui->textEdit_info->append(QStringLiteral("打开串口成功！"));
-			m_pCom->TxReadState();
+			//m_pCom->TxReadState();
+			m_txData = TxConnect;
 			//SetDeviceOprateEnabled(false);
 
 			//m_pCom->moveToThread(m_pRxThread);
@@ -1644,14 +1661,16 @@ void Widget::OnBtnWaterInClicked()
 	// 进水命令:0x07， 开始进水：1，停止进水：0
 	if (m_bIsWaterIn)
 	{
-		m_pCom->TxCmd(0x07, 0x0, 0x0);
+		//m_pCom->TxCmd(0x07, 0x0, 0x0);
+		m_txData = TxWaterInStop;
 		m_testState = WaterInState;
 		//m_bIsWaterIn = false;
 		//ui->pushButton_waterIn->setText(QStringLiteral("进水"));
 	}
 	else
 	{
-		m_pCom->TxCmd(0x07, 0x01, 0x0);
+		//m_pCom->TxCmd(0x07, 0x01, 0x0);
+		m_txData = TxWaterInStart;
 		m_testState = WaterInState;
 		//m_bIsWaterIn = true;
 		//ui->pushButton_waterIn->setText(QStringLiteral("停止进水"));
@@ -1671,14 +1690,16 @@ void Widget::OnBtnWaterOffClicked()
 	// 排水命令:0x08， 开始排水：1，停止排水：0
 	if (m_bIsWaterOff)
 	{
-		m_pCom->TxCmd(0x08, 0x0, 0x0);
+		//m_pCom->TxCmd(0x08, 0x0, 0x0);
+		m_txData = TxWaterOffStop;
 		m_testState = WaterOffState;
 		//m_bIsWaterOff = false;
 		//ui->pushButton_waterOff->setText(QStringLiteral("排水"));
 	}
 	else
 	{
-		m_pCom->TxCmd(0x08, 0x01, 0x0);
+		//m_pCom->TxCmd(0x08, 0x01, 0x0);
+		m_txData = TxWaterOffStart;
 		m_testState = WaterOffState;
 		//m_bIsWaterOff = true;
 		//ui->pushButton_waterOff->setText(QStringLiteral("停止排水"));
@@ -1697,21 +1718,29 @@ void Widget::OnBtnStartTestClicked()
 {
 	if ((Connected == m_testState) || (End == m_testState))
 	{
-		// 串口连接状态或测试结束状态，开始新的测试，先设置参数
-		if (0 == ui->comboBox_selMethod->currentIndex())
+		// 相机状态
+		if (!m_pCamera->IsCameraOpened())
 		{
-			ui->textEdit_info->append(QStringLiteral("请先选择正确的测试方法！"));
+			ui->textEdit_info->append(QStringLiteral("提示：请先打开相机！"));
 			return;
 		}
 
-		m_pCom->TxSetParam(m_methodParam);
+		// 串口连接状态或测试结束状态，开始新的测试，先设置参数
+		if (0 == ui->comboBox_selMethod->currentIndex())
+		{
+			ui->textEdit_info->append(QStringLiteral("提示：请先选择正确的测试方法！"));
+			return;
+		}
 
+		//m_pCom->TxSetParam(m_methodParam);
+		m_txData = TxSetParams;
 		m_testState = SetParams;
 	}
 	else if ((Start == m_testState) || (Pause == m_testState))
 	{
 		// 测试为开始或暂停状态，停止测试
-		m_pCom->TxCmd(0x01, 0x0, 0x0);
+		//m_pCom->TxCmd(0x01, 0x0, 0x0);
+		m_txData = TxStopTest;
 	}
 
 	// 禁止其他操作
@@ -1727,18 +1756,17 @@ void Widget::OnBtnStartTestClicked()
 */
 void Widget::OnBtnPauseTestClicked()
 {
-	//if (Start == m_testState)
-	//{
-	//	// 测试开始状态，暂停测试
-	//	m_pCom->TxCmd(0x01, 0xff, 0x0);
-	//}
-	//else if (Pause == m_testState)
-	//{
-	//	// 测试暂停状态，测试继续进行
-	//	m_pCom->TxCmd(0x01, static_cast<quint8>(m_methodParam.plan), 0x0);
-	//}
-
-//	SetDeviceOprateEnabled(false);
+	if (Start == m_testState)
+	{
+		// 测试开始状态，暂停测试
+		//m_pCom->TxCmd(0x01, 0xff, 0x0);
+	}
+	else if (Pause == m_testState)
+	{
+		// 测试暂停状态，测试继续进行
+		//m_pCom->TxCmd(0x01, static_cast<quint8>(m_methodParam.plan + 1), 0x0);
+		m_txData = TxStartTest;
+	}
 }
 
 
@@ -1772,7 +1800,8 @@ void Widget::OnHandShakeStateReceived(STRUCT_HandShake *handshake)
 		ui->textEdit_info->append(QStringLiteral("测试参数设置成功！"));
 
 		// 发送测试开始命令
-		m_pCom->TxCmd(0x01, static_cast<quint8>(m_methodParam.plan + 1), 0x0);
+		//m_pCom->TxCmd(0x01, static_cast<quint8>(m_methodParam.plan + 1), 0x0);
+		m_txData = TxStartTest;
 		break;
 	case SetParamError:
 		ui->textEdit_info->append(QStringLiteral("错误：测试参数，设置失败！"));
@@ -1851,6 +1880,7 @@ void Widget::OnHandShakeStateReceived(STRUCT_HandShake *handshake)
 				m_pImgProc->StartCalc();
 				ui->textEdit_info->append(QStringLiteral("试验开始："));
 				ui->pushButton_startStop->setText(QStringLiteral("结束"));
+				ui->label_testState->setText(QStringLiteral("正在试验"));
 				SetDeviceOprateEnabled(StartStop | PauseConti);
 			}
 			else if (Start == m_testState)
@@ -1864,6 +1894,7 @@ void Widget::OnHandShakeStateReceived(STRUCT_HandShake *handshake)
 					ui->textEdit_info->append(QStringLiteral("试验结束！"));
 					ui->pushButton_startStop->setText(QStringLiteral("开始"));
 					ui->pushButton_pauseConti->setText(QStringLiteral("暂停"));
+					ui->label_testState->setText(QStringLiteral("试验结束"));
 					SetDeviceOprateEnabled(ConnectDevice | WaterIn | WaterOff | StartStop | PauseConti | Camera);
 					ui->comboBox_selMethod->setEnabled(true);
 				}
@@ -1874,6 +1905,7 @@ void Widget::OnHandShakeStateReceived(STRUCT_HandShake *handshake)
 					m_pImgProc->StopCalc();
 					ui->textEdit_info->append(QStringLiteral("试验暂停。。。"));
 					ui->pushButton_pauseConti->setText(QStringLiteral("继续"));
+					ui->label_testState->setText(QStringLiteral("试验暂停"));
 				}
 			}
 			else if (Pause == m_testState)
@@ -1882,6 +1914,7 @@ void Widget::OnHandShakeStateReceived(STRUCT_HandShake *handshake)
 				m_testState = Start;
 				ui->textEdit_info->append(QStringLiteral("试验继续。。。"));
 				ui->pushButton_pauseConti->setText(QStringLiteral("暂停"));
+				ui->label_testState->setText(QStringLiteral("正在试验"));
 			}
 			break;
 		case 0x02:	// 压头控制，应答成功
@@ -2796,8 +2829,12 @@ void Widget::OnImagePrepared()
 */
 void Widget::OnTimer()
 {
-	if (Start == m_testState)
+	static int tick = 0;
+	tick++;
+
+	if ((Start == m_testState) &&  (tick >= 5))
 	{
+		tick = 0;
 		// 显示测试时间与设备当前压力值
 		m_time = m_time.addSecs(1);
 		ui->lcdNumber_time->display(m_time.toString("hh:mm:ss"));
@@ -2806,9 +2843,56 @@ void Widget::OnTimer()
 		// 获取检测到的水珠数
 		GetDropNum();
 
-		m_pCom->TxReadState();
+		if (m_txData == TxNoData)
+		{
+			m_txData = TxReadDeviceState;
+		}		
 
 		DrawCurve();
+	}
+
+	if (m_txData != TxNoData)
+	{
+		if (m_pCom->IsIdle())
+		{
+			switch (m_txData)
+			{
+			case TxConnect:	
+				m_pCom->TxReadState();
+				break;
+			case TxWaterInStop:
+				m_pCom->TxCmd(0x07, 0x0, 0x0);
+				break;
+			case TxWaterInStart:
+				m_pCom->TxCmd(0x07, 0x01, 0x0);
+				break;
+			case TxWaterOffStop:
+				m_pCom->TxCmd(0x08, 0x0, 0x0);
+				break;
+			case TxWaterOffStart:
+				m_pCom->TxCmd(0x08, 0x01, 0x0);
+				break;
+			case TxSetParams:
+				m_pCom->TxSetParam(m_methodParam);
+				break;
+			case TxReadDeviceState:
+				m_pCom->TxReadState();
+				break;
+			case TxStartTest:
+				m_pCom->TxCmd(0x01, static_cast<quint8>(m_methodParam.plan + 1), 0x0);
+				break;
+			case TxStopTest:
+				m_pCom->TxCmd(0x01, 0x0, 0x0);
+				break;
+			case TxPauseTest:
+				m_pCom->TxCmd(0x01, 0xff, 0x0);
+				break;
+			default:
+				break;
+			}
+
+			m_txData = TxNoData;
+		}
 	}
 }
 
