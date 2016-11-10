@@ -47,6 +47,7 @@ public:
 	void TxSetParam(STRUCT_MethodParam &mthod);
 	void TxReadState();
 	void TxCmd(quint8 cmd, quint8 val1, int val2);
+	void TxAck(quint8 dir, quint8 code);
 
 	void ResetHandshakeState();
 	int GetCurrentPressure();

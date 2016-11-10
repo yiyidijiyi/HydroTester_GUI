@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-19
-* 最后修改：2016-11-09
+* 最后修改：2016-11-10
 * 作      者：syf
 * 描      述：
 */
@@ -288,8 +288,10 @@ void SerialPort::ProtocolDecode(const QByteArray &data, int index)
 		
 		break;
 	case 3:	// 设备主动上报
-		
-		m_handshakeState = Idle;
+		m_handshake.state = DeviceReport;
+		m_handshake.cmd = data[index + 4];
+		emit HandshakeState(&m_handshake);
+		//m_handshakeState = Idle;
 		break;
 	default:
 		break;
@@ -906,6 +908,42 @@ void SerialPort::TxCmd(quint8 cmd, quint8 val1, int val2)
 	// 方案参数设置，等待返回
 	m_handshakeState = WaitForCmdAck;
 	m_ackTime = QTime::currentTime().addSecs(2);
+}
+
+
+/*
+* 参数：dir:数据方向，code：功能码
+* 返回：
+* 功能：向下位机发送应答
+*/
+void SerialPort::TxAck(quint8 dir, quint8 code)
+{
+	QByteArray txData;
+	txData.clear();
+	quint8 checkSum = 0;
+
+	// 帧头
+	txData.append(static_cast<char>(0x68));
+
+	// 方向
+	txData.append(static_cast<char>(dir));
+	checkSum += dir;
+
+	// 功能码
+	txData.append(static_cast<char>(code));
+	checkSum += code;
+
+	// 长度
+	txData.append(static_cast<char>(0x0));
+	
+	// 校验
+	txData.append(static_cast<char>(checkSum));
+
+	// 帧尾
+	txData.append(static_cast<char>(0x16));
+
+	// 通过串口发送数据
+	this->write(txData);
 }
 
 

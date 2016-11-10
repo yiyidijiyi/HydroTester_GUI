@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 	w.setWindowTitle(QStringLiteral("Ö÷´°¿Ú"));
     LoginDlg dlg;
 
-	qDebug() << "main:" << QThread::currentThreadId() << endl;
+	//qDebug() << "main:" << QThread::currentThreadId() << endl;
 
 	QObject::connect(&dlg, &LoginDlg::AccountID, &w, &Widget::OnLoginAccepted);
 

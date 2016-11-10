@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-12
-* 最后修改：2016-11-09
+* 最后修改：2016-11-10
 * 作      者：syf
 * 描      述：
 */
@@ -126,7 +126,17 @@ enum ENUM_TestState{
 	WaterOffState,
 	SetParams,
 	Start,
+	StartByDevice,
+	StartBySoftware,
 	Pause,
+	PauseBySoftware,
+	ContinueBySoftware,
+	EndAuto,
+	EndByDevice,
+	EndBySoftware,
+	EndTimeOut,
+	EndPressureOverRange,
+	EndBurst,
 	End
 };
 
@@ -141,7 +151,8 @@ enum ENUM_TxData{
 	TxReadDeviceState,
 	TxStartTest,
 	TxStopTest,
-	TxPauseTest
+	TxPauseTest,
+	TxAck
 };
 
 char ConvertCharHex(char ch);

@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-02
-* 最后修改：2016-11-09
+* 最后修改：2016-11-10
 * 作      者：syf
 * 描      述：
 */
@@ -30,6 +30,7 @@
 #include "ui_widget.h"
 
 #include "QWT/qwt_plot_curve.h"
+#include "QWT/qwt_plot_grid.h"
 //#include "QWT/qwt_plot_magnifier.h"
 //#include "QWT/qwt_plot_panner.h"
 #include "QWT/qwt_legend.h"
@@ -162,6 +163,12 @@ private:
 	void GenTestReport();
 	void PrintReport();
 
+	/*
+	* 开始、结束测试
+	*/
+	void StartTest();
+	void StopTest();
+
 protected slots:
 	void OnBtnMinClicked();
 	void OnBtnCloseClicked();
@@ -186,6 +193,7 @@ public slots:
 	void OnBtnWaterOffClicked();
 	void OnRxDataReceived(const QByteArray& rxBuf);
 	void OnHandShakeStateReceived(STRUCT_HandShake *handshake);
+	void OnBtnSaveCurveClicked();
 
 	/*
 	* 操作界面切换
@@ -288,6 +296,7 @@ private:
 	ENUM_TxData m_txData;
 	QTime m_time;
 	QTimer *m_pTimer;
+	bool m_bIsParamsSet;
 
 	// 设备操作
 	bool m_bIsWaterIn;
@@ -297,6 +306,8 @@ private:
 	QVector<double> m_vectorX;
 	QVector<double> m_vectorY;
 	QwtPlotCurve	*m_pCurve;
+	QwtPlotGrid *m_pGrid;
+	QwtPlotRenderer m_curveRenderer;
 	size_t	m_oldSize;
 	int m_maxY;
 	double m_avgY;
