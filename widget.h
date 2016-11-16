@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-02
-* 最后修改：2016-11-10
+* 最后修改：2016-11-16
 * 作      者：syf
 * 描      述：
 */
@@ -123,7 +123,7 @@ private:
 	*/
 	void UpdateAccountList();
 	void UpdateTestMethodList();
-	void UpdateReportQueryView(const QList<STRUCT_Reprot> &reportList);
+	void UpdateReportQueryView(const QList<STRUCT_Report> &reportList);
 	
 	/*
 	* 更新UI状态
@@ -160,6 +160,8 @@ private:
 	/*
 	* 生成、打印报告
 	*/
+	void SaveLastImage();
+	void SavePressureCurve();
 	void GenTestReport();
 	void PrintReport();
 
@@ -269,7 +271,7 @@ private:
 	int	m_currentUnitIndex;
 
 	// 测试结果查询相关
-	QList<STRUCT_Reprot> m_reportList;
+	QList<STRUCT_Report> m_reportList;
 	TestResult	*m_pTestResult;
 
 	// 用户账号相关
@@ -287,12 +289,15 @@ private:
 	QThread *m_pImgProcThread;
 	ImageProc *m_pImgProc;
 	int m_dropNum;
+	QStringList m_listAppearTime;
+	QStringList m_listApperPressure;
 
 	// 相机
 	MerCamera *m_pCamera;
 
 	// 测试状态
 	ENUM_TestState m_testState;
+	ENUM_TestState m_btnState;
 	ENUM_TxData m_txData;
 	QTime m_time;
 	QTimer *m_pTimer;

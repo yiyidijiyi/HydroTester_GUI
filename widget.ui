@@ -479,7 +479,7 @@
     </rect>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>3</number>
    </property>
    <widget class="QWidget" name="tab">
     <attribute name="title">
@@ -2063,6 +2063,9 @@ p, li { white-space: pre-wrap; }
      </property>
     </widget>
     <widget class="QListView" name="listView_accountList">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>13</x>
@@ -2852,6 +2855,9 @@ p, li { white-space: pre-wrap; }
      <property name="icon">
       <iconset>
        <normaloff>resource/advance/advanceSave1.png</normaloff>resource/advance/advanceSave1.png</iconset>
+     </property>
+     <property name="flat">
+      <bool>true</bool>
      </property>
     </widget>
     <widget class="QLabel" name="label_advanceMessage">

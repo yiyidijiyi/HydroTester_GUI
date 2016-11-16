@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-02
-* 最后修改：2016-11-10
+* 最后修改：2016-11-16
 * 作      者：syf
 * 描      述：
 */
@@ -32,6 +32,7 @@ Widget::Widget(QWidget *parent)
 	, m_pImgProcThread(NULL)
 	, m_dropNum(0)
 	, m_testState(Init)
+	, m_btnState(Init)
 	, m_txData(TxNoData)
 	, m_pTimer(NULL)
 	, m_bIsParamsSet(false)
@@ -86,6 +87,14 @@ Widget::Widget(QWidget *parent)
 
 	// 可操作按钮
 	SetDeviceOprateEnabled(ConnectDevice | Camera);
+
+	// 设置双击不可编辑
+	ui->listView_accountList->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	ui->listView_methodList->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	ui->tableView_reportQuery->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	ui->textEdit_report->setReadOnly(true);
+	ui->textEdit_info->setReadOnly(true);
+	ui->textEdit_methodInfo->setReadOnly(true);
 
 	/*
 	* 链接信号与槽
@@ -169,6 +178,11 @@ Widget::~Widget()
 		delete m_pRxThread;
 	}
 
+	if (m_pCamera)
+	{
+		delete m_pCamera;
+	}
+
 	if (m_pImgProcThread)
 	{
 		m_pImgProcThread->terminate();
@@ -214,11 +228,6 @@ Widget::~Widget()
 	if (m_pTestResult)
 	{
 		delete m_pTestResult;
-	}
-
-	if (m_pCamera)
-	{
-		delete m_pCamera;
 	}
 
 	if (m_pCurve)
@@ -833,7 +842,7 @@ void Widget::UpdateTestMethodList()
 * 返回：
 * 功能：更新测试结果查询表
 */
-void Widget::UpdateReportQueryView(const QList<STRUCT_Reprot> &reportList)
+void Widget::UpdateReportQueryView(const QList<STRUCT_Report> &reportList)
 {
 	CreateReportViewTable();
 
@@ -844,14 +853,23 @@ void Widget::UpdateReportQueryView(const QList<STRUCT_Reprot> &reportList)
 		QString strMode = "";
 		switch (reportList[i].endMode)
 		{
-		case 0:
+		case EndAuto:
 			strMode = QStringLiteral("自动结束");
 			break;
-		case 1:
-			strMode = QStringLiteral("手动结束");
+		case EndBySoftware:
+			strMode = QStringLiteral("软件手动结束");
 			break;
-		case 2:
-			strMode = QStringLiteral("超量程");
+		case EndByDevice:
+			strMode = QStringLiteral("设备手动结束");
+			break;
+		case EndTimeOut:
+			strMode = QStringLiteral("定时时间到");
+			break;
+		case EndPressureOverRange:
+			strMode = QStringLiteral("压力超量程");
+			break;
+		case EndBurst:
+			strMode = QStringLiteral("布匹涨破");
 			break;
 		default:
 			break;
@@ -1033,7 +1051,7 @@ void Widget::ShowMethodParam(const STRUCT_MethodParam &method)
 
 	QString unit;
 
-	switch (method.uint)
+	switch (method.unit)
 	{
 	case 0:
 		unit = QStringLiteral("Pa(帕)");
@@ -1085,7 +1103,7 @@ void Widget::ShowMethodParam(const STRUCT_MethodParam &method)
 		break;
 	}
 
-	ui->textEdit_methodInfo->append(QStringLiteral("描述：") + method.discription);
+	ui->textEdit_methodInfo->append(QStringLiteral("描述：") + method.description);
 }
 
 
@@ -1121,17 +1139,21 @@ void Widget::GetDropNum()
 {
 	int num = m_pImgProc->GetDropNum();
 
-	if ((num > 0) && (m_dropNum == 0))
-	{
-		ui->textEdit_info->clear();
-	}
+	//if ((num > 0) && (m_dropNum == 0))
+	//{
+	//	ui->textEdit_info->clear();
+	//}
 
 	int n = num - m_dropNum;
 
 	for (int i = 0; i < n; i++)
 	{
-		ui->textEdit_info->append(QStringLiteral("第%1个水珠出现时间：").arg(m_dropNum + i + 1) + m_time.toString("hh:mm:ss"));
-		ui->textEdit_info->append(QStringLiteral("当前压力值为：") + QString::number(m_pCom->GetCurrentPressure()) + QString("\n"));
+		QString strTime = m_time.toString("hh:mm:ss");
+		QString strPressure = QString::number(m_pCom->GetCurrentPressure());
+		m_listAppearTime.push_back(strTime);
+		m_listApperPressure.push_back(strPressure);
+		ui->textEdit_info->append(QStringLiteral("第%1个水珠出现时间：").arg(m_dropNum + i + 1) + strTime);
+		ui->textEdit_info->append(QStringLiteral("当前压力值为：") + strPressure + QString("\n"));
 	}
 
 	m_dropNum = num;
@@ -1141,6 +1163,7 @@ void Widget::GetDropNum()
 		// 发送测试停止命令
 		//m_pCom->TxCmd(0x01, 0x0, 0x0);
 		m_txData = TxStopTest;
+		m_testState = EndAuto;
 
 		// 生成测试报告
 		//GenTestReport();
@@ -1150,19 +1173,177 @@ void Widget::GetDropNum()
 /*
 * 参数：
 * 返回：
+* 功能：保存最后一帧图像
+*/
+void Widget::SaveLastImage()
+{
+	QPixmap pic(*ui->label_video->pixmap());
+	pic.save("./report/last.bmp");
+}
+
+
+/*
+* 参数：
+* 返回：
+* 功能：保存压力曲线
+*/
+void Widget::SavePressureCurve()
+{
+	m_curveRenderer.renderDocument(ui->qwtPlot, "./report/curve.bmp", QSizeF(200, 100));
+}
+
+/*
+* 参数：
+* 返回：
 * 功能：生成测试报告
 */
-
 void Widget::GenTestReport(void)
 {
+	STRUCT_Report report;
+
+	SaveLastImage();
+	SavePressureCurve();
 	ui->textEdit_report->clear();
 
-	QString htmlStr = QStringLiteral("<h1>测试试验报告</h1>");
+	QString htmlStr = QStringLiteral("<p align = \"center\"><font size = \"6\">耐水压成像测试系统</font></p>");
+	htmlStr += QStringLiteral("<p align = \"center\"><font size = \"6\">测试报告</font></p> <p> </p> <p> </p>");
+
+	report.methodName = m_methodParam.name;
+	report.methodPlan = m_methodParam.plan;
+	report.endMode = m_testState;
+	report.userName = m_account.userName;
+	report.fileName = "";
+	report.rate = m_methodParam.rate;
+	report.timing = m_methodParam.timing;
+	report.pressure = m_methodParam.pressure;
+	report.cycle = m_methodParam.cycle;
+	report.holdingTime = m_methodParam.holdingTime;
+	report.unit = m_methodParam.unit;
+	report.description = m_methodParam.description;
+	report.standard = m_methodParam.standard;
+
+	htmlStr += QStringLiteral("<p><font size = \"4\"><b>测试方法与参数:</b></font></p>");
+	htmlStr += QStringLiteral("<p>方法名称：%1</p>").arg(m_methodParam.name);
+	htmlStr += QStringLiteral("<p>应用标准：%1</p>").arg(m_methodParam.standard);
+
+	QString unit;
+	switch (m_methodParam.unit)
+	{
+	case 0:
+		unit = QStringLiteral("Pa(帕)");
+		break;
+	case 1:
+		unit = QStringLiteral("kPa(千帕)");
+		break;
+	case 2:
+		unit = QStringLiteral("mBar(毫巴)");
+		break;
+		unit = QStringLiteral("mmH2O(毫米水柱)");
+	case 3:
+		break;
+	default:
+		break;
+	}
+
+	switch (m_methodParam.plan)
+	{
+	case 0:
+		htmlStr += QStringLiteral("<p>测试方法：持续增压</p>");
+		htmlStr += QStringLiteral("<p>持续增压速率：%1/分钟</p>").arg(QString::number(m_methodParam.rate)  + unit);
+		break;
+	case 1:
+		htmlStr += QStringLiteral("<p>测试方法：定时计压</p>");
+		htmlStr += QStringLiteral("<p>定时计压速率：%1/分钟</p>").arg(QString::number(m_methodParam.rate) + unit);
+		htmlStr += QStringLiteral("<p>定时计压定时时间：%1分钟</p>").arg(QString::number(m_methodParam.timing));
+		break;
+	case 2:
+		htmlStr += QStringLiteral("<p>测试方法：定时定压</p>");
+		htmlStr += QStringLiteral("<p>定时定压速率：%1/分钟</p>").arg(QString::number(m_methodParam.rate) + unit);
+		htmlStr += QStringLiteral("<p>定时定压目标压强：%1</p>").arg(QString::number(m_methodParam.pressure) + unit);
+		htmlStr += QStringLiteral("<p>定时定压定时时间：%1分钟</p>").arg(QString::number(m_methodParam.timing));
+		break;
+	case 3:
+		htmlStr += QStringLiteral("<p>测试方法：绕曲松驰</p>");
+		htmlStr += QStringLiteral("<p>绕曲松驰水速率：%1/分钟</p>").arg(QString::number(m_methodParam.rate) + unit);
+		htmlStr += QStringLiteral("<p>绕曲松驰目标压强：%1</p>").arg(QString::number(m_methodParam.pressure) + unit);
+		htmlStr += QStringLiteral("<p>绕曲松驰松绕周期：%1次</p>").arg(QString::number(m_methodParam.cycle));
+		htmlStr += QStringLiteral("<p>绕曲松驰水压保持时间：%1分钟</p>").arg(QString::number(m_methodParam.holdingTime));
+		break;
+	case 4:
+		htmlStr += QStringLiteral("<p>测试方法：渗水漏水</p>");
+		htmlStr += QStringLiteral("<p>渗水漏水速率：%1/分钟</p>").arg(QString::number(m_methodParam.rate) + unit);
+		htmlStr += QStringLiteral("<p>渗水漏水目标压强：%1</p>").arg(QString::number(m_methodParam.pressure) + unit);
+		htmlStr += QStringLiteral("<p>渗水漏水定时时间：%1分钟</p>").arg(QString::number(m_methodParam.timing));
+		break;
+	default:
+		break;
+	}
+	htmlStr += QStringLiteral("<p>描述：%1</p>").arg(m_methodParam.description);
+	report.testDate = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss");
+	htmlStr += QStringLiteral("<p>   </p><p>    </p><p><b>报告生成时间：</b>%1</p>").arg(report.testDate);
+
+	
+	QString strEndType;
+
+	switch (m_testState)
+	{
+	case EndAuto:
+		strEndType = QStringLiteral("检测到水珠自动结束");
+		break;
+	case EndByDevice:
+		strEndType = QStringLiteral("在设备上手动结束");
+		break;
+	case EndBySoftware:
+		strEndType = QStringLiteral("在软件上手动结束");
+		break;
+	case EndBurst:
+		strEndType = QStringLiteral("布匹涨破结束");
+		break;
+	case EndTimeOut:
+		strEndType = QStringLiteral("定时时间到结束");
+		break;
+	case EndPressureOverRange:
+		strEndType = QStringLiteral("压力超量程结束");
+		break;
+	default:
+		break;
+	}
+	htmlStr += QStringLiteral("<p><b>测试结束方式：</b>%1</p>").arg(strEndType);
+
+	int n = m_listAppearTime.size();
+	htmlStr += QStringLiteral("<p><b>布匹上的水珠检测情况：</b></p>");
+
+	if (n > 0)
+	{
+		for (int i = 0; i < n; i++)
+		{
+			htmlStr += QStringLiteral("<p>检测到第%1滴水珠的时间为：%2</p>").arg(i + 1).arg(m_listAppearTime[i]);
+			htmlStr += QStringLiteral("<p>检测到第%1滴水珠的压力值为：%2</p>").arg(i + 1).arg(m_listApperPressure[i]);
+		}
+	}
+	else
+	{
+		htmlStr += QStringLiteral("<p>未检测到布面上出现水珠！</p>");
+	}
 
 	// 获取保存的实验结果图片
-	QString htmlPath = QString("<img src=\"%1\"/>").arg(QString("report.bmp"));
-	QString htmlText = ui->textEdit_info->toHtml();
-	ui->textEdit_report->insertHtml(htmlStr + htmlPath + htmlText);
+	QString imgPath;
+	if (EndAuto == m_testState)
+	{
+		imgPath = QString("<p align = \"center\"><img src=\"%1\"/></p>").arg(QString("./report/report.bmp"));
+	}
+	else
+	{
+		imgPath = QString("<p align = \"center\"><img src=\"%1\"/></p>").arg(QString("./report/last.bmp"));
+	}
+
+	htmlStr += QStringLiteral("<p> </p> <p align = \"center\"><b>检测结果截图</b></p>");
+	htmlStr += imgPath;
+	htmlStr += QStringLiteral("<p> </p> <p align = \"center\"><b>压力曲线</b></p>");
+	htmlStr += QString("<p align = \"center\"><img src=\"%1\"/></p>").arg(QString("./report/curve.bmp"));
+
+	ui->textEdit_report->insertHtml(htmlStr);
+	m_pTestResult->AddReport(report);
 }
 
 /*
@@ -1193,6 +1374,8 @@ void Widget::PrintReport()
 void Widget::StartTest()
 {
 	m_testState = Start;
+	m_listAppearTime.clear();
+	m_listApperPressure.clear();
 	m_time = QTime(0, 0, 0);
 	ui->lcdNumber_time->display(m_time.toString("hh:mm:ss"));
 	ui->lcdNumber_pressure->display(QString::number(0));
@@ -1205,6 +1388,7 @@ void Widget::StartTest()
 	ui->label_testState->setText(QStringLiteral("正在试验"));
 	SetDeviceOprateEnabled(StartStop | PauseConti);
 	ui->comboBox_selMethod->setEnabled(false);
+	ui->textEdit_report->clear();
 }
 
 
@@ -1215,26 +1399,27 @@ void Widget::StartTest()
 */
 void Widget::StopTest()
 {
-	switch (m_testState)
-	{
-	case EndAuto:	// 软件检测到水珠自动结束
-		break;
-	case EndBySoftware:	// 通过上位机按钮结束测试
-		break;
-	case EndByDevice:	// 通过设备按钮结束测试
-		break;
-	case EndBurst:	// 涨破
-		break;
-	case EndPressureOverRange:	// 压力超量程
-		break;
-	case EndTimeOut:	// 定时时间到
-		break;
-	default:
-		break;
-	}
+	//switch (m_testState)
+	//{
+	//case EndAuto:	// 软件检测到水珠自动结束
+	//	break;
+	//case EndBySoftware:	// 通过上位机按钮结束测试
+	//	break;
+	//case EndByDevice:	// 通过设备按钮结束测试
+	//	break;
+	//case EndBurst:	// 涨破
+	//	break;
+	//case EndPressureOverRange:	// 压力超量程
+	//	break;
+	//case EndTimeOut:	// 定时时间到
+	//	break;
+	//default:
+	//	break;
+	//}
 
-	m_testState = End;
+	//m_testState = End;
 	m_dropNum = 0;
+	m_txData = TxNoData;
 	m_pImgProc->StopCalc();
 	ui->textEdit_info->append(QStringLiteral("试验结束！"));
 	ui->pushButton_startStop->setText(QStringLiteral("开始"));
@@ -1383,10 +1568,10 @@ void Widget::OnBtnCloseClicked()
 {
 	switch (m_testState)
 	{
-	case WaterInState:
+	case WaterInStart:
 		ui->textEdit_info->append(QStringLiteral("提示：请先停止进水，再关闭软件！"));
 		break;
-	case WaterOffState:
+	case WaterOffStart:
 		ui->textEdit_info->append(QStringLiteral("提示：请先停止排水，再关闭软件！"));
 		break;
 	case Start:
@@ -1755,7 +1940,7 @@ void Widget::OnBtnWaterInClicked()
 	{
 		//m_pCom->TxCmd(0x07, 0x0, 0x0);
 		m_txData = TxWaterInStop;
-		m_testState = WaterInState;
+		m_btnState = WaterInStop;
 		//m_bIsWaterIn = false;
 		//ui->pushButton_waterIn->setText(QStringLiteral("进水"));
 	}
@@ -1763,7 +1948,7 @@ void Widget::OnBtnWaterInClicked()
 	{
 		//m_pCom->TxCmd(0x07, 0x01, 0x0);
 		m_txData = TxWaterInStart;
-		m_testState = WaterInState;
+		m_btnState = WaterInStart;
 		//m_bIsWaterIn = true;
 		//ui->pushButton_waterIn->setText(QStringLiteral("停止进水"));
 	}
@@ -1784,7 +1969,7 @@ void Widget::OnBtnWaterOffClicked()
 	{
 		//m_pCom->TxCmd(0x08, 0x0, 0x0);
 		m_txData = TxWaterOffStop;
-		m_testState = WaterOffState;
+		m_btnState = WaterOffStop;
 		//m_bIsWaterOff = false;
 		//ui->pushButton_waterOff->setText(QStringLiteral("排水"));
 	}
@@ -1792,7 +1977,7 @@ void Widget::OnBtnWaterOffClicked()
 	{
 		//m_pCom->TxCmd(0x08, 0x01, 0x0);
 		m_txData = TxWaterOffStart;
-		m_testState = WaterOffState;
+		m_btnState = WaterOffStart;
 		//m_bIsWaterOff = true;
 		//ui->pushButton_waterOff->setText(QStringLiteral("停止排水"));
 	}
@@ -1824,15 +2009,17 @@ void Widget::OnBtnStartTestClicked()
 			return;
 		}
 
-		m_testState = StartBySoftware;
+		//m_testState = StartBySoftware;
+		m_btnState = StartBySoftware;
 		m_txData = TxStartTest;
 	}
 	else if ((Start == m_testState) || (Pause == m_testState))
 	{
 		// 测试为开始或暂停状态，停止测试
 		//m_pCom->TxCmd(0x01, 0x0, 0x0);
+		m_btnState = EndBySoftware;
 		m_txData = TxStopTest;
-		m_testState = EndBySoftware;
+		//m_testState = EndBySoftware;
 	}
 
 	// 禁止其他操作
@@ -1853,12 +2040,14 @@ void Widget::OnBtnPauseTestClicked()
 		// 测试开始状态，暂停测试
 		//m_txData = TxPauseTest;
 		//m_testState = PauseBySoftware;
+		m_btnState = PauseBySoftware;
 	}
 	else if (Pause == m_testState)
 	{
 		// 测试暂停状态，测试继续进行
 		//m_txData = TxStartTest;
 		//m_testState = ContinueBySoftware;
+		m_btnState = ContinueBySoftware;
 	}
 }
 
@@ -1951,7 +2140,7 @@ void Widget::OnHandShakeStateReceived(STRUCT_HandShake *handshake)
 			m_bIsComOpened = false;
 			ui->textEdit_info->append(QStringLiteral("错误：与设备联机失败，请检查与设备的连接情况！"));
 			ui->comboBox_selCom->setEnabled(true);
-//			SetDeviceOprateEnabled(true);
+			//SetDeviceOprateEnabled(true);
 		}
 		//else
 		//{
@@ -1962,37 +2151,47 @@ void Widget::OnHandShakeStateReceived(STRUCT_HandShake *handshake)
 		switch (handshake->cmd)
 		{
 		case 0x01:	// 测试开始，暂停，结束命令，应答成功
-			switch (m_testState)
+			if (0 == handshake->data)
 			{
-			case StartBySoftware:
-				// 上位机操作开始命令操作成功，新的测试开始
-				StartTest();
-				break;
-			case PauseBySoftware:
+				// 上位机操作停止命令操作成功，新的测试开始
+				StopTest();
+
+				if (EndBySoftware == m_btnState)
+				{
+					m_testState = EndBySoftware;
+					m_btnState = Init;
+				}
+				else
+				{
+					m_testState = EndAuto;
+				}
+			}
+			else if (0xff == handshake->data)
+			{
+				// 上位机操作暂停命令操作成功，测试暂停
 				m_testState = Pause;
+				m_btnState = Init;
 				m_pImgProc->StopCalc();
 				ui->textEdit_info->append(QStringLiteral("试验暂停。。。"));
 				ui->pushButton_pauseConti->setText(QStringLiteral("继续"));
 				ui->label_testState->setText(QStringLiteral("试验暂停"));
-				// 上位机操作暂停命令操作成功，新的测试开始
-				break;
-			case EndAuto:
-				// 上位机操作暂停命令操作成功，新的测试开始
-				StopTest();
-				break;
-			case EndBySoftware:
-				// 上位机操作暂停命令操作成功，新的测试开始
-				StopTest();
-				break;
-			case ContinueBySoftware:
-				// 测试暂停后，上位机操作开始命令成功，继续测试
-				m_testState = Start;
-				ui->textEdit_info->append(QStringLiteral("试验继续。。。"));
-				ui->pushButton_pauseConti->setText(QStringLiteral("暂停"));
-				ui->label_testState->setText(QStringLiteral("正在试验"));
-				break;
-			default:
-				break;
+			}
+			else
+			{
+				// 上位机操作开始命令操作成功，新的测试开始
+				if (StartBySoftware == m_btnState)
+				{
+					StartTest();
+				}
+				else if (ContinueBySoftware == m_btnState)
+				{
+					// 测试暂停后，上位机操作开始命令成功，继续测试
+					m_testState = Start;
+					ui->textEdit_info->append(QStringLiteral("试验继续。。。"));
+					ui->pushButton_pauseConti->setText(QStringLiteral("暂停"));
+					ui->label_testState->setText(QStringLiteral("正在试验"));
+				}
+				m_btnState = Init;				
 			}
 			break;
 		case 0x02:	// 压头控制，应答成功
@@ -2050,6 +2249,49 @@ void Widget::OnHandShakeStateReceived(STRUCT_HandShake *handshake)
 	case CmdError:
 		switch (handshake->cmd)
 		{
+		case 0x01:
+			if (0 == handshake->data)
+			{
+				if (EndBySoftware == m_btnState)
+				{
+					ui->textEdit_info->append(QStringLiteral("错误：停止试验命令，设置失败！"));
+					ui->textEdit_info->append(QStringLiteral("请重新尝试，或使用设备上的按钮停止测试！"));
+					m_btnState = Init;
+				}
+				else
+				{
+					//m_testState = EndAuto;
+					ui->textEdit_info->append(QStringLiteral("错误：停止命令自动设置失败！"));
+					ui->textEdit_info->append(QStringLiteral("已检测到3滴或以上水珠，请手动停止测试！"));
+				}
+				
+				SetDeviceOprateEnabled(StartStop | PauseConti);
+			}
+			else if (0xff == handshake->data)
+			{
+				ui->textEdit_info->append(QStringLiteral("错误：暂停试验命令，设置失败！"));
+				ui->textEdit_info->append(QStringLiteral("请重新尝试！"));
+				m_btnState = Init;
+				SetDeviceOprateEnabled(StartStop | PauseConti);
+			}
+			else
+			{
+				if (StartBySoftware == m_btnState)
+				{
+					ui->textEdit_info->append(QStringLiteral("错误：开始试验命令，设置失败！"));
+					ui->textEdit_info->append(QStringLiteral("请检查设备后重新尝试！"));
+					m_btnState = Init;
+					SetDeviceOprateEnabled(ConnectDevice | WaterIn | WaterOff | StartStop | PauseConti | Camera);
+				}
+				else if (ContinueBySoftware == m_btnState)
+				{
+					ui->textEdit_info->append(QStringLiteral("错误：继续试验命令，设置失败！"));
+					ui->textEdit_info->append(QStringLiteral("请重新尝试！"));
+					m_btnState = Init;
+					SetDeviceOprateEnabled(StartStop | PauseConti);
+				}
+			}
+			break;
 		case 0x07:	// 进水，应答错误
 			if (1 == handshake->data)
 			{
@@ -2092,20 +2334,45 @@ void Widget::OnHandShakeStateReceived(STRUCT_HandShake *handshake)
 		switch (handshake->cmd)
 		{
 		case 0x01:	// 测试开始，暂停，结束命令，应答超时
-			if ((Connected == m_testState) || (End == m_testState))
+			if (0 == handshake->data)
 			{
-			}
-			else if (Start == m_testState)
-			{
-				if (0 == handshake->data)
+				if (EndBySoftware == m_btnState)
 				{
+					ui->textEdit_info->append(QStringLiteral("错误：停止试验命令，应答超时！"));
+					ui->textEdit_info->append(QStringLiteral("请重新尝试，或使用设备上的按钮停止测试！"));
+					m_btnState = Init;
 				}
-				else if (0xff == handshake->data)
+				else
 				{
+					ui->textEdit_info->append(QStringLiteral("错误：自动设置停止试验命令，应答超时！"));
+					ui->textEdit_info->append(QStringLiteral("已检测到3滴或以上水珠，请手动停止试验！"));
 				}
+				
+				SetDeviceOprateEnabled(StartStop | PauseConti);
 			}
-			else if (Pause == m_testState)
+			else if (0xff == handshake->data)
 			{
+				ui->textEdit_info->append(QStringLiteral("错误：暂停测试命令，应答超时！"));
+				ui->textEdit_info->append(QStringLiteral("请重新尝试！"));
+				m_btnState = Init;
+				SetDeviceOprateEnabled(StartStop | PauseConti);
+			}
+			else
+			{
+				if (StartBySoftware == m_btnState)
+				{
+					ui->textEdit_info->append(QStringLiteral("错误：开始测试命令，应答超时！"));
+					ui->textEdit_info->append(QStringLiteral("请重新尝试！"));
+					m_btnState = Init;
+					SetDeviceOprateEnabled(ConnectDevice | WaterIn | WaterOff | StartStop | PauseConti | Camera);
+				}
+				else if (ContinueBySoftware == m_btnState)
+				{
+					ui->textEdit_info->append(QStringLiteral("错误：开始测试命令，应答超时！"));
+					ui->textEdit_info->append(QStringLiteral("请重新尝试！"));
+					m_btnState = Init;
+					SetDeviceOprateEnabled(StartStop | PauseConti);
+				}			
 			}
 			break;
 		case 0x02:	// 压头控制，应答超时
@@ -2194,8 +2461,7 @@ void Widget::OnHandShakeStateReceived(STRUCT_HandShake *handshake)
 */
 void Widget::OnBtnSaveCurveClicked()
 {
-	//m_curveRenderer.exportTo(ui->qwtPlot, "curve.pdf");
-	m_curveRenderer.renderDocument(ui->qwtPlot, "curve.pdf", QSizeF(400, 300));
+	m_curveRenderer.exportTo(ui->qwtPlot, "curve.pdf");
 }
 
 
@@ -2415,9 +2681,9 @@ void Widget::OnMethodListItemClicked(const QModelIndex &index)
 	ui->lineEdit_methodName->setText(method.name);
 	ui->comboBox_plan->setCurrentIndex(method.plan);
 	ui->lineEdit_standard->setText(method.standard);
-	ui->textEdit_discription->setText(method.discription);
-	ui->comboBox_unit->setCurrentIndex(method.uint);
-	m_currentUnitIndex = method.uint;
+	ui->textEdit_discription->setText(method.description);
+	ui->comboBox_unit->setCurrentIndex(method.unit);
+	m_currentUnitIndex = method.unit;
 
 	// 根据测试方法类型显示测试方法参数
 	switch (method.plan)
@@ -2590,8 +2856,8 @@ void Widget::OnBtnSaveMethodClicked()
 	method.name = ui->lineEdit_methodName->text();
 	method.plan = index;
 	method.standard = ui->lineEdit_standard->text();
-	method.discription = ui->textEdit_discription->toPlainText();
-	method.uint = ui->comboBox_unit->currentIndex();
+	method.description = ui->textEdit_discription->toPlainText();
+	method.unit = ui->comboBox_unit->currentIndex();
 
 	method.rate = ui->lineEdit_pressureRate->text().toDouble();
 	method.timing = ui->lineEdit_setTime->text().toDouble();
@@ -2857,7 +3123,7 @@ void Widget::OnBtnQueryClicked()
 		userName = ui->comboBox_queryUserName->currentText();
 	}
 
-	bool state = m_pTestResult->GetPeportList(m_reportList, startDate, endDate, methodPlan, methodName, userName);
+	bool state = m_pTestResult->GetReportList(m_reportList, startDate, endDate, methodPlan, methodName, userName);
 	
 
 	if (!state)
@@ -2940,6 +3206,12 @@ void Widget::OnTimer()
 {
 	static int tick = 0;
 	tick++;
+
+	if ((m_testState >= EndAuto) && (m_testState <= EndBurst))
+	{
+		GenTestReport();
+		m_testState = End;
+	}
 
 	if ((Start == m_testState) &&  (tick >= 5))
 	{

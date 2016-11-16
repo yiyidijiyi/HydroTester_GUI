@@ -773,6 +773,7 @@ public:
         label_accountInfo->setLineWidth(1);
         listView_accountList = new QListView(tab_4);
         listView_accountList->setObjectName(QStringLiteral("listView_accountList"));
+        listView_accountList->setEnabled(true);
         listView_accountList->setGeometry(QRect(13, 75, 420, 135));
         listView_accountList->setFrameShape(QFrame::StyledPanel);
         listView_accountList->setFrameShadow(QFrame::Plain);
@@ -1122,7 +1123,7 @@ public:
         retranslateUi(Widget);
 
         tabWidget->setCurrentIndex(0);
-        tabWidget_testInterface->setCurrentIndex(1);
+        tabWidget_testInterface->setCurrentIndex(2);
 
 
         QMetaObject::connectSlotsByName(Widget);

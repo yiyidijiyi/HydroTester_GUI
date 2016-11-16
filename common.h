@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-12
-* 最后修改：2016-11-10
+* 最后修改：2016-11-11
 * 作      者：syf
 * 描      述：
 */
@@ -11,7 +11,7 @@
 #include <QByteArray>
 
 // 相机采样图像的分辨率
-#define IMAGE_WIDTH	1280
+#define IMAGE_WIDTH		1280
 #define IMAGE_HEIGHT	1024
 
 // 账户类型
@@ -53,14 +53,14 @@ struct STRUCT_MethodParam{
 	double pressure;
 	int cycle;
 	double holdingTime;
-	int uint;
-	QString discription;
+	int unit;
+	QString description;
 	QString lastTime;
 	int range;
 };
 
 // 测试结果报告
-struct STRUCT_Reprot{
+struct STRUCT_Report{
 	int id;
 	QString methodName;
 	int methodPlan;
@@ -68,6 +68,14 @@ struct STRUCT_Reprot{
 	int endMode;
 	QString userName;
 	QString fileName;
+	double rate;
+	double timing;
+	double pressure;
+	int cycle;
+	double holdingTime;
+	int unit;
+	QString description;
+	QString standard;
 };
 
 // 同设备通信的握手状态
@@ -114,7 +122,7 @@ struct STRUCT_DeviceState{
 	quint8 shieldState;
 	quint8 workingState;
 	quint8 methoPlan;
-	quint16	temperature;
+	quint16 temperature;
 	quint8 restTime;
 	quint8 restCycle;
 };
@@ -122,8 +130,10 @@ struct STRUCT_DeviceState{
 enum ENUM_TestState{
 	Init = 0,
 	Connected,
-	WaterInState,
-	WaterOffState,
+	WaterInStart,
+    WaterInStop,
+	WaterOffStart,
+    WaterOffStop,
 	SetParams,
 	Start,
 	StartByDevice,
@@ -155,6 +165,8 @@ enum ENUM_TxData{
 	TxAck
 };
 
+//void InitStructReport(STRUCT_Report &report);
+//void IntStructMethodParam(STRUCT_MethodParam &method);
 char ConvertCharHex(char ch);
 void HexToString(const QByteArray &hexData, QString &str);
 

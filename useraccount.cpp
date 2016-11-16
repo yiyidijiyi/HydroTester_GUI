@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-12
-* 最后修改：2016-09-18
+* 最后修改：2016-11-16
 * 作      者：syf
 * 描      述：
 */
@@ -88,13 +88,13 @@ bool UserAccount::GetAccountList(QStringList &accountList, ENUM_AccountType user
 		}
 		else
 		{
-			m_messageList.append(QStringList("在数据库中查询数据，失败！"));
+			m_messageList.append(QStringLiteral("在数据库中查询数据，失败！"));
 			m_messageList.append(query.lastError().text());
 		}
 	}
 	else
 	{
-		m_messageList.append(QStringList("打开数据库，失败！"));
+		m_messageList.append(QStringLiteral("打开数据库，失败！"));
 		m_messageList.append(db.lastError().text());
 	}
 
@@ -318,13 +318,13 @@ bool UserAccount::AddAccount(STRUCT_Account &account)
 
 			if (count > 0)
 			{
-				m_messageList.append(QStringList("账号名重复！"));
+				m_messageList.append(QStringLiteral("账号名重复！"));
 				return state;
 			}
 		}
 		else
 		{
-			m_messageList.append(QStringList("在账号数据库中查询重复账号名时出错！"));
+			m_messageList.append(QStringLiteral("在账号数据库中查询重复账号名时出错！"));
 			m_messageList.append(query.lastError().text());
 			return state;
 		}
@@ -342,13 +342,13 @@ bool UserAccount::AddAccount(STRUCT_Account &account)
 		}
 		else
 		{
-			m_messageList.append(QStringList("在账号数据库中添加账号出错！"));
+			m_messageList.append(QStringLiteral("在账号数据库中添加账号出错！"));
 			m_messageList.append(query.lastError().text());
 		}
 	}
 	else
 	{
-		m_messageList.append(QStringList("链接账号数据库失败！"));
+		m_messageList.append(QStringLiteral("链接账号数据库失败！"));
 		m_messageList.append(db.lastError().text());
 	}
 
@@ -384,13 +384,13 @@ bool UserAccount::DeleteAccount(int id)
 		}
 		else
 		{
-			m_messageList.append(QStringList("在账号数据库中删除账号出错！"));
+			m_messageList.append(QStringLiteral("在账号数据库中删除账号出错！"));
 			m_messageList.append(query.lastError().text());
 		}
 	}
 	else
 	{
-		m_messageList.append(QStringList("链接账号数据库失败！"));
+		m_messageList.append(QStringLiteral("链接账号数据库失败！"));
 		m_messageList.append(db.lastError().text());
 	}
 
@@ -426,13 +426,13 @@ bool UserAccount::DeleteAccount(const QString &userName)
 		}
 		else
 		{
-			m_messageList.append(QStringList("在账号数据库中删除账号出错！"));
+			m_messageList.append(QStringLiteral("在账号数据库中删除账号出错！"));
 			m_messageList.append(query.lastError().text());
 		}
 	}
 	else
 	{
-		m_messageList.append(QStringList("链接账号数据库失败！"));
+		m_messageList.append(QStringLiteral("链接账号数据库失败！"));
 		m_messageList.append(db.lastError().text());
 	}
 
@@ -467,17 +467,17 @@ bool UserAccount::UpdateAccount(const STRUCT_Account &account)
 		if (query.exec())
 		{
 			state = true;
-			m_messageList.append(QStringList("修改用户密码成功！"));
+			m_messageList.append(QStringLiteral("修改用户密码成功！"));
 		}
 		else
 		{
-			m_messageList.append(QStringList("修改用户密码时出错！"));
+			m_messageList.append(QStringLiteral("修改用户密码时出错！"));
 			m_messageList.append(query.lastError().text());
 		}
 	}
 	else
 	{
-		m_messageList.append(QStringList("链接账号数据库失败！"));
+		m_messageList.append(QStringLiteral("链接账号数据库失败！"));
 		m_messageList.append(db.lastError().text());
 	}
 

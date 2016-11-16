@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-14
-* 最后修改：2016-09-15
+* 最后修改：2016-11-11
 * 作      者：syf
 * 描      述：
 */
@@ -51,7 +51,7 @@ QStringList& TestResult::GetMessageList()
 * 返回：
 * 功能：
 */
-bool TestResult::GetPeportList(QList<STRUCT_Reprot> &reportList, const QDateTime &startDate, const QDateTime &endDate, int methodPlan, const QString &methodName, const QString &userName)
+bool TestResult::GetReportList(QList<STRUCT_Report> &reportList, const QDateTime &startDate, const QDateTime &endDate, int methodPlan, const QString &methodName, const QString &userName)
 {
 	m_messageList.clear();
 	reportList.clear();
@@ -103,7 +103,7 @@ bool TestResult::GetPeportList(QList<STRUCT_Reprot> &reportList, const QDateTime
 		{
 			while (query.next())
 			{
-				STRUCT_Reprot report;
+				STRUCT_Report report;
 				report.id = query.value(0).toInt();
 				report.methodName = query.value(1).toString();
 				report.methodPlan = query.value(2).toInt();
@@ -111,7 +111,14 @@ bool TestResult::GetPeportList(QList<STRUCT_Reprot> &reportList, const QDateTime
 				report.endMode = query.value(4).toInt();
 				report.userName = query.value(5).toString();
 				report.fileName = query.value(6).toString();
-
+				report.rate = query.value(7).toDouble();
+				report.timing = query.value(8).toDouble();
+				report.pressure = query.value(9).toDouble();
+				report.cycle = query.value(10).toInt();
+				report.holdingTime = query.value(11).toDouble();
+				report.unit = query.value(12).toInt();
+				report.standard = query.value(13).toString();
+				report.description = query.value(14).toString();
 				reportList.append(report);
 			}
 
@@ -141,7 +148,7 @@ bool TestResult::GetPeportList(QList<STRUCT_Reprot> &reportList, const QDateTime
 * 返回：
 * 功能：根据索引号，获取报告内容
 */
-bool TestResult::GetReport(int id, STRUCT_Reprot &report)
+bool TestResult::GetReport(int id, STRUCT_Report &report)
 {
 	m_messageList.clear();
 	bool state = false;
@@ -166,6 +173,14 @@ bool TestResult::GetReport(int id, STRUCT_Reprot &report)
 				report.endMode = query.value(4).toInt();
 				report.userName = query.value(5).toString();
 				report.fileName = query.value(6).toString();
+				report.rate = query.value(7).toDouble();
+				report.timing = query.value(8).toDouble();
+				report.pressure = query.value(9).toDouble();
+				report.cycle = query.value(10).toInt();
+				report.holdingTime = query.value(11).toDouble();
+				report.unit = query.value(12).toInt();
+				report.standard = query.value(13).toString();
+				report.description = query.value(14).toString();
 			}
 
 			state = true;
@@ -227,6 +242,62 @@ bool TestResult::DeleteReport(int id)
 	db.close();
 	return state;
 }
+
+/*
+* 参数：
+* 返回：
+* 功能：
+*/
+bool TestResult::AddReport(const STRUCT_Report &report)
+{
+	bool state = false;
+	m_messageList.clear();
+
+	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+	db.setDatabaseName("./data/TestResult.db");
+
+	if (db.open())
+	{
+		QString strQuery = "INSERT INTO   report (methodName, methodPlan, testDate,endMode, userName, fileName, rate, timing, pressure, cycle, holdingTime, unit,  standard, description) \
+						   											VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		QSqlQuery query(strQuery, db);
+		query.bindValue(0, report.methodName);
+		query.bindValue(1, report.methodPlan);
+		query.bindValue(2, report.testDate);
+		query.bindValue(3, report.endMode);
+		query.bindValue(4, report.userName);
+		query.bindValue(5, report.fileName);
+		query.bindValue(6, report.rate);
+		query.bindValue(7, report.timing);
+		query.bindValue(8, report.pressure);
+		query.bindValue(9, report.cycle);
+		query.bindValue(10, report.holdingTime);
+		query.bindValue(11, report.unit);
+		query.bindValue(12, report.standard);
+		query.bindValue(13, report.description);
+
+
+		if (query.exec())
+		{
+			state = true;
+			m_messageList.append(QStringLiteral("增加测试方法成功！"));
+		}
+		else
+		{
+			m_messageList.append(QStringLiteral("增加测试方法出错！"));
+			m_messageList.append(query.lastError().text());
+		}
+	}
+	else
+	{
+		m_messageList.append(QStringLiteral("连接测试方法数据库失败！"));
+		m_messageList.append(db.lastError().text());
+	}
+
+	db.close();
+	return state;
+}
+
 
 /*
 * 参数：

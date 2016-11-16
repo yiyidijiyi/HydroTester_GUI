@@ -208,7 +208,7 @@ void ImageProc::Calc(Mat &image)
 			Size dsize = Size(m_matShow.cols / 2, m_matShow.rows / 2);
 			Mat tmpImage;
 			cv::resize(m_matShow, tmpImage, dsize);
-			imwrite("report.bmp", tmpImage);
+			imwrite("./report/report.bmp", tmpImage);
 		}
 	}
 	else

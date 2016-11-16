@@ -140,8 +140,8 @@ bool MethodParam::GetMethodInfo(int index, STRUCT_MethodParam &method)
 				method.pressure		= query.value(6).toDouble();
 				method.cycle				= query.value(7).toInt();
 				method.holdingTime	= query.value(8).toDouble();
-				method.uint				= query.value(9).toInt();
-				method.discription		= query.value(10).toString();
+				method.unit = query.value(9).toInt();
+				method.description		= query.value(10).toString();
 				method.lastTime		= query.value(11).toString();
 			}
 
@@ -192,8 +192,8 @@ bool MethodParam::AddMethod(const STRUCT_MethodParam &method)
 		query.bindValue(5, method.pressure);
 		query.bindValue(6, method.cycle);
 		query.bindValue(7, method.holdingTime);
-		query.bindValue(8, method.uint);
-		query.bindValue(9, method.discription);
+		query.bindValue(8, method.unit);
+		query.bindValue(9, method.description);
 
 
 		if (query.exec())
@@ -288,8 +288,8 @@ bool MethodParam::UpdateMethodParam(int index, const STRUCT_MethodParam &method)
 		query.bindValue(5, method.pressure);
 		query.bindValue(6, method.cycle);
 		query.bindValue(7, method.holdingTime);
-		query.bindValue(8, method.uint);
-		query.bindValue(9, method.discription);
+		query.bindValue(8, method.unit);
+		query.bindValue(9, method.description);
 		query.bindValue(10, id);
 
 		if (query.exec())

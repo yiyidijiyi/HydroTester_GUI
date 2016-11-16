@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-14
-* 最后修改：2016-09-15
+* 最后修改：2016-11-11
 * 作      者：syf
 * 描      述：
 */
@@ -26,9 +26,10 @@ public:
 
 	QStringList& GetMessageList();
 	//bool GetPeportList(QList<STRUCT_Reprot> &reportList, const QString &startDate, const QString &endDate, int methodPlan = -1, const QString &methodName = "", const QString &userName = "");
-	bool GetPeportList(QList<STRUCT_Reprot> &reportList, const QDateTime &startDate, const QDateTime &endDate, int methodPlan = -1, const QString &methodName = "", const QString &userName = "");
-	bool GetReport(int id,  STRUCT_Reprot &report);
+	bool GetReportList(QList<STRUCT_Report> &reportList, const QDateTime &startDate, const QDateTime &endDate, int methodPlan = -1, const QString &methodName = "", const QString &userName = "");
+	bool GetReport(int id,  STRUCT_Report &report);
 	bool DeleteReport(int id);
+	bool AddReport(const STRUCT_Report &report);
 
 private:
 	QStringList m_messageList;
