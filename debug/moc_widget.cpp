@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_Widget_t {
-    QByteArrayData data[55];
-    char stringdata0[1037];
+    QByteArrayData data[57];
+    char stringdata0[1094];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -77,13 +77,15 @@ QT_MOC_LITERAL(44, 827, 22), // "OnBtnNewAccountClicked"
 QT_MOC_LITERAL(45, 850, 23), // "OnBtnSaveAccountClicked"
 QT_MOC_LITERAL(46, 874, 25), // "OnBtnDeleteAccountClicked"
 QT_MOC_LITERAL(47, 900, 25), // "OnBtnModifyAccountClicked"
-QT_MOC_LITERAL(48, 926, 15), // "OnImagePrepared"
-QT_MOC_LITERAL(49, 942, 7), // "OnTimer"
-QT_MOC_LITERAL(50, 950, 19), // "OnUpdateDeviceState"
-QT_MOC_LITERAL(51, 970, 19), // "STRUCT_DeviceState&"
-QT_MOC_LITERAL(52, 990, 11), // "deviceState"
-QT_MOC_LITERAL(53, 1002, 25), // "OnCurrentPressureReceived"
-QT_MOC_LITERAL(54, 1028, 8) // "pressure"
+QT_MOC_LITERAL(48, 926, 26), // "OnCombPressureRangeChanged"
+QT_MOC_LITERAL(49, 953, 29), // "OnBtnSaveAdvanceParamsClicked"
+QT_MOC_LITERAL(50, 983, 15), // "OnImagePrepared"
+QT_MOC_LITERAL(51, 999, 7), // "OnTimer"
+QT_MOC_LITERAL(52, 1007, 19), // "OnUpdateDeviceState"
+QT_MOC_LITERAL(53, 1027, 19), // "STRUCT_DeviceState&"
+QT_MOC_LITERAL(54, 1047, 11), // "deviceState"
+QT_MOC_LITERAL(55, 1059, 25), // "OnCurrentPressureReceived"
+QT_MOC_LITERAL(56, 1085, 8) // "pressure"
 
     },
     "Widget\0OnBtnMinClicked\0\0OnBtnCloseClicked\0"
@@ -110,8 +112,10 @@ QT_MOC_LITERAL(54, 1028, 8) // "pressure"
     "OnAccountListItemClicked\0"
     "OnBtnNewAccountClicked\0OnBtnSaveAccountClicked\0"
     "OnBtnDeleteAccountClicked\0"
-    "OnBtnModifyAccountClicked\0OnImagePrepared\0"
-    "OnTimer\0OnUpdateDeviceState\0"
+    "OnBtnModifyAccountClicked\0"
+    "OnCombPressureRangeChanged\0"
+    "OnBtnSaveAdvanceParamsClicked\0"
+    "OnImagePrepared\0OnTimer\0OnUpdateDeviceState\0"
     "STRUCT_DeviceState&\0deviceState\0"
     "OnCurrentPressureReceived\0pressure"
 };
@@ -123,7 +127,7 @@ static const uint qt_meta_data_Widget[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      43,   14, // methods
+      45,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -131,49 +135,51 @@ static const uint qt_meta_data_Widget[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,  229,    2, 0x09 /* Protected */,
-       3,    0,  230,    2, 0x09 /* Protected */,
-       4,    1,  231,    2, 0x09 /* Protected */,
-       7,    1,  234,    2, 0x09 /* Protected */,
-       8,    1,  237,    2, 0x09 /* Protected */,
-       9,    1,  240,    2, 0x0a /* Public */,
-      11,    0,  243,    2, 0x0a /* Public */,
-      12,    0,  244,    2, 0x0a /* Public */,
-      13,    0,  245,    2, 0x0a /* Public */,
-      14,    0,  246,    2, 0x0a /* Public */,
-      15,    0,  247,    2, 0x0a /* Public */,
-      16,    0,  248,    2, 0x0a /* Public */,
-      17,    1,  249,    2, 0x0a /* Public */,
-      19,    1,  252,    2, 0x0a /* Public */,
-      22,    0,  255,    2, 0x0a /* Public */,
-      23,    0,  256,    2, 0x0a /* Public */,
-      24,    0,  257,    2, 0x0a /* Public */,
-      25,    0,  258,    2, 0x0a /* Public */,
-      26,    0,  259,    2, 0x0a /* Public */,
-      27,    0,  260,    2, 0x0a /* Public */,
-      28,    0,  261,    2, 0x0a /* Public */,
-      29,    0,  262,    2, 0x0a /* Public */,
-      30,    0,  263,    2, 0x0a /* Public */,
-      31,    1,  264,    2, 0x0a /* Public */,
-      33,    0,  267,    2, 0x0a /* Public */,
-      34,    1,  268,    2, 0x0a /* Public */,
-      35,    1,  271,    2, 0x0a /* Public */,
-      36,    1,  274,    2, 0x0a /* Public */,
-      37,    0,  277,    2, 0x0a /* Public */,
-      38,    0,  278,    2, 0x0a /* Public */,
-      39,    0,  279,    2, 0x0a /* Public */,
-      40,    0,  280,    2, 0x0a /* Public */,
-      41,    0,  281,    2, 0x0a /* Public */,
-      42,    0,  282,    2, 0x0a /* Public */,
-      43,    1,  283,    2, 0x0a /* Public */,
-      44,    0,  286,    2, 0x0a /* Public */,
-      45,    0,  287,    2, 0x0a /* Public */,
-      46,    0,  288,    2, 0x0a /* Public */,
-      47,    0,  289,    2, 0x0a /* Public */,
-      48,    0,  290,    2, 0x0a /* Public */,
-      49,    0,  291,    2, 0x0a /* Public */,
-      50,    1,  292,    2, 0x0a /* Public */,
-      53,    1,  295,    2, 0x0a /* Public */,
+       1,    0,  239,    2, 0x09 /* Protected */,
+       3,    0,  240,    2, 0x09 /* Protected */,
+       4,    1,  241,    2, 0x09 /* Protected */,
+       7,    1,  244,    2, 0x09 /* Protected */,
+       8,    1,  247,    2, 0x09 /* Protected */,
+       9,    1,  250,    2, 0x0a /* Public */,
+      11,    0,  253,    2, 0x0a /* Public */,
+      12,    0,  254,    2, 0x0a /* Public */,
+      13,    0,  255,    2, 0x0a /* Public */,
+      14,    0,  256,    2, 0x0a /* Public */,
+      15,    0,  257,    2, 0x0a /* Public */,
+      16,    0,  258,    2, 0x0a /* Public */,
+      17,    1,  259,    2, 0x0a /* Public */,
+      19,    1,  262,    2, 0x0a /* Public */,
+      22,    0,  265,    2, 0x0a /* Public */,
+      23,    0,  266,    2, 0x0a /* Public */,
+      24,    0,  267,    2, 0x0a /* Public */,
+      25,    0,  268,    2, 0x0a /* Public */,
+      26,    0,  269,    2, 0x0a /* Public */,
+      27,    0,  270,    2, 0x0a /* Public */,
+      28,    0,  271,    2, 0x0a /* Public */,
+      29,    0,  272,    2, 0x0a /* Public */,
+      30,    0,  273,    2, 0x0a /* Public */,
+      31,    1,  274,    2, 0x0a /* Public */,
+      33,    0,  277,    2, 0x0a /* Public */,
+      34,    1,  278,    2, 0x0a /* Public */,
+      35,    1,  281,    2, 0x0a /* Public */,
+      36,    1,  284,    2, 0x0a /* Public */,
+      37,    0,  287,    2, 0x0a /* Public */,
+      38,    0,  288,    2, 0x0a /* Public */,
+      39,    0,  289,    2, 0x0a /* Public */,
+      40,    0,  290,    2, 0x0a /* Public */,
+      41,    0,  291,    2, 0x0a /* Public */,
+      42,    0,  292,    2, 0x0a /* Public */,
+      43,    1,  293,    2, 0x0a /* Public */,
+      44,    0,  296,    2, 0x0a /* Public */,
+      45,    0,  297,    2, 0x0a /* Public */,
+      46,    0,  298,    2, 0x0a /* Public */,
+      47,    0,  299,    2, 0x0a /* Public */,
+      48,    1,  300,    2, 0x0a /* Public */,
+      49,    0,  303,    2, 0x0a /* Public */,
+      50,    0,  304,    2, 0x0a /* Public */,
+      51,    0,  305,    2, 0x0a /* Public */,
+      52,    1,  306,    2, 0x0a /* Public */,
+      55,    1,  309,    2, 0x0a /* Public */,
 
  // slots: parameters
     QMetaType::Void,
@@ -215,10 +221,12 @@ static const uint qt_meta_data_Widget[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
+    QMetaType::Void, QMetaType::Int,   32,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, 0x80000000 | 51,   52,
-    QMetaType::Void, QMetaType::Int,   54,
+    QMetaType::Void,
+    QMetaType::Void, 0x80000000 | 53,   54,
+    QMetaType::Void, QMetaType::Int,   56,
 
        0        // eod
 };
@@ -268,10 +276,12 @@ void Widget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
         case 36: _t->OnBtnSaveAccountClicked(); break;
         case 37: _t->OnBtnDeleteAccountClicked(); break;
         case 38: _t->OnBtnModifyAccountClicked(); break;
-        case 39: _t->OnImagePrepared(); break;
-        case 40: _t->OnTimer(); break;
-        case 41: _t->OnUpdateDeviceState((*reinterpret_cast< STRUCT_DeviceState(*)>(_a[1]))); break;
-        case 42: _t->OnCurrentPressureReceived((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 39: _t->OnCombPressureRangeChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 40: _t->OnBtnSaveAdvanceParamsClicked(); break;
+        case 41: _t->OnImagePrepared(); break;
+        case 42: _t->OnTimer(); break;
+        case 43: _t->OnUpdateDeviceState((*reinterpret_cast< STRUCT_DeviceState(*)>(_a[1]))); break;
+        case 44: _t->OnCurrentPressureReceived((*reinterpret_cast< int(*)>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
@@ -313,13 +323,13 @@ int Widget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 43)
+        if (_id < 45)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 43;
+        _id -= 45;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 43)
+        if (_id < 45)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 43;
+        _id -= 45;
     }
     return _id;
 }

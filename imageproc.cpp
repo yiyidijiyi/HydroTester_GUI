@@ -19,9 +19,12 @@ ImageProc::ImageProc(QObject *parent)
 	m_iRoiX = 622;			// 检测区域中心X坐标
 	m_iRoiY = 522;			// 检测区域中心Y坐标
 	m_iRoiRadius = 495;		// 检测区域半径
+	m_iDensity = 1;
 	m_dDropArea = 0.5;		// 水珠面积阈值（实际面积，单位mm）
+	m_dDropArea *= m_iDensity;
 	m_iDropArea = m_dDropArea / 0.12;		// 水珠面积阈值（像素点个数）	
 	m_iAdapArea = 25;		// 自适应阈值面积
+	
 	m_iAdapParam = 5;		// 自适应阈值灵敏度
 	m_iDropNum = 0;			// 检测到的水珠个数
 

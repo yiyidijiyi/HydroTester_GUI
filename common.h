@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-12
-* 最后修改：2016-11-11
+* 最后修改：2016-11-17
 * 作      者：syf
 * 描      述：
 */
@@ -125,6 +125,19 @@ struct STRUCT_DeviceState{
 	quint16 temperature;
 	quint8 restTime;
 	quint8 restCycle;
+};
+
+struct STRUCT_AdvanceParams{
+	int id;
+	int density;
+	int waterInTime;
+	double dropletArea;
+	int sensitivity;
+	int ignorePixes;
+	int x;
+	int y;
+	int r; 
+	int pressureRange;
 };
 
 enum ENUM_TestState{

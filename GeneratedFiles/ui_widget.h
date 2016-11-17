@@ -876,35 +876,35 @@ public:
         label_r->setAlignment(Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter);
         lineEdit_dropRec = new QLineEdit(tab_4);
         lineEdit_dropRec->setObjectName(QStringLiteral("lineEdit_dropRec"));
-        lineEdit_dropRec->setEnabled(false);
+        lineEdit_dropRec->setEnabled(true);
         lineEdit_dropRec->setGeometry(QRect(110, 260, 242, 30));
         lineEdit_flowInTime = new QLineEdit(tab_4);
         lineEdit_flowInTime->setObjectName(QStringLiteral("lineEdit_flowInTime"));
-        lineEdit_flowInTime->setEnabled(false);
+        lineEdit_flowInTime->setEnabled(true);
         lineEdit_flowInTime->setGeometry(QRect(110, 300, 242, 30));
         lineEdit_dropArea = new QLineEdit(tab_4);
         lineEdit_dropArea->setObjectName(QStringLiteral("lineEdit_dropArea"));
-        lineEdit_dropArea->setEnabled(false);
+        lineEdit_dropArea->setEnabled(true);
         lineEdit_dropArea->setGeometry(QRect(110, 340, 242, 30));
         lineEdit_sensitivity = new QLineEdit(tab_4);
         lineEdit_sensitivity->setObjectName(QStringLiteral("lineEdit_sensitivity"));
-        lineEdit_sensitivity->setEnabled(false);
+        lineEdit_sensitivity->setEnabled(true);
         lineEdit_sensitivity->setGeometry(QRect(608, 260, 242, 30));
         lineEdit_ignoreWidth = new QLineEdit(tab_4);
         lineEdit_ignoreWidth->setObjectName(QStringLiteral("lineEdit_ignoreWidth"));
-        lineEdit_ignoreWidth->setEnabled(false);
+        lineEdit_ignoreWidth->setEnabled(true);
         lineEdit_ignoreWidth->setGeometry(QRect(608, 300, 242, 30));
         lineEdit_centerX = new QLineEdit(tab_4);
         lineEdit_centerX->setObjectName(QStringLiteral("lineEdit_centerX"));
-        lineEdit_centerX->setEnabled(false);
+        lineEdit_centerX->setEnabled(true);
         lineEdit_centerX->setGeometry(QRect(1090, 260, 242, 30));
         lineEdit_centerY = new QLineEdit(tab_4);
         lineEdit_centerY->setObjectName(QStringLiteral("lineEdit_centerY"));
-        lineEdit_centerY->setEnabled(false);
+        lineEdit_centerY->setEnabled(true);
         lineEdit_centerY->setGeometry(QRect(1090, 300, 242, 30));
         lineEdit_r = new QLineEdit(tab_4);
         lineEdit_r->setObjectName(QStringLiteral("lineEdit_r"));
-        lineEdit_r->setEnabled(false);
+        lineEdit_r->setEnabled(true);
         lineEdit_r->setGeometry(QRect(1090, 339, 242, 30));
         line_12 = new QFrame(tab_4);
         line_12->setObjectName(QStringLiteral("line_12"));
@@ -986,6 +986,7 @@ public:
         QIcon icon11;
         icon11.addFile(QStringLiteral("resource/advance/advanceSave1.png"), QSize(), QIcon::Normal, QIcon::Off);
         pushButton_saveParams->setIcon(icon11);
+        pushButton_saveParams->setFlat(true);
         label_advanceMessage = new QLabel(tab_4);
         label_advanceMessage->setObjectName(QStringLiteral("label_advanceMessage"));
         label_advanceMessage->setGeometry(QRect(120, 5, 1000, 30));
@@ -1122,8 +1123,8 @@ public:
 
         retranslateUi(Widget);
 
-        tabWidget->setCurrentIndex(0);
-        tabWidget_testInterface->setCurrentIndex(2);
+        tabWidget->setCurrentIndex(3);
+        tabWidget_testInterface->setCurrentIndex(1);
 
 
         QMetaObject::connectSlotsByName(Widget);
@@ -1241,7 +1242,7 @@ public:
         pushButton_delAccount->setText(QApplication::translate("Widget", "\345\210\240\351\231\244", 0));
         pushButton_modifyAccount->setText(QApplication::translate("Widget", "\344\277\256\346\224\271", 0));
         label_advance->setText(QApplication::translate("Widget", "\351\253\230\347\272\247\351\200\211\351\241\271", 0));
-        label_dropRec->setText(QApplication::translate("Widget", "\346\260\264\346\273\264\350\257\206\345\210\253\357\274\232", 0));
+        label_dropRec->setText(QApplication::translate("Widget", "\347\273\217\347\272\254\345\257\206\345\272\246\357\274\232", 0));
         label_flowInTime->setText(QApplication::translate("Widget", "\350\277\233\346\260\264\346\227\266\351\227\264\357\274\232", 0));
         label_dropArea->setText(QApplication::translate("Widget", "\346\260\264\347\217\240\351\235\242\347\247\257\357\274\232", 0));
         label_sensitivity->setText(QApplication::translate("Widget", "\347\201\265\346\225\217\345\272\246\357\274\232", 0));
@@ -1249,7 +1250,7 @@ public:
         label_pressureRange->setText(QApplication::translate("Widget", "\345\216\213\345\212\233\351\207\217\347\250\213\357\274\232", 0));
         label_centerX->setText(QApplication::translate("Widget", "\350\247\206\351\207\216\344\270\255\345\277\203X\357\274\232", 0));
         label_centerY->setText(QApplication::translate("Widget", "\350\247\206\351\207\216\344\270\255\345\277\203Y\357\274\232", 0));
-        label_r->setText(QApplication::translate("Widget", "\350\247\206\351\207\216\345\215\212\345\276\204\357\274\232", 0));
+        label_r->setText(QApplication::translate("Widget", "\350\247\206\351\207\216\347\233\264\345\276\204\357\274\232", 0));
         label_pressureCali->setText(QApplication::translate("Widget", "\345\216\213\345\212\233\346\240\207\345\256\232", 0));
         pushButton_pressureCali->setText(QApplication::translate("Widget", "\347\241\256\345\256\232", 0));
         label_actual1->setText(QApplication::translate("Widget", "\345\256\236\351\231\205\345\200\2741\357\274\232", 0));

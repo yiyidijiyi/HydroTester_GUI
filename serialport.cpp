@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-19
-* 最后修改：2016-11-10
+* 最后修改：2016-11-17
 * 作      者：syf
 * 描      述：
 */
@@ -638,6 +638,9 @@ void SerialPort::TxSetParam(STRUCT_MethodParam &method)
 		txData.append(static_cast<char>(0x0e));
 		checkSum += static_cast<quint8>(0x0e);
 		
+		// 指示设置压力量程
+		m_handshake.data = 5;
+
 		switch (method.range)
 		{
 		case 0:

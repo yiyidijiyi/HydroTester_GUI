@@ -58,7 +58,8 @@ private:
 	int m_iDropArea;			// 水珠面积阈值（像素点个数）
 	double m_dDropArea;	// 水珠面积阈值（实际面积，单位mm）
 	int m_iAdapArea;			// 自适应阈值面积
-	int m_iAdapParam;			// 自适应阈值灵敏度
+	int m_iDensity;
+	int m_iAdapParam;		// 自适应阈值灵敏度
 	int m_iDropNum;			// 检测到的水珠个数
 	int m_iMinDis;				// 水珠之间的最小距离平方
 	int m_iReduceDis;			// 检测区域缩减距离

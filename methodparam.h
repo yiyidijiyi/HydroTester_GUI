@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-14
-* 最后修改：2016-09-15
+* 最后修改：2016-11-17
 * 作      者：syf
 * 描      述：
 */
@@ -32,6 +32,8 @@ public:
 	bool AddMethod(const STRUCT_MethodParam &method);
 	bool DeleteMethod(int index);
 	bool UpdateMethodParam(int index, const STRUCT_MethodParam &method);
+	bool GetAdvanceParams(int id, STRUCT_AdvanceParams &params);
+	bool UpdateAdvanceParams(int id, const STRUCT_AdvanceParams &params);
 private:
 	QStringList		m_messageList;
 	QVector<int>	m_idMap;

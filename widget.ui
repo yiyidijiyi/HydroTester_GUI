@@ -2300,7 +2300,7 @@ p, li { white-space: pre-wrap; }
       </font>
      </property>
      <property name="text">
-      <string>水滴识别：</string>
+      <string>经纬密度：</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_flowInTime">
@@ -2459,7 +2459,7 @@ p, li { white-space: pre-wrap; }
       </font>
      </property>
      <property name="text">
-      <string>视野半径：</string>
+      <string>视野直径：</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -2467,7 +2467,7 @@ p, li { white-space: pre-wrap; }
     </widget>
     <widget class="QLineEdit" name="lineEdit_dropRec">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="geometry">
       <rect>
@@ -2480,7 +2480,7 @@ p, li { white-space: pre-wrap; }
     </widget>
     <widget class="QLineEdit" name="lineEdit_flowInTime">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="geometry">
       <rect>
@@ -2493,7 +2493,7 @@ p, li { white-space: pre-wrap; }
     </widget>
     <widget class="QLineEdit" name="lineEdit_dropArea">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="geometry">
       <rect>
@@ -2506,7 +2506,7 @@ p, li { white-space: pre-wrap; }
     </widget>
     <widget class="QLineEdit" name="lineEdit_sensitivity">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="geometry">
       <rect>
@@ -2519,7 +2519,7 @@ p, li { white-space: pre-wrap; }
     </widget>
     <widget class="QLineEdit" name="lineEdit_ignoreWidth">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="geometry">
       <rect>
@@ -2532,7 +2532,7 @@ p, li { white-space: pre-wrap; }
     </widget>
     <widget class="QLineEdit" name="lineEdit_centerX">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="geometry">
       <rect>
@@ -2545,7 +2545,7 @@ p, li { white-space: pre-wrap; }
     </widget>
     <widget class="QLineEdit" name="lineEdit_centerY">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="geometry">
       <rect>
@@ -2558,7 +2558,7 @@ p, li { white-space: pre-wrap; }
     </widget>
     <widget class="QLineEdit" name="lineEdit_r">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="geometry">
       <rect>

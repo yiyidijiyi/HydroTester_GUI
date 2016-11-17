@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-02
-* 最后修改：2016-11-16
+* 最后修改：2016-11-17
 * 作      者：syf
 * 描      述：
 */
@@ -151,6 +151,7 @@ Widget::Widget(QWidget *parent)
 	connect(ui->pushButton_saveAccount, &QPushButton::clicked, this, &Widget::OnBtnSaveAccountClicked);
 	connect(ui->pushButton_delAccount, &QPushButton::clicked, this, &Widget::OnBtnDeleteAccountClicked);
 	connect(ui->pushButton_modifyAccount, &QPushButton::clicked, this, &Widget::OnBtnModifyAccountClicked);
+	connect(ui->comboBox_pressureRange, static_cast<void (QComboBox::*)(int) >(&QComboBox::currentIndexChanged), this, &Widget::OnCombPressureRangeChanged);
 
 	// 图像显示
 	connect(m_pImgProc, &ImageProc::ImageProcessed, this, &Widget::OnImagePrepared);
@@ -345,6 +346,23 @@ void Widget::CreateUi()
 	ui->lineEdit_targetPressure->setValidator(new QDoubleValidator(0, 1000000, 2, this));
 	ui->lineEdit_pressureCycle->setValidator(new QIntValidator(0, 100, this));
 	ui->lineEdit_pressureHolding->setValidator(new QDoubleValidator(0, 1000000, 2, this));
+
+	ui->lineEdit_dropRec->setValidator(new QIntValidator(1, 10, this));
+	ui->lineEdit_dropRec->setToolTip(QStringLiteral("建议设置范围值1~10"));
+	ui->lineEdit_flowInTime->setValidator(new QIntValidator(1, 1000, this));
+	ui->lineEdit_flowInTime->setToolTip(QStringLiteral("建议设置范围值1~1000"));
+	ui->lineEdit_dropArea->setValidator(new QDoubleValidator(0.01, 10000.0, 2, this));
+	ui->lineEdit_dropArea->setToolTip(QStringLiteral("建议设置范围值0.01~5.00"));
+	ui->lineEdit_sensitivity->setValidator(new QIntValidator(1, 5, this));
+	ui->lineEdit_sensitivity->setToolTip(QStringLiteral("建议设置范围值1~5"));
+	ui->lineEdit_ignoreWidth->setValidator(new QIntValidator(0, 1024, this));
+	ui->lineEdit_ignoreWidth->setToolTip(QStringLiteral("建议设置范围值0~100"));
+	ui->lineEdit_centerX->setValidator(new QIntValidator(0, 1024, this));
+	ui->lineEdit_centerX->setToolTip(QStringLiteral("建议设置范围值0~1024"));
+	ui->lineEdit_centerY->setValidator(new QIntValidator(0, 1024, this));
+	ui->lineEdit_centerY->setToolTip(QStringLiteral("建议设置范围值0~1024"));
+	ui->lineEdit_r->setValidator(new QIntValidator(1, 1024, this));
+	ui->lineEdit_r->setToolTip(QStringLiteral("建议设置范围值1~1024"));
 
 
 	// 设置新增、删除、修改按钮样式
@@ -1343,7 +1361,10 @@ void Widget::GenTestReport(void)
 	htmlStr += QString("<p align = \"center\"><img src=\"%1\"/></p>").arg(QString("./report/curve.bmp"));
 
 	ui->textEdit_report->insertHtml(htmlStr);
-	m_pTestResult->AddReport(report);
+	if (!m_pTestResult->AddReport(report))
+	{
+		ui->label_testInterfaceMessage->setText(QStringLiteral("向数据库写入试验报告错误！"));
+	}
 }
 
 /*
@@ -1545,6 +1566,60 @@ void Widget::SetDeviceOprateEnabled(quint8 state)
 	{
 		ui->pushButton_openCloseCamera->setEnabled(false);
 	}
+}
+
+
+/*
+* 参数：flag:高级设置可编辑状态
+* 返回：
+* 功能：设置高级设置的操作状态
+*/
+void Widget::SetAdvanceSettingEnabled(bool flag)
+{
+	if (flag)
+	{
+		ui->lineEdit_dropRec->setReadOnly(false);
+		ui->lineEdit_flowInTime->setReadOnly(false);
+		ui->lineEdit_dropArea->setReadOnly(false);
+		ui->lineEdit_sensitivity->setReadOnly(false);
+		ui->lineEdit_ignoreWidth->setReadOnly(false);
+		ui->comboBox_pressureRange->setEnabled(true);
+		ui->lineEdit_centerX->setReadOnly(false);
+		ui->lineEdit_centerY->setReadOnly(false);
+		ui->lineEdit_r->setReadOnly(false);
+	}
+	else
+	{
+		ui->lineEdit_dropRec->setReadOnly(true);
+		ui->lineEdit_flowInTime->setReadOnly(true);
+		ui->lineEdit_dropArea->setReadOnly(true);
+		ui->lineEdit_sensitivity->setReadOnly(true);
+		ui->lineEdit_ignoreWidth->setReadOnly(true);
+		ui->comboBox_pressureRange->setEnabled(false);
+		ui->lineEdit_centerX->setReadOnly(true);
+		ui->lineEdit_centerY->setReadOnly(true);
+		ui->lineEdit_r->setReadOnly(true);
+	}
+}
+
+
+/*
+* 参数：params：高级设置参数
+* 返回：
+* 功能：更新高级设置参数
+*/
+void Widget::UpdateAdvanceParams(const STRUCT_AdvanceParams &params)
+{
+	ui->lineEdit_dropRec->setText(QString::number(params.density));
+	ui->lineEdit_flowInTime->setText(QString::number(params.waterInTime));
+	ui->lineEdit_dropArea->setText(QString::number(params.dropletArea));
+	ui->lineEdit_sensitivity->setText(QString::number(params.sensitivity));
+	ui->lineEdit_ignoreWidth->setText(QString::number(params.ignorePixes));
+	ui->lineEdit_centerX->setText(QString::number(params.x));
+	ui->lineEdit_centerY->setText(QString::number(params.y));
+	ui->lineEdit_r->setText(QString::number(params.r));
+
+	ui->comboBox_pressureRange->setCurrentIndex(params.pressureRange);
 }
 
 
@@ -1805,6 +1880,18 @@ void Widget::OnLoginAccepted(int id)
 	UpdateAccountList();
 
 	UpdateTestMethodList();
+
+	if (Tester == m_account.userType)
+	{
+		SetAdvanceSettingEnabled(false);
+	}
+	else
+	{
+		SetAdvanceSettingEnabled(true);
+	}
+
+	m_pMethodParam->GetAdvanceParams(1, m_advanceParams);
+	UpdateAdvanceParams(m_advanceParams);
 }
 
 
@@ -2078,24 +2165,51 @@ void Widget::OnHandShakeStateReceived(STRUCT_HandShake *handshake)
 		ui->textEdit_info->append(QStringLiteral("通信正忙，请稍后再尝试！"));
 		break;
 	case SetParamOk:
-		ui->textEdit_info->append(QStringLiteral("测试参数设置成功！"));
-		m_testState = Connected;
-		m_bIsParamsSet = true;
-		ui->comboBox_selMethod->setEnabled(true);
+		if (5 == handshake->data)
+		{
+			ui->textEdit_info->append(QStringLiteral("压力量程设置成功！"));
+			ui->label_advanceMessage->setText(QStringLiteral("压力量程设置成功！"));
+			ui->comboBox_pressureRange->setEnabled(true);
+		}
+		else
+		{
+			ui->textEdit_info->append(QStringLiteral("测试参数设置成功！"));
+			m_testState = Connected;
+			m_bIsParamsSet = true;
+			ui->comboBox_selMethod->setEnabled(true);
+		}
 		break;
 	case SetParamError:
+		if (5 == handshake->data)
+		{
+			ui->textEdit_info->append(QStringLiteral("压力量程设置失败！"));
+			ui->label_advanceMessage->setText(QStringLiteral("压力量程设置失败！"));
+			ui->comboBox_pressureRange->setEnabled(true);
+		}
+		else
+		{
 		ui->textEdit_info->append(QStringLiteral("错误：测试参数，设置失败！"));
 		m_testState = Connected;
 		m_bIsParamsSet = false;
-		//SetDeviceOprateEnabled(ConnectDevice | WaterIn | WaterOff | StartStop | PauseConti | Camera);
 		ui->comboBox_selMethod->setEnabled(true);
+		}	
+		//SetDeviceOprateEnabled(ConnectDevice | WaterIn | WaterOff | StartStop | PauseConti | Camera);	
 		break;
 	case SetParamAckTimeOut:
+		if (5 == handshake->data)
+		{
+			ui->textEdit_info->append(QStringLiteral("压力量程设置，应答超时！"));
+			ui->label_advanceMessage->setText(QStringLiteral("压力量程设置，应答超时！"));
+			ui->comboBox_pressureRange->setEnabled(true);
+		}
+		else
+		{
 		ui->textEdit_info->append(QStringLiteral("错误：设置测试参数，等待应答超时！"));
 		m_testState = Connected;
 		m_bIsParamsSet = false;
 		//SetDeviceOprateEnabled(ConnectDevice | WaterIn | WaterOff | StartStop | PauseConti | Camera);
 		ui->comboBox_selMethod->setEnabled(true);
+		}
 		break;
 	case ReadParamOk:
 		ui->textEdit_info->append(QStringLiteral("读取参数成功！"));
@@ -2651,6 +2765,139 @@ void Widget::OnBtnModifyAccountClicked()
 	{
 		m_accountEditState = Editable;
 		UpdateAcountInfoUI(m_accountEditState);
+	}
+}
+
+
+/*
+* 参数：index：压力量程选项
+* 返回：
+* 功能：设置压力量程
+*/
+void Widget::OnCombPressureRangeChanged(int index)
+{
+	if (Init == m_testState)
+	{
+		return;
+	}
+
+	ui->comboBox_pressureRange->setEnabled(false);
+	m_methodParam.plan = 5;
+	m_methodParam.range = index;
+	m_txData = TxSetParams;
+
+	m_advanceParams.pressureRange = index;
+	m_pMethodParam->UpdateAdvanceParams(2, m_advanceParams);
+}
+
+
+/*
+* 参数：
+* 返回：
+* 功能：保存高级设置参数
+*/
+void Widget::OnBtnSaveAdvanceParamsClicked()
+{
+	int val1;
+	double val2;
+
+	val1 = ui->lineEdit_dropRec->text().toInt();
+	if ((val1 < 1) || (val1 > 10))
+	{
+		ui->label_advanceMessage->setText(QStringLiteral("经纬密度设置值不符合要求，请修改！"));
+		return;
+	}
+	else
+	{
+		m_advanceParams.density = val1;
+	}
+
+	val1 = ui->lineEdit_flowInTime->text().toInt();
+	if ((val1 < 0) || (val1 > 1000))
+	{
+		ui->label_advanceMessage->setText(QStringLiteral("进水时间设置值不符合要求，请修改！"));
+		return;
+	}
+	else
+	{
+		m_advanceParams.waterInTime = val1;
+	}
+
+	val2 = ui->lineEdit_dropArea->text().toDouble();
+	if ((val2 < 0.01) || (val1 > 10000.0))
+	{
+		ui->label_advanceMessage->setText(QStringLiteral("水珠面积设置值不符合要求，请修改！"));
+		return;
+	}
+	else
+	{
+		m_advanceParams.dropletArea = val2;
+	}
+
+	val1 = ui->lineEdit_sensitivity->text().toInt();
+	if ((val1 < 1) || (val1 > 5))
+	{
+		ui->label_advanceMessage->setText(QStringLiteral("灵敏度设置值不符合要求，请修改！"));
+		return;
+	}
+	else
+	{
+		m_advanceParams.sensitivity = val1;
+	}
+
+	val1 = ui->label_ignoreWidth->text().toInt();
+	if ((val1 < 0) || (val1 > 500))
+	{
+		ui->label_advanceMessage->setText(QStringLiteral("忽略边缘宽度设置值不符合要求，请修改！"));
+		return;
+	}
+	else
+	{
+		m_advanceParams.ignorePixes = val1;
+	}
+
+	val1 = ui->lineEdit_centerX->text().toInt();
+	if ((val1 < 1) || (val1 > 1000))
+	{
+		ui->label_advanceMessage->setText(QStringLiteral("视野中心X设置值不符合要求，请修改！"));
+		return;
+	}
+	else
+	{
+		m_advanceParams.x = val1;
+	}
+
+	val1 = ui->lineEdit_centerY->text().toInt();
+	if ((val1 < 1) || (val1 > 1000))
+	{
+		ui->label_advanceMessage->setText(QStringLiteral("视野中心Y设置值不符合要求，请修改！"));
+		return;
+	}
+	else
+	{
+		m_advanceParams.y = val1;
+	}
+
+	val1 = ui->lineEdit_r->text().toInt();
+	if ((val1 < 1) || (val1 > 1000))
+	{
+		ui->label_advanceMessage->setText(QStringLiteral("视野直径设置值不符合要求，请修改！"));
+		return;
+	}
+	else
+	{
+		m_advanceParams.r = val1;
+	}
+
+	m_advanceParams.pressureRange = ui->comboBox_pressureRange->currentIndex();
+
+	if (m_pMethodParam->UpdateAdvanceParams(2, m_advanceParams))
+	{
+		ui->label_advanceMessage->setText(QStringLiteral("高级设置参数修改成功！"));
+	}
+	else
+	{
+		ui->label_advanceMessage->setText(QStringLiteral("高级设置参数修改错误，请重新打开软件重试！"));
 	}
 }
 

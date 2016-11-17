@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-02
-* 最后修改：2016-11-16
+* 最后修改：2016-11-17
 * 作      者：syf
 * 描      述：
 */
@@ -131,6 +131,8 @@ private:
 	void UpdateAcountInfoUI(UIState state);
 	void UpdateMethodInfoUI(UIState state);
 	void SetDeviceOprateEnabled(quint8 state);
+	void SetAdvanceSettingEnabled(bool state);
+	void UpdateAdvanceParams(const STRUCT_AdvanceParams &params);
 
 	/*
 	* 设置值超限判断
@@ -242,6 +244,12 @@ public slots:
 	void OnBtnModifyAccountClicked();
 
 	/*
+	* 高级设置操作
+	*/
+	void OnCombPressureRangeChanged(int index);
+	void OnBtnSaveAdvanceParamsClicked();
+
+	/*
 	* 图像显示
 	*/
 	void OnImagePrepared();
@@ -272,7 +280,7 @@ private:
 
 	// 测试结果查询相关
 	QList<STRUCT_Report> m_reportList;
-	TestResult	*m_pTestResult;
+	TestResult	 *m_pTestResult;
 
 	// 用户账号相关
 	QStringListModel	*m_pAccountListModel;
@@ -284,6 +292,9 @@ private:
 	QThread  *m_pRxThread;
 	SerialPort *m_pCom;
 	bool m_bIsComOpened;
+
+	// 高级设置
+	STRUCT_AdvanceParams m_advanceParams;
 
 	// 算法
 	QThread *m_pImgProcThread;
