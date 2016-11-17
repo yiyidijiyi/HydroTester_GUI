@@ -92,6 +92,8 @@ Widget::Widget(QWidget *parent)
 	ui->listView_accountList->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	ui->listView_methodList->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	ui->tableView_reportQuery->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	ui->tableView_reportQuery->setSelectionBehavior(QAbstractItemView::SelectRows);
+	ui->tableView_reportQuery->setSelectionMode(QAbstractItemView::SingleSelection);
 	ui->textEdit_report->setReadOnly(true);
 	ui->textEdit_info->setReadOnly(true);
 	ui->textEdit_methodInfo->setReadOnly(true);
@@ -129,6 +131,9 @@ Widget::Widget(QWidget *parent)
 	connect(ui->pushButton_video, &QPushButton::clicked, this, &Widget::OnBtnChartVideoClicked);
 	connect(ui->pushButton_curve, &QPushButton::clicked, this, &Widget::OnBtnChartCurveClicked);
 	connect(ui->pushButton_report, &QPushButton::clicked, this, &Widget::OnBtnChartReportClicked);
+
+	// 高级设置操作
+	connect(ui->pushButton_saveParams, &QPushButton::clicked, this, &Widget::OnBtnSaveAdvanceParamsClicked);
 	connect(ui->comboBox_selMethod, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &Widget::OnCombSelMethodChanged);
 
 	// 测试方法操作
@@ -2894,11 +2899,14 @@ void Widget::OnBtnSaveAdvanceParamsClicked()
 	if (m_pMethodParam->UpdateAdvanceParams(2, m_advanceParams))
 	{
 		ui->label_advanceMessage->setText(QStringLiteral("高级设置参数修改成功！"));
+		m_pImgProc->UpdateParams(m_advanceParams);
 	}
 	else
 	{
 		ui->label_advanceMessage->setText(QStringLiteral("高级设置参数修改错误，请重新打开软件重试！"));
 	}
+
+	
 }
 
 

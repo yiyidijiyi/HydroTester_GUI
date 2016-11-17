@@ -276,6 +276,32 @@ void ImageProc::SetCamera(MerCamera *pCamera)
 
 
 /*
+* 参数：params：包含参数的结构体
+* 返回：
+* 功能：更新参数设置
+*/
+void ImageProc::UpdateParams(STRUCT_AdvanceParams &params)
+{
+	if (!m_bClacFlag)
+	{
+		m_iRoiX = params.x;			// 检测区域中心X坐标
+		m_iRoiY = params.y;			// 检测区域中心Y坐标
+		m_iRoiRadius = params.r;		// 检测区域半径
+		m_iDensity = params.density;
+		m_dDropArea = params.dropletArea;		// 水珠面积阈值（实际面积，单位mm）
+		m_dDropArea *= m_iDensity;
+		m_iDropArea = m_dDropArea / 0.12;		// 水珠面积阈值（像素点个数）	
+		m_iAdapParam = params.sensitivity;		// 自适应阈值灵敏度
+		m_iReduceDis = params.ignorePixes;		// 检测区域缩减距离
+
+		// 检测局域模板
+		m_matRoi = Mat(IMAGE_HEIGHT, IMAGE_WIDTH, CV_8UC1, Scalar::all(0));
+		circle(m_matRoi, Point(m_iRoiX, m_iRoiY), m_iRoiRadius - 5, Scalar::all(255), -1, 8);
+	}
+}
+
+
+/*
 * 参数：
 * 返回：
 * 功能：获取处理过的图像数据

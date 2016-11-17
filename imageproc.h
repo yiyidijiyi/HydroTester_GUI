@@ -38,6 +38,7 @@ public:
 	void StartCalc();
 	void StopCalc();
 	void SetCamera(MerCamera *pCamera);
+	void UpdateParams(STRUCT_AdvanceParams &params);
 	Mat& GetImage();
 	int GetDropNum();
 
