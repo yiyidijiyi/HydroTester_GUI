@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-02
-* 最后修改：2016-11-17
+* 最后修改：2016-11-18
 * 作      者：syf
 * 描      述：
 */
@@ -40,6 +40,7 @@ Widget::Widget(QWidget *parent)
 	, m_bIsWaterOff(false)
 	, m_pCurve(NULL)
 	, m_pGrid(NULL)
+	, m_pVideoWriter(NULL)
 	, m_oldSize(0)
 	, m_maxY(0)
 	, m_avgY(0)
@@ -112,6 +113,7 @@ Widget::Widget(QWidget *parent)
 	connect(ui->pushButton_waterOff, &QPushButton::clicked, this, &Widget::OnBtnWaterOffClicked);
 	connect(ui->pushButton_startStop, &QPushButton::clicked, this, &Widget::OnBtnStartTestClicked);
 	connect(ui->pushButton_pauseConti, &QPushButton::clicked, this, &Widget::OnBtnPauseTestClicked);
+	connect(ui->pushButton_playback, &QPushButton::clicked, this, &Widget::OnBtnPlayBackClicked);
 #ifdef DATA_DEBUG
 	connect(m_pCom, &SerialPort::DataReceived, this, &Widget::OnRxDataReceived);
 #endif
@@ -581,7 +583,17 @@ void Widget::ShowImage(Mat &image)
 	Mat resizeImage;
 	Mat rgbImage;
 
-	cv::resize(image, resizeImage, Size(427, 342));
+	
+
+	cv::resize(image, resizeImage, Size(ui->label_video->width(), ui->label_video->height()));
+
+	if (m_pVideoWriter)
+	{
+		if (m_pVideoWriter->isOpened())
+		{
+			*m_pVideoWriter << resizeImage;
+		}
+	}
 
 	if (3 == resizeImage.channels())
 	{
@@ -1212,7 +1224,7 @@ void Widget::SaveLastImage()
 */
 void Widget::SavePressureCurve()
 {
-	m_curveRenderer.renderDocument(ui->qwtPlot, "./report/curve.bmp", QSizeF(200, 100));
+	m_curveRenderer.renderDocument(ui->qwtPlot, "./report/curve.bmp", QSizeF(150, 75));
 }
 
 /*
@@ -1414,7 +1426,18 @@ void Widget::StartTest()
 	ui->label_testState->setText(QStringLiteral("正在试验"));
 	SetDeviceOprateEnabled(StartStop | PauseConti);
 	ui->comboBox_selMethod->setEnabled(false);
+	ui->comboBox_pressureRange->setEnabled(false);
 	ui->textEdit_report->clear();
+
+	// 保存视频
+	QFile file("./report/record.avi");
+	if (file.exists())
+	{
+		file.remove();
+	}
+
+	m_pVideoWriter = new VideoWriter("./report/record.avi", CV_FOURCC('M', 'J', 'P', 'G'), 5.0, Size(ui->label_video->width(), ui->label_video->height()), false);
+	//m_pVideoWriter = new VideoWriter("./report/record.avi", -1, 5.0, Size(ui->label_video->width(), ui->label_video->height()), false);
 }
 
 
@@ -1453,6 +1476,14 @@ void Widget::StopTest()
 	ui->label_testState->setText(QStringLiteral("试验结束"));
 	SetDeviceOprateEnabled(ConnectDevice | WaterIn | WaterOff | StartStop | PauseConti | Camera);
 	ui->comboBox_selMethod->setEnabled(true);
+	ui->comboBox_pressureRange->setEnabled(true);
+
+	if (m_pVideoWriter)
+	{
+		m_pVideoWriter->release();
+		delete m_pVideoWriter;
+		m_pVideoWriter = NULL;
+	}
 }
 
 
@@ -2582,6 +2613,21 @@ void Widget::OnBtnSaveCurveClicked()
 {
 	m_curveRenderer.exportTo(ui->qwtPlot, "curve.pdf");
 }
+
+
+/*
+* 参数：
+* 返回：
+* 功能：打开保存视频文件夹
+*/
+void Widget::OnBtnPlayBackClicked()
+{
+	QString path = QDir::currentPath();
+	path += "/report";
+	//QProcess::startDetached("explorer ./report");
+	QDesktopServices::openUrl(QUrl(path, QUrl::TolerantMode));
+}
+
 
 
 /*

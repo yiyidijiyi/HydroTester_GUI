@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-02
-* 最后修改：2016-11-17
+* 最后修改：2016-11-18
 * 作      者：syf
 * 描      述：
 */
@@ -19,6 +19,9 @@
 #include <QtPrintSupport/QPrintDialog>
 #include <QtPrintSupport/QPrintPreviewDialog>
 #include <QDebug>
+#include <QDesktopServices>
+#include <QDir>
+#include <QFile>
 
 #include "common.h"
 #include "useraccount.h"
@@ -198,6 +201,7 @@ public slots:
 	void OnRxDataReceived(const QByteArray& rxBuf);
 	void OnHandShakeStateReceived(STRUCT_HandShake *handshake);
 	void OnBtnSaveCurveClicked();
+	void OnBtnPlayBackClicked();
 
 	/*
 	* 操作界面切换
@@ -281,6 +285,7 @@ private:
 	// 测试结果查询相关
 	QList<STRUCT_Report> m_reportList;
 	TestResult	 *m_pTestResult;
+	VideoWriter *m_pVideoWriter;
 
 	// 用户账号相关
 	QStringListModel	*m_pAccountListModel;
