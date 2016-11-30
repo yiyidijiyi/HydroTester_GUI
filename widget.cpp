@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-02
-* 最后修改：2016-11-18
+* 最后修改：2016-11-30
 * 作      者：syf
 * 描      述：
 */
@@ -53,6 +53,9 @@ Widget::Widget(QWidget *parent)
 	m_account.userName = "";
 	m_account.passward = "";
 	m_account.id = 0;
+
+	// 初始单位为Pa
+	m_methodParam.unit = Pa;
 
 	m_pAccountDB = new UserAccount(this);
 
@@ -151,6 +154,7 @@ Widget::Widget(QWidget *parent)
 	// 测试结果查询操作
 	connect(ui->pushButton_query, &QPushButton::clicked, this, &Widget::OnBtnQueryClicked);
 	connect(ui->pushButton_delReport, &QPushButton::clicked, this, &Widget::OnBtnDeleteReportListClicked);
+	connect(ui->pushButton_genReport, &QPushButton::clicked, this, &Widget::OnBtnGenReportClicked);
 
 	// 账户信息操作
 	connect(ui->listView_accountList, &QListView::clicked, this, &Widget::OnAccountListItemClicked);
@@ -288,10 +292,10 @@ void Widget::CreateUi()
 	// 设置通用样式
 	this->setStyleSheet("QLabel{font-family:'Microsoft YaHei'; font-size:14px;color:#979797;}"
 		"QPushButton{font-family:'Microsoft YaHei'; font-size:14px;}"
-		"QLineEdit{font-family:'Microsoft YaHei'; font-size:14px; color:#979797; }"
+		"QLineEdit{font-family:'Microsoft YaHei'; font-size:14px;}"
 		"QTextEdit{font-family:'Microsoft YaHei'; font-size:14px; color:#000000;  background-color:#ffffff}"
-		"QDateEdit{font-family:'Microsoft YaHei'; font-size:14px; color:#979797; background-color:#f7f7f7;}"
-		"QComboBox{font-family:'Microsoft YaHei'; font-size:14px; color:#979797; background-color:#f7f7f7}");
+		"QDateEdit{font-family:'Microsoft YaHei'; font-size:14px; background-color:#f7f7f7;}"
+		"QComboBox{font-family:'Microsoft YaHei'; font-size:14px; background-color:#f7f7f7}");
 
 	// 设置状态栏Label样式
 	ui->label_testState->setStyleSheet("QLabel{font-size:16px; color:#ffffff;}");
@@ -328,9 +332,10 @@ void Widget::CreateUi()
 	// 设置视频回放、清除信息按钮样式
 	ui->pushButton_playback->setStyleSheet("QPushButton{font-family:'Microsoft YaHei';font-size:16px; color:#979797}"
 		"QPushButton:hover{color:#ffffff; border-image: url(:/testInterface/resource/testInterface/testInterfaceBtn1.png);}");
-
 	ui->pushButton_clearInfo->setStyleSheet("QPushButton{font-family:'Microsoft YaHei';font-size:16px; color:#979797}"
 		"QPushButton:hover{color:#ffffff; border-image: url(:/testInterface/resource/testInterface/testInterfaceBtn1.png);}");
+	ui->pushButton_print->setStyleSheet("QPushButton{font-family:'Microsoft YaHei';font-size:14px; color:#979797}"
+		"QPushButton:hover{color:#ffffff; border-image: url(:/testInterface/resource/testInterface/testInterfaceBtn3.png);}");
 
 	// 图表显示功能选择
 	SwitchChart(m_chartIndex);
@@ -538,8 +543,7 @@ void Widget::SwitchChart(ChartIndex index)
 		"QPushButton:{border-image: url(:/testInterface/resource/testInterface/testInterfaceBtn4.png);}");
 	ui->pushButton_report->setStyleSheet("QPushButton{font-family:'Microsoft YaHei';font-size:14px; color:#979797}"
 		"QPushButton:{border-image: url(:/testInterface/resource/testInterface/testInterfaceBtn4.png);}");
-	ui->pushButton_print->setStyleSheet("QPushButton{font-family:'Microsoft YaHei';font-size:14px; color:#979797}"
-		"QPushButton:{border-image: url(:/testInterface/resource/testInterface/testInterfaceBtn4.png);}");
+	
 
 	switch (index)
 	{
@@ -660,7 +664,24 @@ void Widget::InitCurve()
 
 	ui->qwtPlot->setTitle(QStringLiteral("压力曲线"));
 	ui->qwtPlot->setAxisTitle(QwtPlot::xBottom, QStringLiteral("时间（S）"));
-	ui->qwtPlot->setAxisTitle(QwtPlot::yLeft, QStringLiteral("压力（Pa）"));
+	switch (m_methodParam.unit)
+	{
+	case Pa:
+		ui->qwtPlot->setAxisTitle(QwtPlot::yLeft, QStringLiteral("压力（Pa）"));
+		break;
+	case kPa:
+		ui->qwtPlot->setAxisTitle(QwtPlot::yLeft, QStringLiteral("压力（KPa）"));
+		break;
+	case mBar:
+		ui->qwtPlot->setAxisTitle(QwtPlot::yLeft, QStringLiteral("压力（mBar）"));
+		break;
+	case mmH2O:
+		ui->qwtPlot->setAxisTitle(QwtPlot::yLeft, QStringLiteral("压力（mmH2O）"));
+		break;
+	default:
+		break;
+	}
+	
 	ui->qwtPlot->setAxisScale(QwtPlot::xBottom, 0, 60.0, 5.0);
 	ui->qwtPlot->setAxisScale(QwtPlot::yLeft, 0, 100000.0);
 
@@ -700,7 +721,7 @@ void Widget::ResetCurve()
 void Widget::DrawCurve()
 {
 	double x = m_time.second() + m_time.minute() * 60 + m_time.hour() * 3600;
-	double y = ui->lcdNumber_pressure->intValue();
+	double y = ui->lcdNumber_pressure->value();
 	size_t ySize = m_vectorY.size();
 
 	if (ySize < 10)
@@ -767,6 +788,7 @@ void Widget::InitImageProc()
 {
 	m_pImgProc = new ImageProc;
 	m_pImgProcThread = new QThread;
+	//m_pImgProc->UpdateParams(m_advanceParams);
 
 	m_pImgProc->SetCamera(m_pCamera);
 	m_pImgProc->moveToThread(m_pImgProcThread);
@@ -909,7 +931,7 @@ void Widget::UpdateReportQueryView(const QList<STRUCT_Report> &reportList)
 		default:
 			break;
 		}
-		m_pReportQueryModel->setItem(i, 0, new QStandardItem(QString::number(reportList[i].id)));
+		m_pReportQueryModel->setItem(i, 0, new QStandardItem(QString::number(i + 1)));
 		m_pReportQueryModel->setItem(i, 1, new QStandardItem(reportList[i].methodName));
 		m_pReportQueryModel->setItem(i, 2, new QStandardItem(reportList[i].testDate));
 		m_pReportQueryModel->setItem(i, 3, new QStandardItem(strMode));
@@ -999,7 +1021,12 @@ bool Widget::IsPressureOverload(double p)
 }
 
 
-void Widget::ConvertPressureUnit(double &pressure, ENUM_PressureUnit unit0, ENUM_PressureUnit unit1)
+/*
+* 参数：pressure：压力值，unit0：转换前单位，unit1：转换后的单位
+* 返回：转换后的压力值
+* 功能：压力单位转换
+*/
+double Widget::ConvertPressureUnit(double pressure, ENUM_PressureUnit unit0, ENUM_PressureUnit unit1)
 {
 	switch (unit0)
 	{
@@ -1070,6 +1097,8 @@ void Widget::ConvertPressureUnit(double &pressure, ENUM_PressureUnit unit0, ENUM
 	default:
 		break;
 	}
+
+	return pressure;
 }
 
 
@@ -1088,51 +1117,59 @@ void Widget::ShowMethodParam(const STRUCT_MethodParam &method)
 
 	switch (method.unit)
 	{
-	case 0:
+	case Pa:
 		unit = QStringLiteral("Pa(帕)");
 		break;
-	case 1:
+	case kPa:
 		unit = QStringLiteral("kPa(千帕)");
 		break;
-	case 2:
+	case mBar:
 		unit = QStringLiteral("mBar(毫巴)");
-		break;
+		break;	
+	case mmH2O:
 		unit = QStringLiteral("mmH2O(毫米水柱)");
-	case 3:
 		break;
 	default:
 		break;
+	}
+
+	double pressure1 = method.rate;
+	double pressure2 = method.pressure;
+	if (method.unit != Pa)
+	{
+		pressure1 = ConvertPressureUnit(pressure1, Pa, method.unit);
+		pressure2 = ConvertPressureUnit(pressure2, Pa, method.unit);
 	}
 
 	switch (method.plan)
 	{
 	case 0:
 		ui->textEdit_methodInfo->append(QStringLiteral("测试方法：") + QStringLiteral("持续增压"));
-		ui->textEdit_methodInfo->append(QStringLiteral("增压速率：") + QString::number(method.rate) + unit + QStringLiteral("/分钟"));
+		ui->textEdit_methodInfo->append(QStringLiteral("增压速率：") + QString::number(pressure1) + unit + QStringLiteral("/分钟"));
 		break;
 	case 1:
 		ui->textEdit_methodInfo->append(QStringLiteral("测试方法：") + QStringLiteral("定时计压"));
-		ui->textEdit_methodInfo->append(QStringLiteral("增压速率：") + QString::number(method.rate) + unit + QStringLiteral("/分钟"));
+		ui->textEdit_methodInfo->append(QStringLiteral("增压速率：") + QString::number(pressure1) + unit + QStringLiteral("/分钟"));
 		ui->textEdit_methodInfo->append(QStringLiteral("定时时间：") + QString::number(method.timing) +  QStringLiteral("分钟"));
 		break;
 	case 2:
 		ui->textEdit_methodInfo->append(QStringLiteral("测试方法：") + QStringLiteral("定时定压"));
-		ui->textEdit_methodInfo->append(QStringLiteral("增压速率：") + QString::number(method.rate) + unit + QStringLiteral("/分钟"));
+		ui->textEdit_methodInfo->append(QStringLiteral("增压速率：") + QString::number(pressure1) + unit + QStringLiteral("/分钟"));
 		ui->textEdit_methodInfo->append(QStringLiteral("定时时间：") + QString::number(method.timing) + QStringLiteral("分钟"));
-		ui->textEdit_methodInfo->append(QStringLiteral("目标压强：") + QString::number(method.pressure) + unit);
+		ui->textEdit_methodInfo->append(QStringLiteral("目标压强：") + QString::number(pressure2) + unit);
 		break;
 	case 3:
 		ui->textEdit_methodInfo->append(QStringLiteral("测试方法：") + QStringLiteral("绕曲松弛"));
-		ui->textEdit_methodInfo->append(QStringLiteral("增压速率：") + QString::number(method.rate) + unit + QStringLiteral("/分钟"));
-		ui->textEdit_methodInfo->append(QStringLiteral("目标压强：") + QString::number(method.pressure) + unit);
+		ui->textEdit_methodInfo->append(QStringLiteral("增压速率：") + QString::number(pressure1) + unit + QStringLiteral("/分钟"));
+		ui->textEdit_methodInfo->append(QStringLiteral("目标压强：") + QString::number(pressure2) + unit);
 		ui->textEdit_methodInfo->append(QStringLiteral("松绕周期：") + QString::number(method.cycle) + QStringLiteral("次"));
 		ui->textEdit_methodInfo->append(QStringLiteral("保压时间：") + QString::number(method.holdingTime) + QStringLiteral("分钟"));
 		break;
 	case 4:
 		ui->textEdit_methodInfo->append(QStringLiteral("测试方法：") + QStringLiteral("渗水漏水"));
-		ui->textEdit_methodInfo->append(QStringLiteral("增压速率：") + QString::number(method.rate) + unit + QStringLiteral("/分钟"));
+		ui->textEdit_methodInfo->append(QStringLiteral("增压速率：") + QString::number(pressure1) + unit + QStringLiteral("/分钟"));
 		ui->textEdit_methodInfo->append(QStringLiteral("定时时间：") + QString::number(method.timing) + QStringLiteral("分钟"));
-		ui->textEdit_methodInfo->append(QStringLiteral("目标压强：") + QString::number(method.pressure) + unit);
+		ui->textEdit_methodInfo->append(QStringLiteral("目标压强：") + QString::number(pressure2) + unit);
 		break;
 	default:
 		break;
@@ -1149,20 +1186,7 @@ void Widget::ShowMethodParam(const STRUCT_MethodParam &method)
 */
 void Widget::DeleteReportInList(int id)
 {
-	size_t size = m_reportList.size();
-	
-	for (size_t i = 0; i < size; i++)
-	{
-		if (id != m_reportList[i].id)
-		{
-			continue;
-		}
-		else
-		{
-			m_reportList.removeAt(i);
-			break;
-		}
-	}
+	m_reportList.removeAt(id);
 }
 
 /*
@@ -1184,9 +1208,33 @@ void Widget::GetDropNum()
 	for (int i = 0; i < n; i++)
 	{
 		QString strTime = m_time.toString("hh:mm:ss");
-		QString strPressure = QString::number(m_pCom->GetCurrentPressure());
+		QString unit;
+		double pressure = static_cast<double>(m_pCom->GetCurrentPressure());
+		switch (m_methodParam.unit)
+		{
+		case Pa:
+			unit = QStringLiteral("Pa(帕)");
+			break;
+		case kPa:
+			unit = QStringLiteral("kPa(千帕)");
+			pressure = ConvertPressureUnit(pressure, Pa, kPa);
+			break;
+		case mBar:
+			unit = QStringLiteral("mBar(毫巴)");
+			pressure = ConvertPressureUnit(pressure, Pa, mBar);
+			break;
+		case mmH2O:
+			unit = QStringLiteral("mmH2O(毫米水柱)");
+			pressure = ConvertPressureUnit(pressure, Pa, mmH2O);
+			break;
+		default:
+			break;
+		}
+		QString strPressure = QString::number(pressure) + unit;
+
+
 		m_listAppearTime.push_back(strTime);
-		m_listApperPressure.push_back(strPressure);
+		m_listAppearPressure.push_back(strPressure);
 		ui->textEdit_info->append(QStringLiteral("第%1个水珠出现时间：").arg(m_dropNum + i + 1) + strTime);
 		ui->textEdit_info->append(QStringLiteral("当前压力值为：") + strPressure + QString("\n"));
 	}
@@ -1206,25 +1254,27 @@ void Widget::GetDropNum()
 }
 
 /*
-* 参数：
+* 参数：s-文件名
 * 返回：
 * 功能：保存最后一帧图像
 */
-void Widget::SaveLastImage()
+void Widget::SaveLastImage(const QString &s)
 {
+	QString path = "./report/last" + s + ".jpg";
 	QPixmap pic(*ui->label_video->pixmap());
-	pic.save("./report/last.bmp");
+	pic.save(path);
 }
 
 
 /*
-* 参数：
+* 参数：s-文件名
 * 返回：
 * 功能：保存压力曲线
 */
-void Widget::SavePressureCurve()
+void Widget::SavePressureCurve(const QString &s)
 {
-	m_curveRenderer.renderDocument(ui->qwtPlot, "./report/curve.bmp", QSizeF(150, 75));
+	QString path = "./report/curve" + s + ".jpg";
+	m_curveRenderer.renderDocument(ui->qwtPlot, path, QSizeF(180, 90));
 }
 
 /*
@@ -1235,9 +1285,10 @@ void Widget::SavePressureCurve()
 void Widget::GenTestReport(void)
 {
 	STRUCT_Report report;
+	QString testDate = QDateTime::currentDateTime().toString("yyyy-MM-dd-hh-mm-ss");
 
-	SaveLastImage();
-	SavePressureCurve();
+	SaveLastImage(testDate);
+	SavePressureCurve(testDate);
 	ui->textEdit_report->clear();
 
 	QString htmlStr = QStringLiteral("<p align = \"center\"><font size = \"6\">耐水压成像测试系统</font></p>");
@@ -1247,7 +1298,7 @@ void Widget::GenTestReport(void)
 	report.methodPlan = m_methodParam.plan;
 	report.endMode = m_testState;
 	report.userName = m_account.userName;
-	report.fileName = "";
+	report.fileName = testDate;
 	report.rate = m_methodParam.rate;
 	report.timing = m_methodParam.timing;
 	report.pressure = m_methodParam.pressure;
@@ -1353,7 +1404,7 @@ void Widget::GenTestReport(void)
 		for (int i = 0; i < n; i++)
 		{
 			htmlStr += QStringLiteral("<p>检测到第%1滴水珠的时间为：%2</p>").arg(i + 1).arg(m_listAppearTime[i]);
-			htmlStr += QStringLiteral("<p>检测到第%1滴水珠的压力值为：%2</p>").arg(i + 1).arg(m_listApperPressure[i]);
+			htmlStr += QStringLiteral("<p>检测到第%1滴水珠的压力值为：%2</p>").arg(i + 1).arg(m_listAppearPressure[i]);
 		}
 	}
 	else
@@ -1365,23 +1416,176 @@ void Widget::GenTestReport(void)
 	QString imgPath;
 	if (EndAuto == m_testState)
 	{
-		imgPath = QString("<p align = \"center\"><img src=\"%1\"/></p>").arg(QString("./report/report.bmp"));
+		imgPath = "./report/report" + testDate + ".jpg";
+		QPixmap pic("./report/report.jpg");
+		pic.save(imgPath);
+		imgPath = QString("<p align = \"center\"><img src=\"%1\"/></p>").arg(QString("./report/report.jpg"));
 	}
 	else
 	{
-		imgPath = QString("<p align = \"center\"><img src=\"%1\"/></p>").arg(QString("./report/last.bmp"));
+		imgPath = "./report/last" + testDate + ".jpg";
+		imgPath = QString("<p align = \"center\"><img src=\"%1\"/></p>").arg(imgPath);
+	}
+	htmlStr += QStringLiteral("<p> </p> <p align = \"center\"><b>检测结果截图</b></p>");
+	htmlStr += imgPath;
+	htmlStr += QStringLiteral("<p> </p> <p align = \"center\"><b>压力曲线</b></p>");
+	imgPath = "./report/curve" + testDate + ".jpg";
+	htmlStr += QString("<p align = \"center\"><img src=\"%1\"/></p>").arg(imgPath);
+
+	ui->textEdit_report->insertHtml(htmlStr);
+
+	if (m_listAppearTime.size() > 0)
+	{
+		report.decTime = m_listAppearTime.join(",");
+		report.decPressure = m_listAppearPressure.join(",");
+	}
+	else
+	{
+		report.decTime = "";
+		report.decPressure = "";
+	}
+
+	if (!m_pTestResult->AddReport(report))
+	{
+		ui->label_testInterfaceMessage->setText(QStringLiteral("向数据库写入试验报告错误！"));
+	}
+}
+
+
+/*
+* 参数：
+* 返回：
+* 功能：生成测试报告
+*/
+void Widget::GenTestReport(const STRUCT_Report &report)
+{
+	QString htmlStr = QStringLiteral("<p align = \"center\"><font size = \"6\">耐水压成像测试系统</font></p>");
+	htmlStr += QStringLiteral("<p align = \"center\"><font size = \"6\">测试报告</font></p> <p> </p> <p> </p>");
+
+	htmlStr += QStringLiteral("<p><font size = \"4\"><b>测试方法与参数:</b></font></p>");
+	htmlStr += QStringLiteral("<p>方法名称：%1</p>").arg(report.methodName);
+	htmlStr += QStringLiteral("<p>应用标准：%1</p>").arg(report.standard);
+
+	QString unit;
+	switch (report.unit)
+	{
+	case 0:
+		unit = QStringLiteral("Pa(帕)");
+		break;
+	case 1:
+		unit = QStringLiteral("kPa(千帕)");
+		break;
+	case 2:
+		unit = QStringLiteral("mBar(毫巴)");
+		break;
+		unit = QStringLiteral("mmH2O(毫米水柱)");
+	case 3:
+		break;
+	default:
+		break;
+	}
+
+	switch (report.methodPlan)
+	{
+	case 0:
+		htmlStr += QStringLiteral("<p>测试方法：持续增压</p>");
+		htmlStr += QStringLiteral("<p>持续增压速率：%1/分钟</p>").arg(QString::number(report.rate) + unit);
+		break;
+	case 1:
+		htmlStr += QStringLiteral("<p>测试方法：定时计压</p>");
+		htmlStr += QStringLiteral("<p>定时计压速率：%1/分钟</p>").arg(QString::number(report.rate) + unit);
+		htmlStr += QStringLiteral("<p>定时计压定时时间：%1分钟</p>").arg(QString::number(report.timing));
+		break;
+	case 2:
+		htmlStr += QStringLiteral("<p>测试方法：定时定压</p>");
+		htmlStr += QStringLiteral("<p>定时定压速率：%1/分钟</p>").arg(QString::number(report.rate) + unit);
+		htmlStr += QStringLiteral("<p>定时定压目标压强：%1</p>").arg(QString::number(report.pressure) + unit);
+		htmlStr += QStringLiteral("<p>定时定压定时时间：%1分钟</p>").arg(QString::number(report.timing));
+		break;
+	case 3:
+		htmlStr += QStringLiteral("<p>测试方法：绕曲松驰</p>");
+		htmlStr += QStringLiteral("<p>绕曲松驰水速率：%1/分钟</p>").arg(QString::number(report.rate) + unit);
+		htmlStr += QStringLiteral("<p>绕曲松驰目标压强：%1</p>").arg(QString::number(report.pressure) + unit);
+		htmlStr += QStringLiteral("<p>绕曲松驰松绕周期：%1次</p>").arg(QString::number(report.cycle));
+		htmlStr += QStringLiteral("<p>绕曲松驰水压保持时间：%1分钟</p>").arg(QString::number(report.holdingTime));
+		break;
+	case 4:
+		htmlStr += QStringLiteral("<p>测试方法：渗水漏水</p>");
+		htmlStr += QStringLiteral("<p>渗水漏水速率：%1/分钟</p>").arg(QString::number(report.rate) + unit);
+		htmlStr += QStringLiteral("<p>渗水漏水目标压强：%1</p>").arg(QString::number(report.pressure) + unit);
+		htmlStr += QStringLiteral("<p>渗水漏水定时时间：%1分钟</p>").arg(QString::number(report.timing));
+		break;
+	default:
+		break;
+	}
+	htmlStr += QStringLiteral("<p>描述：%1</p>").arg(report.description);
+	htmlStr += QStringLiteral("<p>   </p><p>    </p><p><b>报告生成时间：</b>%1</p>").arg(report.testDate);
+
+
+	QString strEndType;
+
+	switch (report.endMode)
+	{
+	case EndAuto:
+		strEndType = QStringLiteral("检测到水珠自动结束");
+		break;
+	case EndByDevice:
+		strEndType = QStringLiteral("在设备上手动结束");
+		break;
+	case EndBySoftware:
+		strEndType = QStringLiteral("在软件上手动结束");
+		break;
+	case EndBurst:
+		strEndType = QStringLiteral("布匹涨破结束");
+		break;
+	case EndTimeOut:
+		strEndType = QStringLiteral("定时时间到结束");
+		break;
+	case EndPressureOverRange:
+		strEndType = QStringLiteral("压力超量程结束");
+		break;
+	default:
+		break;
+	}
+	htmlStr += QStringLiteral("<p><b>测试结束方式：</b>%1</p>").arg(strEndType);
+
+	
+	htmlStr += QStringLiteral("<p><b>布匹上的水珠检测情况：</b></p>");
+
+	if (report.decTime.length() > 1)
+	{
+		QStringList listAppearTime = report.decTime.split(",");
+		QStringList listAppearPressure = report.decPressure.split(",");
+		int n = listAppearTime.size();
+
+		for (int i = 0; i < n; i++)
+		{
+			htmlStr += QStringLiteral("<p>检测到第%1滴水珠的时间为：%2</p>").arg(i + 1).arg(listAppearTime[i]);
+			htmlStr += QStringLiteral("<p>检测到第%1滴水珠的压力值为：%2</p>").arg(i + 1).arg(listAppearPressure[i]);
+		}
+	}
+	else
+	{
+		htmlStr += QStringLiteral("<p>未检测到布面上出现水珠！</p>");
+	}
+
+	// 获取保存的实验结果图片
+	QString imgPath;
+	if (EndAuto == m_testState)
+	{
+		imgPath = QString("<p align = \"center\"><img src=\"%1\"/></p>").arg(QString("./report/report") + report.fileName);
+	}
+	else
+	{
+		imgPath = QString("<p align = \"center\"><img src=\"%1\"/></p>").arg(QString("./report/last") + report.fileName);
 	}
 
 	htmlStr += QStringLiteral("<p> </p> <p align = \"center\"><b>检测结果截图</b></p>");
 	htmlStr += imgPath;
 	htmlStr += QStringLiteral("<p> </p> <p align = \"center\"><b>压力曲线</b></p>");
-	htmlStr += QString("<p align = \"center\"><img src=\"%1\"/></p>").arg(QString("./report/curve.bmp"));
+	htmlStr += QString("<p align = \"center\"><img src=\"%1\"/></p>").arg(QString("./report/curve") + report.fileName);
 
 	ui->textEdit_report->insertHtml(htmlStr);
-	if (!m_pTestResult->AddReport(report))
-	{
-		ui->label_testInterfaceMessage->setText(QStringLiteral("向数据库写入试验报告错误！"));
-	}
 }
 
 /*
@@ -1413,10 +1617,11 @@ void Widget::StartTest()
 {
 	m_testState = Start;
 	m_listAppearTime.clear();
-	m_listApperPressure.clear();
+	m_listAppearPressure.clear();
 	m_time = QTime(0, 0, 0);
 	ui->lcdNumber_time->display(m_time.toString("hh:mm:ss"));
 	ui->lcdNumber_pressure->display(QString::number(0));
+	InitCurve();
 	ResetCurve();
 	m_pCom->ResetHandshakeState();
 	m_pImgProc->InitCalc();
@@ -1427,16 +1632,17 @@ void Widget::StartTest()
 	SetDeviceOprateEnabled(StartStop | PauseConti);
 	ui->comboBox_selMethod->setEnabled(false);
 	ui->comboBox_pressureRange->setEnabled(false);
+	ui->pushButton_playback->setEnabled(false);
 	ui->textEdit_report->clear();
 
 	// 保存视频
-	QFile file("./report/record.avi");
+	QFile file("./video/record.avi");
 	if (file.exists())
 	{
 		file.remove();
 	}
 
-	m_pVideoWriter = new VideoWriter("./report/record.avi", CV_FOURCC('M', 'J', 'P', 'G'), 5.0, Size(ui->label_video->width(), ui->label_video->height()), false);
+	m_pVideoWriter = new VideoWriter("./video/record.avi", CV_FOURCC('M', 'J', 'P', 'G'), 5.0, Size(ui->label_video->width(), ui->label_video->height()), false);
 	//m_pVideoWriter = new VideoWriter("./report/record.avi", -1, 5.0, Size(ui->label_video->width(), ui->label_video->height()), false);
 }
 
@@ -1477,6 +1683,7 @@ void Widget::StopTest()
 	SetDeviceOprateEnabled(ConnectDevice | WaterIn | WaterOff | StartStop | PauseConti | Camera);
 	ui->comboBox_selMethod->setEnabled(true);
 	ui->comboBox_pressureRange->setEnabled(true);
+	ui->pushButton_playback->setEnabled(true);
 
 	if (m_pVideoWriter)
 	{
@@ -1612,29 +1819,29 @@ void Widget::SetDeviceOprateEnabled(quint8 state)
 */
 void Widget::SetAdvanceSettingEnabled(bool flag)
 {
-	if (flag)
+	if (!flag)
 	{
-		ui->lineEdit_dropRec->setReadOnly(false);
-		ui->lineEdit_flowInTime->setReadOnly(false);
-		ui->lineEdit_dropArea->setReadOnly(false);
-		ui->lineEdit_sensitivity->setReadOnly(false);
-		ui->lineEdit_ignoreWidth->setReadOnly(false);
-		ui->comboBox_pressureRange->setEnabled(true);
-		ui->lineEdit_centerX->setReadOnly(false);
-		ui->lineEdit_centerY->setReadOnly(false);
-		ui->lineEdit_r->setReadOnly(false);
+		ui->lineEdit_dropRec->setEnabled(false);
+		ui->lineEdit_flowInTime->setEnabled(false);
+		ui->lineEdit_dropArea->setEnabled(false);
+		ui->lineEdit_sensitivity->setEnabled(false);
+		ui->lineEdit_ignoreWidth->setEnabled(false);
+		ui->comboBox_pressureRange->setEnabled(false);
+		ui->lineEdit_centerX->setEnabled(false);
+		ui->lineEdit_centerY->setEnabled(false);
+		ui->lineEdit_r->setEnabled(false);
 	}
 	else
 	{
-		ui->lineEdit_dropRec->setReadOnly(true);
-		ui->lineEdit_flowInTime->setReadOnly(true);
-		ui->lineEdit_dropArea->setReadOnly(true);
-		ui->lineEdit_sensitivity->setReadOnly(true);
-		ui->lineEdit_ignoreWidth->setReadOnly(true);
-		ui->comboBox_pressureRange->setEnabled(false);
-		ui->lineEdit_centerX->setReadOnly(true);
-		ui->lineEdit_centerY->setReadOnly(true);
-		ui->lineEdit_r->setReadOnly(true);
+		ui->lineEdit_dropRec->setEnabled(true);
+		ui->lineEdit_flowInTime->setEnabled(true);
+		ui->lineEdit_dropArea->setEnabled(true);
+		ui->lineEdit_sensitivity->setEnabled(true);
+		ui->lineEdit_ignoreWidth->setEnabled(true);
+		ui->comboBox_pressureRange->setEnabled(true);
+		ui->lineEdit_centerX->setEnabled(true);
+		ui->lineEdit_centerY->setEnabled(true);
+		ui->lineEdit_r->setEnabled(true);
 	}
 }
 
@@ -1864,6 +2071,28 @@ void Widget::OnCombSelMethodChanged(int index)
 	bool state = false;
 
 	state = m_pMethodParam->GetMethodInfo(index - 1,  m_methodParam);
+	if (m_methodParam.unit != Pa)
+	{
+		m_methodParam.rate = ConvertPressureUnit(m_methodParam.rate, m_methodParam.unit, Pa);
+		m_methodParam.pressure = ConvertPressureUnit(m_methodParam.pressure, m_methodParam.unit, Pa);
+	}
+	switch (m_methodParam.unit)
+	{
+	case Pa:
+		ui->label_pressure->setText("Pa");
+		break;
+	case kPa:
+		ui->label_pressure->setText("KPa");
+		break;
+	case mBar:
+		ui->label_pressure->setText("mBar");
+		break;
+	case mmH2O:
+		ui->label_pressure->setText("mmH2O");
+		break;
+	default:
+		break;
+	}
 
 	if (!state)
 	{
@@ -2135,6 +2364,10 @@ void Widget::OnBtnStartTestClicked()
 		//m_testState = StartBySoftware;
 		m_btnState = StartBySoftware;
 		m_txData = TxStartTest;
+
+		// 禁止其他操作
+		SetDeviceOprateEnabled(0);
+		ui->comboBox_selMethod->setEnabled(false);
 	}
 	else if ((Start == m_testState) || (Pause == m_testState))
 	{
@@ -2143,11 +2376,11 @@ void Widget::OnBtnStartTestClicked()
 		m_btnState = EndBySoftware;
 		m_txData = TxStopTest;
 		//m_testState = EndBySoftware;
-	}
 
-	// 禁止其他操作
-	SetDeviceOprateEnabled(0);
-	ui->comboBox_selMethod->setEnabled(false);
+		// 禁止其他操作
+		SetDeviceOprateEnabled(0);
+		ui->comboBox_selMethod->setEnabled(false);
+	}
 }
 
 
@@ -2161,16 +2394,18 @@ void Widget::OnBtnPauseTestClicked()
 	if (Start == m_testState)
 	{
 		// 测试开始状态，暂停测试
-		//m_txData = TxPauseTest;
+		m_txData = TxPauseTest;
 		//m_testState = PauseBySoftware;
 		m_btnState = PauseBySoftware;
+		SetDeviceOprateEnabled(0);
 	}
 	else if (Pause == m_testState)
 	{
 		// 测试暂停状态，测试继续进行
-		//m_txData = TxStartTest;
+		m_txData = TxStartTest;
 		//m_testState = ContinueBySoftware;
 		m_btnState = ContinueBySoftware;
+		SetDeviceOprateEnabled(0);
 	}
 }
 
@@ -2264,11 +2499,7 @@ void Widget::OnHandShakeStateReceived(STRUCT_HandShake *handshake)
 			ui->pushButton_connectCom->setText(QStringLiteral("断开"));
 			m_testState = Connected;
 			SetDeviceOprateEnabled(ConnectDevice | WaterIn | WaterOff | StartStop | PauseConti | Camera);
-		}
-		//else
-		//{
-		//	ui->textEdit_info->append(QStringLiteral("读取设备实时数据与状态成功！"));
-		//}	
+		}	
 		break;
 	case ReadStateError:
 		if (Init == m_testState)
@@ -2325,6 +2556,7 @@ void Widget::OnHandShakeStateReceived(STRUCT_HandShake *handshake)
 				ui->textEdit_info->append(QStringLiteral("试验暂停。。。"));
 				ui->pushButton_pauseConti->setText(QStringLiteral("继续"));
 				ui->label_testState->setText(QStringLiteral("试验暂停"));
+				SetDeviceOprateEnabled(StartStop | PauseConti);
 			}
 			else
 			{
@@ -2340,6 +2572,7 @@ void Widget::OnHandShakeStateReceived(STRUCT_HandShake *handshake)
 					ui->textEdit_info->append(QStringLiteral("试验继续。。。"));
 					ui->pushButton_pauseConti->setText(QStringLiteral("暂停"));
 					ui->label_testState->setText(QStringLiteral("正在试验"));
+					SetDeviceOprateEnabled(StartStop | PauseConti);
 				}
 				m_btnState = Init;				
 			}
@@ -2583,16 +2816,24 @@ void Widget::OnHandShakeStateReceived(STRUCT_HandShake *handshake)
 		switch (handshake->cmd)
 		{
 		case 0x01:	// 压力超量程
+			m_testState = EndPressureOverRange;
+			StopTest();
 			break;
 		case 0x02:	// 涨破
+			m_testState = EndBurst;
+			StopTest();
 			break;
 		case 0x03:	// 定时时间到
+			m_testState = EndTimeOut;
+			StopTest();
 			break;
 		case 0x04:	// 设备就绪
 			break;
 		case 0x05:	// 设备上按测试按钮，通知上位机测试开始
 			break;
 		case 0x06:	// 设备上按测试按钮，通知上位机测试结束
+			m_testState = EndByDevice;
+			StopTest();
 			break;
 		default:
 			break;
@@ -2623,7 +2864,7 @@ void Widget::OnBtnSaveCurveClicked()
 void Widget::OnBtnPlayBackClicked()
 {
 	QString path = QDir::currentPath();
-	path += "/report";
+	path += "/video/record.avi";
 	//QProcess::startDetached("explorer ./report");
 	QDesktopServices::openUrl(QUrl(path, QUrl::TolerantMode));
 }
@@ -3122,14 +3363,14 @@ void Widget::OnCombPressureUnitChanged(int index)
 	if (!strP1.isEmpty())
 	{
 		double pressure1 = strP1.toDouble();
-		ConvertPressureUnit(pressure1, static_cast<ENUM_PressureUnit>(m_currentUnitIndex), static_cast<ENUM_PressureUnit>(index));
+		pressure1 = ConvertPressureUnit(pressure1, static_cast<ENUM_PressureUnit>(m_currentUnitIndex), static_cast<ENUM_PressureUnit>(index));
 		ui->lineEdit_pressureRate->setText(QString::number(pressure1));
 	}
 
 	if (!strP2.isEmpty())
 	{
 		double pressure2 = strP2.toDouble();
-		ConvertPressureUnit(pressure2, static_cast<ENUM_PressureUnit>(m_currentUnitIndex), static_cast<ENUM_PressureUnit>(index));
+		pressure2 = ConvertPressureUnit(pressure2, static_cast<ENUM_PressureUnit>(m_currentUnitIndex), static_cast<ENUM_PressureUnit>(index));
 		ui->lineEdit_targetPressure->setText(QString::number(pressure2));
 	}
 
@@ -3158,7 +3399,8 @@ void Widget::OnBtnSaveMethodClicked()
 	method.plan = index;
 	method.standard = ui->lineEdit_standard->text();
 	method.description = ui->textEdit_discription->toPlainText();
-	method.unit = ui->comboBox_unit->currentIndex();
+	method.unit = static_cast<ENUM_PressureUnit>(ui->comboBox_unit->currentIndex());
+
 
 	method.rate = ui->lineEdit_pressureRate->text().toDouble();
 	method.timing = ui->lineEdit_setTime->text().toDouble();
@@ -3393,6 +3635,8 @@ void Widget::OnBtnModifyMethodClicked()
 */
 void Widget::OnBtnQueryClicked()
 {
+	disconnect(ui->pushButton_reportQuery, &QPushButton::clicked, this, &Widget::OnBtnQueryClicked);
+
 	int methodPlan = -1;
 	int index = -1;
 	QString methodName = "";
@@ -3435,6 +3679,8 @@ void Widget::OnBtnQueryClicked()
 	{
 		UpdateReportQueryView(m_reportList);
 	}
+
+	connect(ui->pushButton_reportQuery, &QPushButton::clicked, this, &Widget::OnBtnQueryClicked);
 }
 
 
@@ -3455,6 +3701,7 @@ void Widget::OnBtnDeleteReportListClicked()
 	{
 		i = selection.row();
 
+		// foreach循环时，同一行又多列会循环多次。
 		if (j == i)
 		{
 			continue;
@@ -3464,7 +3711,7 @@ void Widget::OnBtnDeleteReportListClicked()
 			j = i;
 		}
 
-		id = m_pReportQueryModel->item(i, 0)->text().toInt();
+		id = m_reportList[i].id;
 
 		state = m_pTestResult->DeleteReport(id);
 
@@ -3475,7 +3722,7 @@ void Widget::OnBtnDeleteReportListClicked()
 		}
 		else
 		{
-			DeleteReportInList(id);
+			DeleteReportInList(i);
 		}
 	}
 
@@ -3485,6 +3732,50 @@ void Widget::OnBtnDeleteReportListClicked()
 	}
 }
 
+
+/*
+* 参数：
+* 返回：
+* 功能：选中历史试验报告中的第一项，生成试验报告
+*/
+void Widget::OnBtnGenReportClicked()
+{
+	//QModelIndexList selectedList = ui->tableView_reportQuery->selectionModel()->selectedIndexes();
+	//int i = 0, j = -1;
+	//int id = -1;
+	//bool state = false;
+	//QModelIndex selection;
+
+	//foreach(selection, selectedList)
+	//{
+	//	i = selection.row();
+
+	//	// foreach循环时，同一行又多列会循环多次。
+	//	if (j == i)
+	//	{
+	//		continue;
+	//	}
+	//	else
+	//	{
+	//		j = i;
+	//	}
+
+	//	id = m_pReportQueryModel->item(i, 0)->text().toInt();
+
+	//	STRUCT_Report report;
+	//	state = m_pTestResult->GetReport(id, report);
+
+	//	if (!state)
+	//	{
+	//		ui->label_queryMessage->setText(m_pTestResult->GetMessageList()[0]);
+	//		break;
+	//	}
+	//	else
+	//	{
+	//		DeleteReportInList(id);
+	//	}
+	//}
+}
 
 /*
 * 参数：
@@ -3514,24 +3805,36 @@ void Widget::OnTimer()
 		m_testState = End;
 	}
 
-	if ((Start == m_testState) &&  (tick >= 5))
+	if (m_testState > Init)
 	{
-		tick = 0;
-		// 显示测试时间与设备当前压力值
-		m_time = m_time.addSecs(1);
-		ui->lcdNumber_time->display(m_time.toString("hh:mm:ss"));
-		ui->lcdNumber_pressure->display(m_pCom->GetCurrentPressure());
-
-		// 获取检测到的水珠数
-		GetDropNum();
-
-		if (m_txData == TxNoData)
+		if (tick >= 5)
 		{
-			m_txData = TxReadDeviceState;
-		}		
+			tick = 0;
+			if (m_txData == TxNoData)
+			{
+				m_txData = TxReadDeviceState;
+			}
 
-		DrawCurve();
+			double pressure = static_cast<double>(m_pCom->GetCurrentPressure());
+			if (m_methodParam.unit != Pa)
+			{
+				pressure = ConvertPressureUnit(pressure, Pa, m_methodParam.unit);
+			}
+			ui->lcdNumber_pressure->display(pressure);
+
+			if (Start == m_testState)
+			{
+				// 显示测试时间与设备当前压力值
+				m_time = m_time.addSecs(1);
+				ui->lcdNumber_time->display(m_time.toString("hh:mm:ss"));
+
+				// 获取检测到的水珠数
+				GetDropNum();
+				DrawCurve();
+			}
+		}
 	}
+	
 
 	if (m_txData != TxNoData)
 	{

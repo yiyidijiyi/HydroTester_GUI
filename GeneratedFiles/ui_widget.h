@@ -79,15 +79,14 @@ public:
     QPushButton *pushButton_saveCurve;
     QWidget *tab_7;
     QTextEdit *textEdit_report;
+    QPushButton *pushButton_print;
     QFrame *frame_4;
     QPushButton *pushButton_video;
     QFrame *line_24;
     QFrame *line_25;
     QFrame *line_26;
-    QFrame *line_27;
     QPushButton *pushButton_curve;
     QPushButton *pushButton_report;
-    QPushButton *pushButton_print;
     QLabel *label_testInterfaceMessage;
     QTextEdit *textEdit_methodInfo;
     QWidget *tab_2;
@@ -280,7 +279,7 @@ public:
         label_testState->setFont(font);
         label_pressure = new QLabel(Widget);
         label_pressure->setObjectName(QStringLiteral("label_pressure"));
-        label_pressure->setGeometry(QRect(490, 100, 61, 20));
+        label_pressure->setGeometry(QRect(490, 100, 65, 20));
         label_pressure->setMinimumSize(QSize(0, 20));
         label_pressure->setFont(font);
         label_holdingTime = new QLabel(Widget);
@@ -451,7 +450,11 @@ public:
         tab_7->setObjectName(QStringLiteral("tab_7"));
         textEdit_report = new QTextEdit(tab_7);
         textEdit_report->setObjectName(QStringLiteral("textEdit_report"));
-        textEdit_report->setGeometry(QRect(20, 10, 865, 380));
+        textEdit_report->setGeometry(QRect(20, 38, 865, 360));
+        pushButton_print = new QPushButton(tab_7);
+        pushButton_print->setObjectName(QStringLiteral("pushButton_print"));
+        pushButton_print->setGeometry(QRect(830, 5, 56, 26));
+        pushButton_print->setFlat(true);
         tabWidget_testInterface->addTab(tab_7, QString());
         frame_4 = new QFrame(tab);
         frame_4->setObjectName(QStringLiteral("frame_4"));
@@ -477,11 +480,6 @@ public:
         line_26->setGeometry(QRect(175, 3, 3, 20));
         line_26->setFrameShape(QFrame::VLine);
         line_26->setFrameShadow(QFrame::Sunken);
-        line_27 = new QFrame(frame_4);
-        line_27->setObjectName(QStringLiteral("line_27"));
-        line_27->setGeometry(QRect(234, 3, 3, 20));
-        line_27->setFrameShape(QFrame::VLine);
-        line_27->setFrameShadow(QFrame::Sunken);
         pushButton_curve = new QPushButton(frame_4);
         pushButton_curve->setObjectName(QStringLiteral("pushButton_curve"));
         pushButton_curve->setGeometry(QRect(59, 0, 56, 26));
@@ -490,10 +488,6 @@ public:
         pushButton_report->setObjectName(QStringLiteral("pushButton_report"));
         pushButton_report->setGeometry(QRect(118, 0, 56, 26));
         pushButton_report->setFlat(true);
-        pushButton_print = new QPushButton(frame_4);
-        pushButton_print->setObjectName(QStringLiteral("pushButton_print"));
-        pushButton_print->setGeometry(QRect(177, 0, 56, 26));
-        pushButton_print->setFlat(true);
         label_testInterfaceMessage = new QLabel(tab);
         label_testInterfaceMessage->setObjectName(QStringLiteral("label_testInterfaceMessage"));
         label_testInterfaceMessage->setGeometry(QRect(120, 5, 431, 30));
@@ -1123,8 +1117,8 @@ public:
 
         retranslateUi(Widget);
 
-        tabWidget->setCurrentIndex(0);
-        tabWidget_testInterface->setCurrentIndex(0);
+        tabWidget->setCurrentIndex(1);
+        tabWidget_testInterface->setCurrentIndex(2);
 
 
         QMetaObject::connectSlotsByName(Widget);
@@ -1142,7 +1136,7 @@ public:
         label_4->setText(QString());
         label_5->setText(QString());
         label_testState->setText(QApplication::translate("Widget", "\350\256\276\345\244\207\346\234\252\350\277\236\346\216\245", 0));
-        label_pressure->setText(QApplication::translate("Widget", "Pa\357\274\210\345\270\225\357\274\211", 0));
+        label_pressure->setText(QApplication::translate("Widget", "Pa", 0));
         label_holdingTime->setText(QString());
         pushButton_testInterface->setText(QString());
         pushButton_testMethod->setText(QString());
@@ -1171,11 +1165,11 @@ public:
         tabWidget_testInterface->setTabText(tabWidget_testInterface->indexOf(tab_10), QApplication::translate("Widget", "\345\233\276\350\241\250", 0));
         pushButton_saveCurve->setText(QString());
         tabWidget_testInterface->setTabText(tabWidget_testInterface->indexOf(tab_6), QApplication::translate("Widget", "\346\233\262\347\272\277", 0));
+        pushButton_print->setText(QApplication::translate("Widget", "\346\211\223\345\215\260", 0));
         tabWidget_testInterface->setTabText(tabWidget_testInterface->indexOf(tab_7), QApplication::translate("Widget", "\346\212\245\345\221\212", 0));
         pushButton_video->setText(QApplication::translate("Widget", "\345\233\276\350\241\250", 0));
         pushButton_curve->setText(QApplication::translate("Widget", "\346\233\262\347\272\277", 0));
         pushButton_report->setText(QApplication::translate("Widget", "\346\212\245\345\221\212", 0));
-        pushButton_print->setText(QApplication::translate("Widget", "\346\211\223\345\215\260", 0));
         label_testInterfaceMessage->setText(QString());
         tabWidget->setTabText(tabWidget->indexOf(tab), QApplication::translate("Widget", "Tab 1", 0));
         label_methodList->setText(QApplication::translate("Widget", "\346\243\200\346\265\213\346\226\271\346\263\225\345\210\227\350\241\250", 0));

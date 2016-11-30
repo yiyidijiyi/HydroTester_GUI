@@ -140,7 +140,7 @@ bool MethodParam::GetMethodInfo(int index, STRUCT_MethodParam &method)
 				method.pressure		= query.value(6).toDouble();
 				method.cycle				= query.value(7).toInt();
 				method.holdingTime	= query.value(8).toDouble();
-				method.unit = query.value(9).toInt();
+				method.unit = static_cast<ENUM_PressureUnit>(query.value(9).toInt());
 				method.description		= query.value(10).toString();
 				method.lastTime		= query.value(11).toString();
 			}

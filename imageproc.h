@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-10-31
-* 最后修改：2016-11-01
+* 最后修改：2016-11-29
 * 作      者：syf
 * 描      述：
 */
@@ -49,7 +49,7 @@ public slots:
 signals:
 	void ImageProcessed();
 private:
-	bool  m_bClacFlag;
+	bool  m_bCalcFlag;
 
 	MerCamera *m_pCamera;
 

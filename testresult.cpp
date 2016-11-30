@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-14
-* 最后修改：2016-11-11
+* 最后修改：2016-11-30
 * 作      者：syf
 * 描      述：
 */
@@ -116,9 +116,11 @@ bool TestResult::GetReportList(QList<STRUCT_Report> &reportList, const QDateTime
 				report.pressure = query.value(9).toDouble();
 				report.cycle = query.value(10).toInt();
 				report.holdingTime = query.value(11).toDouble();
-				report.unit = query.value(12).toInt();
+				report.unit = static_cast<ENUM_PressureUnit>(query.value(12).toInt());
 				report.standard = query.value(13).toString();
 				report.description = query.value(14).toString();
+				report.decTime = query.value(15).toString();
+				report.decPressure = query.value(16).toString();
 				reportList.append(report);
 			}
 
@@ -178,9 +180,11 @@ bool TestResult::GetReport(int id, STRUCT_Report &report)
 				report.pressure = query.value(9).toDouble();
 				report.cycle = query.value(10).toInt();
 				report.holdingTime = query.value(11).toDouble();
-				report.unit = query.value(12).toInt();
+				report.unit = static_cast<ENUM_PressureUnit>(query.value(12).toInt());
 				report.standard = query.value(13).toString();
 				report.description = query.value(14).toString();
+				report.decTime = query.value(15).toString();
+				report.decPressure = query.value(16).toString();
 			}
 
 			state = true;
@@ -258,8 +262,8 @@ bool TestResult::AddReport(const STRUCT_Report &report)
 
 	if (db.open())
 	{
-		QString strQuery = "INSERT INTO   report (methodName, methodPlan, testDate,endMode, userName, fileName, rate, timing, pressure, cycle, holdingTime, unit,  standard, description) \
-						   											VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+		QString strQuery = "INSERT INTO   report (methodName, methodPlan, testDate,endMode, userName, fileName, rate, timing, pressure, cycle, holdingTime, unit,  standard, description, decTime, decPressure) \
+						   											VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		QSqlQuery query(strQuery, db);
 		query.bindValue(0, report.methodName);
 		query.bindValue(1, report.methodPlan);
@@ -275,6 +279,8 @@ bool TestResult::AddReport(const STRUCT_Report &report)
 		query.bindValue(11, report.unit);
 		query.bindValue(12, report.standard);
 		query.bindValue(13, report.description);
+		query.bindValue(14, report.decTime);
+		query.bindValue(15, report.decPressure);
 
 
 		if (query.exec())

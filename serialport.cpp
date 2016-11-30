@@ -194,14 +194,14 @@ void SerialPort::ProtocolDecode(const QByteArray &data, int index)
 				m_handshake.state = SetParamOk;
 			}
 			m_handshakeState = Idle;
+			
 			emit HandshakeState(&m_handshake);
 		}
 		else if (WaitForReadParamAck == m_handshakeState)
 		{
-
-		}
-		
-		m_handshakeState = Idle;
+			// 暂时没有参数读取的操作
+			m_handshakeState = Idle;
+		}	
 		break;
 	case 1:	// 实时数据及状态读取
 		if (WaitForReadStateAck == m_handshakeState)
@@ -265,8 +265,6 @@ void SerialPort::ProtocolDecode(const QByteArray &data, int index)
 			m_handshakeState = Idle;
 			emit HandshakeState(&m_handshake);
 		}
-		
-		m_handshakeState = Idle;
 		break;
 	case 2:	// 对设备的操作命令	
 		if (WaitForCmdAck == m_handshakeState)
@@ -281,17 +279,14 @@ void SerialPort::ProtocolDecode(const QByteArray &data, int index)
 				// 命令成功
 				m_handshake.state = CmdOk;
 			}
-
+			m_handshakeState = Idle;
 			emit HandshakeState(&m_handshake);
-		}
-		m_handshakeState = Idle;
-		
+		}	
 		break;
 	case 3:	// 设备主动上报
 		m_handshake.state = DeviceReport;
 		m_handshake.cmd = data[index + 4];
 		emit HandshakeState(&m_handshake);
-		//m_handshakeState = Idle;
 		break;
 	default:
 		break;
@@ -311,7 +306,7 @@ void SerialPort::TxSetParam(STRUCT_MethodParam &method)
 	{
 		m_handshake.state = Busy;
 		m_handshake.cmd = 0x0;
-		emit HandshakeState(&m_handshake);
+		//emit HandshakeState(&m_handshake);
 		return;
 	}
 
@@ -744,15 +739,15 @@ void SerialPort::TxReadState()
 void SerialPort::TxCmd(quint8 cmd, quint8 val1, int val2)
 {
 	// 串口非空闲状态，不发送新数据
-	//if (Idle != m_handshakeState)
-	//{
-	//	m_handshake.state = Busy;
-	//	m_handshake.cmd = 0x0;
+	if (Idle != m_handshakeState)
+	{
+		m_handshake.state = Busy;
+		m_handshake.cmd = 0x0;
 
-	//	emit HandshakeState(m_handshake);
-	//	
-	//	return;
-	//}
+		//emit HandshakeState(&m_handshake);
+		
+		return;
+	}
 
 	QByteArray txData;
 	quint8 checkSum = 0;
@@ -1090,16 +1085,6 @@ void SerialPort::OnTimer()
 		break;
 	}
 }
-
-
-
-/*
-* 参数：
-* 返回：
-* 功能：
-*/
-
-
 
 
 /*

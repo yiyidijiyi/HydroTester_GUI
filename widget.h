@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-02
-* 最后修改：2016-11-18
+* 最后修改：2016-11-30
 * 作      者：syf
 * 描      述：
 */
@@ -145,7 +145,7 @@ private:
 	/*
 	* 压强单位转换
 	*/
-	void ConvertPressureUnit(double &pressure, ENUM_PressureUnit unit0, ENUM_PressureUnit unit1);
+	double ConvertPressureUnit(double pressure, ENUM_PressureUnit unit0, ENUM_PressureUnit unit1);
 
 	/*
 	* 显示测试方法参数信息
@@ -165,9 +165,10 @@ private:
 	/*
 	* 生成、打印报告
 	*/
-	void SaveLastImage();
-	void SavePressureCurve();
+	void SaveLastImage(const QString &s);
+	void SavePressureCurve(const QString &s);
 	void GenTestReport();
+	void GenTestReport(const STRUCT_Report &report);
 	void PrintReport();
 
 	/*
@@ -237,6 +238,7 @@ public slots:
 	*/
 	void OnBtnQueryClicked();
 	void OnBtnDeleteReportListClicked();
+	void OnBtnGenReportClicked();
 
 	/*
 	* 帐号信息操作
@@ -306,7 +308,7 @@ private:
 	ImageProc *m_pImgProc;
 	int m_dropNum;
 	QStringList m_listAppearTime;
-	QStringList m_listApperPressure;
+	QStringList m_listAppearPressure;
 
 	// 相机
 	MerCamera *m_pCamera;

@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-10-31
-* 最后修改：2016-11-01
+* 最后修改：2016-11-29
 * 作      者：syf
 * 描      述：
 */
@@ -14,7 +14,7 @@
 ImageProc::ImageProc(QObject *parent)
 	: QObject(parent)
 	, m_pCamera(NULL)
-	, m_bClacFlag(false)
+	, m_bCalcFlag(false)
 {
 	m_iRoiX = 622;			// 检测区域中心X坐标
 	m_iRoiY = 522;			// 检测区域中心Y坐标
@@ -69,7 +69,7 @@ void ImageProc::Calc(Mat &image)
 
 	image.copyTo(m_matShow);
 
-	if (m_bClacFlag)
+	if (m_bCalcFlag)
 	{
 		int val = 0;
 		int roi_num = 0;
@@ -211,7 +211,8 @@ void ImageProc::Calc(Mat &image)
 			Size dsize = Size(m_matShow.cols / 2, m_matShow.rows / 2);
 			Mat tmpImage;
 			cv::resize(m_matShow, tmpImage, dsize);
-			imwrite("./report/report.bmp", tmpImage);
+			imwrite("./report/report.jpg", tmpImage);
+			m_bCalcFlag = false;
 		}
 	}
 	else
@@ -241,7 +242,7 @@ void ImageProc::InitCalc()
 */
 void ImageProc::StartCalc()
 {
-	m_bClacFlag = true;
+	m_bCalcFlag = true;
 }
 
 
@@ -252,7 +253,7 @@ void ImageProc::StartCalc()
 */
 void ImageProc::StopCalc()
 {
-	m_bClacFlag = false;
+	m_bCalcFlag = false;
 }
 
 
@@ -282,7 +283,7 @@ void ImageProc::SetCamera(MerCamera *pCamera)
 */
 void ImageProc::UpdateParams(STRUCT_AdvanceParams &params)
 {
-	if (!m_bClacFlag)
+	if (!m_bCalcFlag)
 	{
 		m_iRoiX = params.x;			// 检测区域中心X坐标
 		m_iRoiY = params.y;			// 检测区域中心Y坐标

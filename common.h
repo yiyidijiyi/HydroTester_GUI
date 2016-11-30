@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-12
-* 最后修改：2016-11-17
+* 最后修改：2016-11-30
 * 作      者：syf
 * 描      述：
 */
@@ -23,10 +23,10 @@ enum ENUM_AccountType{
 
 // 压强单位
 enum ENUM_PressureUnit{
-	Pa				= 0,
-	kPa			= 1,
-	mBar			= 2,
-	mmH2O	= 3
+	Pa		= 0,
+	kPa,
+	mBar,
+	mmH2O
 };
 
 // 测试方法
@@ -53,7 +53,7 @@ struct STRUCT_MethodParam{
 	double pressure;
 	int cycle;
 	double holdingTime;
-	int unit;
+	ENUM_PressureUnit unit;
 	QString description;
 	QString lastTime;
 	int range;
@@ -73,9 +73,11 @@ struct STRUCT_Report{
 	double pressure;
 	int cycle;
 	double holdingTime;
-	int unit;
+	ENUM_PressureUnit unit;
 	QString description;
 	QString standard;
+	QString decTime;
+	QString decPressure;
 };
 
 // 同设备通信的握手状态
