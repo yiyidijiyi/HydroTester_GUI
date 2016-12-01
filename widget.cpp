@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-02
-* 最后修改：2016-11-30
+* 最后修改：2016-12-01
 * 作      者：syf
 * 描      述：
 */
@@ -256,16 +256,16 @@ Widget::~Widget()
 
 	if (m_pGrid)
 	{
-		//m_pGrid->detach();
-		//delete m_pGrid;
-		//m_pGrid = NULL;
+		m_pGrid->detach();
+		delete m_pGrid;
+		m_pGrid = NULL;
 	}
 
 	if (NULL != m_pCurve)
 	{
-		//m_pCurve->detach();
-		//delete m_pCurve;
-		//m_pCurve = NULL;
+		m_pCurve->detach();
+		delete m_pCurve;
+		m_pCurve = NULL;
 	}
 
 	if (m_pTimer)
@@ -1264,7 +1264,7 @@ void Widget::GetDropNum()
 		// 发送测试停止命令
 		//m_pCom->TxCmd(0x01, 0x0, 0x0);
 		m_txData = TxStopTest;
-		m_testState = EndAuto;
+		//m_testState = EndAuto;
 
 		// 生成测试报告
 		//GenTestReport();
@@ -1421,8 +1421,8 @@ void Widget::GenTestReport(void)
 	{
 		for (int i = 0; i < n; i++)
 		{
-			htmlStr += QStringLiteral("<p>检测到第%1滴水珠的时间为：%2</p>").arg(i + 1).arg(m_listAppearTime[i]);
-			htmlStr += QStringLiteral("<p>检测到第%1滴水珠的压力值为：%2</p>").arg(i + 1).arg(m_listAppearPressure[i]);
+			htmlStr += QStringLiteral("<p>检测到第%1滴水珠的时间为：%2，压力值为：3%。</p>").arg(i + 1).arg(m_listAppearTime[i]).arg(m_listAppearPressure[i]);
+			//htmlStr += QStringLiteral("<p>检测到第%1滴水珠的压力值为：%2</p>").arg(i + 1).arg(m_listAppearPressure[i]);
 		}
 	}
 	else
@@ -1434,7 +1434,7 @@ void Widget::GenTestReport(void)
 	QString imgPath;
 	if (EndAuto == m_testState)
 	{
-		imgPath = "./report/report" + testDate + ".jpg";
+		imgPath = "./report/last" + testDate + ".jpg";
 		QPixmap pic("./report/report.jpg");
 		pic.save(imgPath);
 		imgPath = QString("<p align = \"center\"><img src=\"%1\"/></p>").arg(QString("./report/report.jpg"));
@@ -3740,6 +3740,19 @@ void Widget::OnBtnDeleteReportListClicked()
 		}
 		else
 		{
+			QString fileName1 = "./report/last" + m_reportList[i].fileName + ".jpg";
+			QFile file1(fileName1);
+			if (file1.exists())
+			{
+				file1.remove();
+			}
+
+			QString fileName2 = "./report/curve" + m_reportList[i].fileName + ".jpg";
+			QFile file2(fileName2);
+			if (file2.exists())
+			{
+				file2.remove();
+			}
 			DeleteReportInList(i);
 		}
 	}

@@ -139,8 +139,8 @@ void ReportWindow::GenReport(const STRUCT_Report &report)
 
 		for (int i = 0; i < n; i++)
 		{
-			htmlStr += QStringLiteral("<p>检测到第%1滴水珠的时间为：%2</p>").arg(i + 1).arg(listAppearTime[i]);
-			htmlStr += QStringLiteral("<p>检测到第%1滴水珠的压力值为：%2</p>").arg(i + 1).arg(listAppearPressure[i]);
+			htmlStr += QStringLiteral("<p>检测到第%1滴水珠的时间为：%2，压力值为：%3。</p>").arg(i + 1).arg(listAppearTime[i]).arg(listAppearPressure[i]);
+			//htmlStr += QStringLiteral("<p>检测到第%1滴水珠的压力值为：%2</p>").arg(i + 1).arg(listAppearPressure[i]);
 		}
 	}
 	else
@@ -152,7 +152,7 @@ void ReportWindow::GenReport(const STRUCT_Report &report)
 	QString imgPath;
 	if (EndAuto == report.endMode)
 	{
-		imgPath = QString("<p align = \"center\"><img src=\"%1\"/></p>").arg(QString("./report/report") + report.fileName);
+		imgPath = QString("<p align = \"center\"><img src=\"%1\"/></p>").arg(QString("./report/last") + report.fileName);
 	}
 	else
 	{
