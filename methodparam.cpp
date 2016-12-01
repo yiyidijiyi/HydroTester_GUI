@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-14
-* 最后修改：2016-11-17
+* 最后修改：2016-11-30
 * 作      者：syf
 * 描      述：
 */
@@ -64,7 +64,16 @@ bool MethodParam::GetMethodList(QStringList &methodList)
 	m_methodNameList.clear();
 	m_messageList.clear();
 
-	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+	//QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+	QSqlDatabase db;
+	if (QSqlDatabase::contains("qt_sql_default_connection1"))
+	{
+		db = QSqlDatabase::database("qt_sql_default_connection1");
+	}
+	else
+	{
+		db = QSqlDatabase::addDatabase("QSQLITE", "qt_sql_default_connection1");
+	}
 	db.setDatabaseName("./data/TestMethod.db");
 
 	if (db.open())
@@ -118,7 +127,16 @@ bool MethodParam::GetMethodInfo(int index, STRUCT_MethodParam &method)
 	m_messageList.clear();
 	int id = m_idMap[index];
 
-	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+	//QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+	QSqlDatabase db;
+	if (QSqlDatabase::contains("qt_sql_default_connection1"))
+	{
+		db = QSqlDatabase::database("qt_sql_default_connection1");
+	}
+	else
+	{
+		db = QSqlDatabase::addDatabase("QSQLITE", "qt_sql_default_connection1");
+	}
 	db.setDatabaseName("./data/TestMethod.db");
 
 	if (db.open())
@@ -176,7 +194,16 @@ bool MethodParam::AddMethod(const STRUCT_MethodParam &method)
 	bool state = false;
 	m_messageList.clear();
 
-	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+	//QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+	QSqlDatabase db;
+	if (QSqlDatabase::contains("qt_sql_default_connection1"))
+	{
+		db = QSqlDatabase::database("qt_sql_default_connection1");
+	}
+	else
+	{
+		db = QSqlDatabase::addDatabase("QSQLITE", "qt_sql_default_connection1");
+	}
 	db.setDatabaseName("./data/TestMethod.db");
 
 	if (db.open())
@@ -229,7 +256,16 @@ bool MethodParam::DeleteMethod(int index)
 	m_messageList.clear();
 	int id = m_idMap[index];
 
-	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+	//QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+	QSqlDatabase db;
+	if (QSqlDatabase::contains("qt_sql_default_connection1"))
+	{
+		db = QSqlDatabase::database("qt_sql_default_connection1");
+	}
+	else
+	{
+		db = QSqlDatabase::addDatabase("QSQLITE", "qt_sql_default_connection1");
+	}
 	db.setDatabaseName("./data/TestMethod.db");
 
 	if (db.open())
@@ -272,7 +308,16 @@ bool MethodParam::UpdateMethodParam(int index, const STRUCT_MethodParam &method)
 	m_messageList.clear();
 	int id = m_idMap[index];
 
-	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+	//QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+	QSqlDatabase db;
+	if (QSqlDatabase::contains("qt_sql_default_connection1"))
+	{
+		db = QSqlDatabase::database("qt_sql_default_connection1");
+	}
+	else
+	{
+		db = QSqlDatabase::addDatabase("QSQLITE", "qt_sql_default_connection1");
+	}
 	db.setDatabaseName("./data/TestMethod.db");
 
 	if (db.open())
@@ -326,7 +371,16 @@ bool MethodParam::GetAdvanceParams(int index, STRUCT_AdvanceParams &params)
 	bool state = false;
 	m_messageList.clear();
 
-	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+	//QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+	QSqlDatabase db;
+	if (QSqlDatabase::contains("qt_sql_default_connection1"))
+	{
+		db = QSqlDatabase::database("qt_sql_default_connection1");
+	}
+	else
+	{
+		db = QSqlDatabase::addDatabase("QSQLITE", "qt_sql_default_connection1");
+	}
 	db.setDatabaseName("./data/TestMethod.db");
 
 	if (db.open())
@@ -383,7 +437,16 @@ bool MethodParam::UpdateAdvanceParams(int index, const STRUCT_AdvanceParams &par
 	bool state = false;
 	m_messageList.clear();
 
-	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+	//QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+	QSqlDatabase db;
+	if (QSqlDatabase::contains("qt_sql_default_connection1"))
+	{
+		db = QSqlDatabase::database("qt_sql_default_connection1");
+	}
+	else
+	{
+		db = QSqlDatabase::addDatabase("QSQLITE", "qt_sql_default_connection1");
+	}
 	db.setDatabaseName("./data/TestMethod.db");
 
 	if (db.open())

@@ -42,6 +42,7 @@ LoginDlg::~LoginDlg()
 	{
 		delete m_pAccount;
 	}
+
     delete ui;
 }
 

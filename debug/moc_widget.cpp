@@ -19,8 +19,8 @@
 
 QT_BEGIN_MOC_NAMESPACE
 struct qt_meta_stringdata_Widget_t {
-    QByteArrayData data[59];
-    char stringdata0[1137];
+    QByteArrayData data[60];
+    char stringdata0[1156];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -74,20 +74,21 @@ QT_MOC_LITERAL(41, 751, 24), // "OnBtnModifyMethodClicked"
 QT_MOC_LITERAL(42, 776, 17), // "OnBtnQueryClicked"
 QT_MOC_LITERAL(43, 794, 28), // "OnBtnDeleteReportListClicked"
 QT_MOC_LITERAL(44, 823, 21), // "OnBtnGenReportClicked"
-QT_MOC_LITERAL(45, 845, 24), // "OnAccountListItemClicked"
-QT_MOC_LITERAL(46, 870, 22), // "OnBtnNewAccountClicked"
-QT_MOC_LITERAL(47, 893, 23), // "OnBtnSaveAccountClicked"
-QT_MOC_LITERAL(48, 917, 25), // "OnBtnDeleteAccountClicked"
-QT_MOC_LITERAL(49, 943, 25), // "OnBtnModifyAccountClicked"
-QT_MOC_LITERAL(50, 969, 26), // "OnCombPressureRangeChanged"
-QT_MOC_LITERAL(51, 996, 29), // "OnBtnSaveAdvanceParamsClicked"
-QT_MOC_LITERAL(52, 1026, 15), // "OnImagePrepared"
-QT_MOC_LITERAL(53, 1042, 7), // "OnTimer"
-QT_MOC_LITERAL(54, 1050, 19), // "OnUpdateDeviceState"
-QT_MOC_LITERAL(55, 1070, 19), // "STRUCT_DeviceState&"
-QT_MOC_LITERAL(56, 1090, 11), // "deviceState"
-QT_MOC_LITERAL(57, 1102, 25), // "OnCurrentPressureReceived"
-QT_MOC_LITERAL(58, 1128, 8) // "pressure"
+QT_MOC_LITERAL(45, 845, 18), // "OnItemDouleClicked"
+QT_MOC_LITERAL(46, 864, 24), // "OnAccountListItemClicked"
+QT_MOC_LITERAL(47, 889, 22), // "OnBtnNewAccountClicked"
+QT_MOC_LITERAL(48, 912, 23), // "OnBtnSaveAccountClicked"
+QT_MOC_LITERAL(49, 936, 25), // "OnBtnDeleteAccountClicked"
+QT_MOC_LITERAL(50, 962, 25), // "OnBtnModifyAccountClicked"
+QT_MOC_LITERAL(51, 988, 26), // "OnCombPressureRangeChanged"
+QT_MOC_LITERAL(52, 1015, 29), // "OnBtnSaveAdvanceParamsClicked"
+QT_MOC_LITERAL(53, 1045, 15), // "OnImagePrepared"
+QT_MOC_LITERAL(54, 1061, 7), // "OnTimer"
+QT_MOC_LITERAL(55, 1069, 19), // "OnUpdateDeviceState"
+QT_MOC_LITERAL(56, 1089, 19), // "STRUCT_DeviceState&"
+QT_MOC_LITERAL(57, 1109, 11), // "deviceState"
+QT_MOC_LITERAL(58, 1121, 25), // "OnCurrentPressureReceived"
+QT_MOC_LITERAL(59, 1147, 8) // "pressure"
 
     },
     "Widget\0OnBtnMinClicked\0\0OnBtnCloseClicked\0"
@@ -112,7 +113,8 @@ QT_MOC_LITERAL(58, 1128, 8) // "pressure"
     "OnBtnDeleteMethodClicked\0"
     "OnBtnModifyMethodClicked\0OnBtnQueryClicked\0"
     "OnBtnDeleteReportListClicked\0"
-    "OnBtnGenReportClicked\0OnAccountListItemClicked\0"
+    "OnBtnGenReportClicked\0OnItemDouleClicked\0"
+    "OnAccountListItemClicked\0"
     "OnBtnNewAccountClicked\0OnBtnSaveAccountClicked\0"
     "OnBtnDeleteAccountClicked\0"
     "OnBtnModifyAccountClicked\0"
@@ -130,7 +132,7 @@ static const uint qt_meta_data_Widget[] = {
        7,       // revision
        0,       // classname
        0,    0, // classinfo
-      47,   14, // methods
+      48,   14, // methods
        0,    0, // properties
        0,    0, // enums/sets
        0,    0, // constructors
@@ -138,53 +140,54 @@ static const uint qt_meta_data_Widget[] = {
        0,       // signalCount
 
  // slots: name, argc, parameters, tag, flags
-       1,    0,  249,    2, 0x09 /* Protected */,
-       3,    0,  250,    2, 0x09 /* Protected */,
-       4,    1,  251,    2, 0x09 /* Protected */,
-       7,    1,  254,    2, 0x09 /* Protected */,
-       8,    1,  257,    2, 0x09 /* Protected */,
-       9,    1,  260,    2, 0x0a /* Public */,
-      11,    0,  263,    2, 0x0a /* Public */,
-      12,    0,  264,    2, 0x0a /* Public */,
-      13,    0,  265,    2, 0x0a /* Public */,
-      14,    0,  266,    2, 0x0a /* Public */,
-      15,    0,  267,    2, 0x0a /* Public */,
-      16,    0,  268,    2, 0x0a /* Public */,
-      17,    1,  269,    2, 0x0a /* Public */,
-      19,    1,  272,    2, 0x0a /* Public */,
-      22,    0,  275,    2, 0x0a /* Public */,
-      23,    0,  276,    2, 0x0a /* Public */,
-      24,    0,  277,    2, 0x0a /* Public */,
-      25,    0,  278,    2, 0x0a /* Public */,
-      26,    0,  279,    2, 0x0a /* Public */,
-      27,    0,  280,    2, 0x0a /* Public */,
-      28,    0,  281,    2, 0x0a /* Public */,
-      29,    0,  282,    2, 0x0a /* Public */,
-      30,    0,  283,    2, 0x0a /* Public */,
-      31,    0,  284,    2, 0x0a /* Public */,
-      32,    1,  285,    2, 0x0a /* Public */,
-      34,    0,  288,    2, 0x0a /* Public */,
-      35,    1,  289,    2, 0x0a /* Public */,
-      36,    1,  292,    2, 0x0a /* Public */,
-      37,    1,  295,    2, 0x0a /* Public */,
-      38,    0,  298,    2, 0x0a /* Public */,
-      39,    0,  299,    2, 0x0a /* Public */,
-      40,    0,  300,    2, 0x0a /* Public */,
-      41,    0,  301,    2, 0x0a /* Public */,
-      42,    0,  302,    2, 0x0a /* Public */,
-      43,    0,  303,    2, 0x0a /* Public */,
-      44,    0,  304,    2, 0x0a /* Public */,
-      45,    1,  305,    2, 0x0a /* Public */,
-      46,    0,  308,    2, 0x0a /* Public */,
-      47,    0,  309,    2, 0x0a /* Public */,
-      48,    0,  310,    2, 0x0a /* Public */,
-      49,    0,  311,    2, 0x0a /* Public */,
-      50,    1,  312,    2, 0x0a /* Public */,
-      51,    0,  315,    2, 0x0a /* Public */,
-      52,    0,  316,    2, 0x0a /* Public */,
-      53,    0,  317,    2, 0x0a /* Public */,
-      54,    1,  318,    2, 0x0a /* Public */,
-      57,    1,  321,    2, 0x0a /* Public */,
+       1,    0,  254,    2, 0x09 /* Protected */,
+       3,    0,  255,    2, 0x09 /* Protected */,
+       4,    1,  256,    2, 0x09 /* Protected */,
+       7,    1,  259,    2, 0x09 /* Protected */,
+       8,    1,  262,    2, 0x09 /* Protected */,
+       9,    1,  265,    2, 0x0a /* Public */,
+      11,    0,  268,    2, 0x0a /* Public */,
+      12,    0,  269,    2, 0x0a /* Public */,
+      13,    0,  270,    2, 0x0a /* Public */,
+      14,    0,  271,    2, 0x0a /* Public */,
+      15,    0,  272,    2, 0x0a /* Public */,
+      16,    0,  273,    2, 0x0a /* Public */,
+      17,    1,  274,    2, 0x0a /* Public */,
+      19,    1,  277,    2, 0x0a /* Public */,
+      22,    0,  280,    2, 0x0a /* Public */,
+      23,    0,  281,    2, 0x0a /* Public */,
+      24,    0,  282,    2, 0x0a /* Public */,
+      25,    0,  283,    2, 0x0a /* Public */,
+      26,    0,  284,    2, 0x0a /* Public */,
+      27,    0,  285,    2, 0x0a /* Public */,
+      28,    0,  286,    2, 0x0a /* Public */,
+      29,    0,  287,    2, 0x0a /* Public */,
+      30,    0,  288,    2, 0x0a /* Public */,
+      31,    0,  289,    2, 0x0a /* Public */,
+      32,    1,  290,    2, 0x0a /* Public */,
+      34,    0,  293,    2, 0x0a /* Public */,
+      35,    1,  294,    2, 0x0a /* Public */,
+      36,    1,  297,    2, 0x0a /* Public */,
+      37,    1,  300,    2, 0x0a /* Public */,
+      38,    0,  303,    2, 0x0a /* Public */,
+      39,    0,  304,    2, 0x0a /* Public */,
+      40,    0,  305,    2, 0x0a /* Public */,
+      41,    0,  306,    2, 0x0a /* Public */,
+      42,    0,  307,    2, 0x0a /* Public */,
+      43,    0,  308,    2, 0x0a /* Public */,
+      44,    0,  309,    2, 0x0a /* Public */,
+      45,    1,  310,    2, 0x0a /* Public */,
+      46,    1,  313,    2, 0x0a /* Public */,
+      47,    0,  316,    2, 0x0a /* Public */,
+      48,    0,  317,    2, 0x0a /* Public */,
+      49,    0,  318,    2, 0x0a /* Public */,
+      50,    0,  319,    2, 0x0a /* Public */,
+      51,    1,  320,    2, 0x0a /* Public */,
+      52,    0,  323,    2, 0x0a /* Public */,
+      53,    0,  324,    2, 0x0a /* Public */,
+      54,    0,  325,    2, 0x0a /* Public */,
+      55,    1,  326,    2, 0x0a /* Public */,
+      58,    1,  329,    2, 0x0a /* Public */,
 
  // slots: parameters
     QMetaType::Void,
@@ -224,6 +227,7 @@ static const uint qt_meta_data_Widget[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void, QMetaType::QModelIndex,   33,
+    QMetaType::Void, QMetaType::QModelIndex,   33,
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
@@ -232,8 +236,8 @@ static const uint qt_meta_data_Widget[] = {
     QMetaType::Void,
     QMetaType::Void,
     QMetaType::Void,
-    QMetaType::Void, 0x80000000 | 55,   56,
-    QMetaType::Void, QMetaType::Int,   58,
+    QMetaType::Void, 0x80000000 | 56,   57,
+    QMetaType::Void, QMetaType::Int,   59,
 
        0        // eod
 };
@@ -280,17 +284,18 @@ void Widget::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void
         case 33: _t->OnBtnQueryClicked(); break;
         case 34: _t->OnBtnDeleteReportListClicked(); break;
         case 35: _t->OnBtnGenReportClicked(); break;
-        case 36: _t->OnAccountListItemClicked((*reinterpret_cast< const QModelIndex(*)>(_a[1]))); break;
-        case 37: _t->OnBtnNewAccountClicked(); break;
-        case 38: _t->OnBtnSaveAccountClicked(); break;
-        case 39: _t->OnBtnDeleteAccountClicked(); break;
-        case 40: _t->OnBtnModifyAccountClicked(); break;
-        case 41: _t->OnCombPressureRangeChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
-        case 42: _t->OnBtnSaveAdvanceParamsClicked(); break;
-        case 43: _t->OnImagePrepared(); break;
-        case 44: _t->OnTimer(); break;
-        case 45: _t->OnUpdateDeviceState((*reinterpret_cast< STRUCT_DeviceState(*)>(_a[1]))); break;
-        case 46: _t->OnCurrentPressureReceived((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 36: _t->OnItemDouleClicked((*reinterpret_cast< const QModelIndex(*)>(_a[1]))); break;
+        case 37: _t->OnAccountListItemClicked((*reinterpret_cast< const QModelIndex(*)>(_a[1]))); break;
+        case 38: _t->OnBtnNewAccountClicked(); break;
+        case 39: _t->OnBtnSaveAccountClicked(); break;
+        case 40: _t->OnBtnDeleteAccountClicked(); break;
+        case 41: _t->OnBtnModifyAccountClicked(); break;
+        case 42: _t->OnCombPressureRangeChanged((*reinterpret_cast< int(*)>(_a[1]))); break;
+        case 43: _t->OnBtnSaveAdvanceParamsClicked(); break;
+        case 44: _t->OnImagePrepared(); break;
+        case 45: _t->OnTimer(); break;
+        case 46: _t->OnUpdateDeviceState((*reinterpret_cast< STRUCT_DeviceState(*)>(_a[1]))); break;
+        case 47: _t->OnCurrentPressureReceived((*reinterpret_cast< int(*)>(_a[1]))); break;
         default: ;
         }
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
@@ -332,13 +337,13 @@ int Widget::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 47)
+        if (_id < 48)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 47;
+        _id -= 48;
     } else if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 47)
+        if (_id < 48)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 47;
+        _id -= 48;
     }
     return _id;
 }

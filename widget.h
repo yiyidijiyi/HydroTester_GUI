@@ -30,6 +30,7 @@
 #include "serialport.h"
 #include "mercamera.h"
 #include "imageproc.h"
+#include "reportwindow.h"
 #include "ui_widget.h"
 
 #include "QWT/qwt_plot_curve.h"
@@ -239,6 +240,7 @@ public slots:
 	void OnBtnQueryClicked();
 	void OnBtnDeleteReportListClicked();
 	void OnBtnGenReportClicked();
+	void OnItemDouleClicked(const QModelIndex &index);
 
 	/*
 	* ÕÊºÅÐÅÏ¢²Ù×÷

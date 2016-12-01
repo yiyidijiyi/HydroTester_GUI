@@ -57,7 +57,16 @@ bool TestResult::GetReportList(QList<STRUCT_Report> &reportList, const QDateTime
 	reportList.clear();
 	bool state = false;
 
-	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+	//QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+	QSqlDatabase db;
+	if (QSqlDatabase::contains("qt_sql_default_connection2"))
+	{
+		db = QSqlDatabase::database("qt_sql_default_connection2");
+	}
+	else
+	{
+		db = QSqlDatabase::addDatabase("QSQLITE", "qt_sql_default_connection2");
+	}
 	db.setDatabaseName("./data/TestResult.db");
 
 	if (db.open())
@@ -155,7 +164,16 @@ bool TestResult::GetReport(int id, STRUCT_Report &report)
 	m_messageList.clear();
 	bool state = false;
 
-	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+	//QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+	QSqlDatabase db;
+	if (QSqlDatabase::contains("qt_sql_default_connection2"))
+	{
+		db = QSqlDatabase::database("qt_sql_default_connection2");
+	}
+	else
+	{
+		db = QSqlDatabase::addDatabase("QSQLITE", "qt_sql_default_connection2");
+	}
 	db.setDatabaseName("./data/TestResult.db");
 
 	if (db.open())
@@ -217,7 +235,16 @@ bool TestResult::DeleteReport(int id)
 	m_messageList.clear();
 	bool state = false;
 
-	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+	//QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+	QSqlDatabase db;
+	if (QSqlDatabase::contains("qt_sql_default_connection2"))
+	{
+		db = QSqlDatabase::database("qt_sql_default_connection2");
+	}
+	else
+	{
+		db = QSqlDatabase::addDatabase("QSQLITE", "qt_sql_default_connection2");
+	}
 	db.setDatabaseName("./data/TestResult.db");
 
 	if (db.open())
@@ -257,7 +284,16 @@ bool TestResult::AddReport(const STRUCT_Report &report)
 	bool state = false;
 	m_messageList.clear();
 
-	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+	//QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+	QSqlDatabase db;
+	if (QSqlDatabase::contains("qt_sql_default_connection2"))
+	{
+		db = QSqlDatabase::database("qt_sql_default_connection2");
+	}
+	else
+	{
+		db = QSqlDatabase::addDatabase("QSQLITE", "qt_sql_default_connection2");
+	}
 	db.setDatabaseName("./data/TestResult.db");
 
 	if (db.open())

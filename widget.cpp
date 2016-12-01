@@ -155,6 +155,7 @@ Widget::Widget(QWidget *parent)
 	connect(ui->pushButton_query, &QPushButton::clicked, this, &Widget::OnBtnQueryClicked);
 	connect(ui->pushButton_delReport, &QPushButton::clicked, this, &Widget::OnBtnDeleteReportListClicked);
 	connect(ui->pushButton_genReport, &QPushButton::clicked, this, &Widget::OnBtnGenReportClicked);
+	connect(ui->tableView_reportQuery, &QTableView::doubleClicked, this, &Widget::OnItemDouleClicked);
 
 	// 账户信息操作
 	connect(ui->listView_accountList, &QListView::clicked, this, &Widget::OnAccountListItemClicked);
@@ -188,11 +189,13 @@ Widget::~Widget()
 		m_pRxThread->terminate();
 		m_pRxThread->wait();
 		delete m_pRxThread;
+		m_pRxThread = NULL;
 	}
 
 	if (m_pCamera)
 	{
 		delete m_pCamera;
+		m_pCamera = NULL;
 	}
 
 	if (m_pImgProcThread)
@@ -200,64 +203,79 @@ Widget::~Widget()
 		m_pImgProcThread->terminate();
 		m_pImgProcThread->wait();
 		delete m_pImgProcThread;
+		m_pImgProcThread = NULL;
 	}
 
 	if (m_pImgProc)
 	{
 		delete m_pImgProc;
+		m_pImgProc = NULL;
 	}
 
 	if (m_pCom)
 	{
 		delete m_pCom;
+		m_pCom = NULL;
 	}
 
 	if (m_pAccountListModel)
 	{
 		delete m_pAccountListModel;
+		m_pAccountListModel = NULL;
 	}
 
 	if (m_pMethodListModel)
 	{
 		delete m_pMethodListModel;
+		m_pMethodListModel = NULL;
 	}
 
 	if (m_pAccountDB)
 	{
 		delete m_pAccountDB;
+		m_pAccountDB = NULL;
 	}
 
 	if (m_pMethodParam)
 	{
 		delete m_pMethodParam;
+		m_pMethodParam = NULL;
 	}
 
 	if (m_pReportQueryModel)
 	{
 		delete m_pReportQueryModel;
+		m_pReportQueryModel = NULL;
 	}
 
 	if (m_pTestResult)
 	{
 		delete m_pTestResult;
-	}
-
-	if (m_pCurve)
-	{
-		delete m_pCurve;
+		m_pTestResult = NULL;
 	}
 
 	if (m_pGrid)
 	{
-		delete m_pGrid;
+		//m_pGrid->detach();
+		//delete m_pGrid;
+		//m_pGrid = NULL;
+	}
+
+	if (NULL != m_pCurve)
+	{
+		//m_pCurve->detach();
+		//delete m_pCurve;
+		//m_pCurve = NULL;
 	}
 
 	if (m_pTimer)
 	{
 		m_pTimer->stop();
 		delete m_pTimer;
+		m_pTimer = NULL;
 	}
 
+	ui->qwtPlot->detachItems();
 	delete ui;
 }
 
@@ -1285,7 +1303,7 @@ void Widget::SavePressureCurve(const QString &s)
 void Widget::GenTestReport(void)
 {
 	STRUCT_Report report;
-	QString testDate = QDateTime::currentDateTime().toString("yyyy-MM-dd-hh-mm-ss");
+	QString testDate = QDateTime::currentDateTime().toString("yyyy_MM_dd_hh_mm_ss");
 
 	SaveLastImage(testDate);
 	SavePressureCurve(testDate);
@@ -1426,9 +1444,9 @@ void Widget::GenTestReport(void)
 		imgPath = "./report/last" + testDate + ".jpg";
 		imgPath = QString("<p align = \"center\"><img src=\"%1\"/></p>").arg(imgPath);
 	}
-	htmlStr += QStringLiteral("<p> </p> <p align = \"center\"><b>检测结果截图</b></p>");
+	htmlStr += QStringLiteral("<p> <br></br> </p> <p align = \"center\"><b>检测结果截图</b></p>");
 	htmlStr += imgPath;
-	htmlStr += QStringLiteral("<p> </p> <p align = \"center\"><b>压力曲线</b></p>");
+	htmlStr += QStringLiteral("<p> <br></br><br></br> </p> <p align = \"center\"><b>压力曲线</b></p>");
 	imgPath = "./report/curve" + testDate + ".jpg";
 	htmlStr += QString("<p align = \"center\"><img src=\"%1\"/></p>").arg(imgPath);
 
@@ -3740,41 +3758,68 @@ void Widget::OnBtnDeleteReportListClicked()
 */
 void Widget::OnBtnGenReportClicked()
 {
-	//QModelIndexList selectedList = ui->tableView_reportQuery->selectionModel()->selectedIndexes();
-	//int i = 0, j = -1;
-	//int id = -1;
-	//bool state = false;
-	//QModelIndex selection;
+	QModelIndexList selectedList = ui->tableView_reportQuery->selectionModel()->selectedIndexes();
+	int i = 0, j = -1;
+	int id = -1;
+	bool state = false;
+	QModelIndex selection;
 
-	//foreach(selection, selectedList)
-	//{
-	//	i = selection.row();
+	foreach(selection, selectedList)
+	{
+		i = selection.row();
 
-	//	// foreach循环时，同一行又多列会循环多次。
-	//	if (j == i)
-	//	{
-	//		continue;
-	//	}
-	//	else
-	//	{
-	//		j = i;
-	//	}
+		// foreach循环时，同一行有多列会循环多次。
+		if (j == i)
+		{
+			continue;
+		}
+		else
+		{
+			j = i;
+		}
 
-	//	id = m_pReportQueryModel->item(i, 0)->text().toInt();
+		id = m_reportList[i].id;
 
-	//	STRUCT_Report report;
-	//	state = m_pTestResult->GetReport(id, report);
+		STRUCT_Report report;
+		state = m_pTestResult->GetReport(id, report);
 
-	//	if (!state)
-	//	{
-	//		ui->label_queryMessage->setText(m_pTestResult->GetMessageList()[0]);
-	//		break;
-	//	}
-	//	else
-	//	{
-	//		DeleteReportInList(id);
-	//	}
-	//}
+		if (!state)
+		{
+			ui->label_queryMessage->setText(m_pTestResult->GetMessageList()[0]);
+			break;
+		}
+		else
+		{
+			ReportWindow w(this);
+			w.GenReport(report);
+			w.show();
+			w.exec();
+		}
+	}
+}
+
+/*
+* 参数：index-tableview中选中的行
+* 返回：
+* 功能：双击查询到的试验记录
+*/
+void Widget::OnItemDouleClicked(const QModelIndex &index)
+{
+	int id = m_reportList[index.row()].id;
+	STRUCT_Report report;
+	bool state = m_pTestResult->GetReport(id, report);
+
+	if (!state)
+	{
+		ui->label_queryMessage->setText(m_pTestResult->GetMessageList()[0]);
+	}
+	else
+	{
+		ReportWindow w(this);
+		w.GenReport(report);
+		w.show();
+		w.exec();
+	}
 }
 
 /*

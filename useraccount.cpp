@@ -1,6 +1,6 @@
 /*
 * 创建日期：2016-09-12
-* 最后修改：2016-11-16
+* 最后修改：2016-11-30
 * 作      者：syf
 * 描      述：
 */
@@ -64,7 +64,16 @@ bool UserAccount::GetAccountList(QStringList &accountList, ENUM_AccountType user
 	accountList.clear();
 	bool state = false;
 
-	QSqlDatabase db = QSqlDatabase::addDatabase("SQLITECIPHER");
+	//QSqlDatabase db = QSqlDatabase::addDatabase("SQLITECIPHER");
+	QSqlDatabase db;
+	if (QSqlDatabase::contains("qt_sql_default_connection"))
+	{
+		db = QSqlDatabase::database("qt_sql_default_connection");
+	}
+	else
+	{
+		db = QSqlDatabase::addDatabase("SQLITECIPHER", "qt_sql_default_connection");
+	}
 	db.setDatabaseName("./data/account.db");
 	db.setPassword("caep17305");
 
@@ -113,7 +122,16 @@ bool UserAccount::GetAccountInfo(const QString &userName, STRUCT_Account &accoun
 	bool state = false;
 	m_messageList.clear();
 
-	QSqlDatabase db = QSqlDatabase::addDatabase("SQLITECIPHER");
+	//QSqlDatabase db = QSqlDatabase::addDatabase("SQLITECIPHER");
+	QSqlDatabase db;
+	if (QSqlDatabase::contains("qt_sql_default_connection"))
+	{
+		db = QSqlDatabase::database("qt_sql_default_connection");
+	}
+	else
+	{
+		db = QSqlDatabase::addDatabase("SQLITECIPHER", "qt_sql_default_connection");
+	}
 	db.setDatabaseName("./data/account.db");
 	db.setPassword("caep17305");
 
@@ -176,7 +194,16 @@ bool UserAccount::GetAccountInfo(int id, STRUCT_Account &account)
 	bool state = false;
 	m_messageList.clear();
 
-	QSqlDatabase db = QSqlDatabase::addDatabase("SQLITECIPHER");
+	//QSqlDatabase db = QSqlDatabase::addDatabase("SQLITECIPHER");
+	QSqlDatabase db;
+	if (QSqlDatabase::contains("qt_sql_default_connection"))
+	{
+		db = QSqlDatabase::database("qt_sql_default_connection");
+	}
+	else
+	{
+		db = QSqlDatabase::addDatabase("SQLITECIPHER", "qt_sql_default_connection");
+	}
 	db.setDatabaseName("./data/account.db");
 	db.setPassword("caep17305");
 
@@ -239,7 +266,16 @@ bool UserAccount::AuthenticateAccount(int &id, const QString &userName, const QS
 {
 	bool state = false;
 	m_messageList.clear();
-	QSqlDatabase db = QSqlDatabase::addDatabase("SQLITECIPHER");
+	//QSqlDatabase db = QSqlDatabase::addDatabase("SQLITECIPHER");
+	QSqlDatabase db;
+	if (QSqlDatabase::contains("qt_sql_default_connection"))
+	{
+		db = QSqlDatabase::database("qt_sql_default_connection");
+	}
+	else
+	{
+		db = QSqlDatabase::addDatabase("SQLITECIPHER", "qt_sql_default_connection");
+	}
 	db.setDatabaseName("./data/account.db");
 	db.setPassword("caep17305");
 
@@ -295,7 +331,16 @@ bool UserAccount::AddAccount(STRUCT_Account &account)
 	m_messageList.clear();
 	bool state = false;
 
-	QSqlDatabase db = QSqlDatabase::addDatabase("SQLITECIPHER");
+	//QSqlDatabase db = QSqlDatabase::addDatabase("SQLITECIPHER");
+	QSqlDatabase db;
+	if (QSqlDatabase::contains("qt_sql_default_connection"))
+	{
+		db = QSqlDatabase::database("qt_sql_default_connection");
+	}
+	else
+	{
+		db = QSqlDatabase::addDatabase("SQLITECIPHER", "qt_sql_default_connection");
+	}
 	db.setDatabaseName("./data/account.db");
 	db.setPassword("caep17305");
 
@@ -367,7 +412,16 @@ bool UserAccount::DeleteAccount(int id)
 	m_messageList.clear();
 	bool state = false;
 
-	QSqlDatabase db = QSqlDatabase::addDatabase("SQLITECIPHER");
+	//QSqlDatabase db = QSqlDatabase::addDatabase("SQLITECIPHER");
+	QSqlDatabase db;
+	if (QSqlDatabase::contains("qt_sql_default_connection"))
+	{
+		db = QSqlDatabase::database("qt_sql_default_connection");
+	}
+	else
+	{
+		db = QSqlDatabase::addDatabase("SQLITECIPHER", "qt_sql_default_connection");
+	}
 	db.setDatabaseName("./data/account.db");
 	db.setPassword("caep17305");
 
@@ -409,7 +463,16 @@ bool UserAccount::DeleteAccount(const QString &userName)
 	m_messageList.clear();
 	bool state = false;
 
-	QSqlDatabase db = QSqlDatabase::addDatabase("SQLITECIPHER");
+	//QSqlDatabase db = QSqlDatabase::addDatabase("SQLITECIPHER");
+	QSqlDatabase db;
+	if (QSqlDatabase::contains("qt_sql_default_connection"))
+	{
+		db = QSqlDatabase::database("qt_sql_default_connection");
+	}
+	else
+	{
+		db = QSqlDatabase::addDatabase("SQLITECIPHER", "qt_sql_default_connection");
+	}
 	db.setDatabaseName("./data/account.db");
 	db.setPassword("caep17305");
 
@@ -451,7 +514,16 @@ bool UserAccount::UpdateAccount(const STRUCT_Account &account)
 	m_messageList.clear();
 	bool state = false;
 
-	QSqlDatabase db = QSqlDatabase::addDatabase("SQLITECIPHER");
+	//QSqlDatabase db = QSqlDatabase::addDatabase("SQLITECIPHER");
+	QSqlDatabase db;
+	if (QSqlDatabase::contains("qt_sql_default_connection"))
+	{
+		db = QSqlDatabase::database("qt_sql_default_connection");
+	}
+	else
+	{
+		db = QSqlDatabase::addDatabase("SQLITECIPHER", "qt_sql_default_connection");
+	}
 	db.setDatabaseName("./data/account.db");
 	db.setPassword("caep17305");
 
